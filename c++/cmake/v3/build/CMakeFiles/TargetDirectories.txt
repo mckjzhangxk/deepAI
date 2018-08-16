@@ -1,0 +1,6 @@
+/home/zxk/桌面/c++/cmake/v3/build/CMakeFiles/edit_cache.dir
+/home/zxk/桌面/c++/cmake/v3/build/CMakeFiles/rebuild_cache.dir
+/home/zxk/桌面/c++/cmake/v3/build/CMakeFiles/Tutorial.dir
+/home/zxk/桌面/c++/cmake/v3/build/CMakeFiles/MathFunctions.dir
+/home/zxk/桌面/c++/cmake/v3/build/MathFunctions/CMakeFiles/edit_cache.dir
+/home/zxk/桌面/c++/cmake/v3/build/MathFunctions/CMakeFiles/rebuild_cache.dir

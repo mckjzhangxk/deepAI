@@ -1,0 +1,3 @@
+/home/zxk/桌面/c++/cmake/build/CMakeFiles/edit_cache.dir
+/home/zxk/桌面/c++/cmake/build/CMakeFiles/rebuild_cache.dir
+/home/zxk/桌面/c++/cmake/build/CMakeFiles/Tutorial.dir
