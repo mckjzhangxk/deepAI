@@ -1,12 +1,12 @@
 #include <iostream>
 using namespace std;
-enum  colors {RED,GREEM,BLUE};
+typedef enum  colors{RED,GREEM,BLUE} color;
 /*
 	use of enum
 */
 
 int main(int argc,char **argv){
-	colors c;
+	color c=BLUE;
 	cout<<"color is:"<<c<<endl;
 	return 0;
 }
