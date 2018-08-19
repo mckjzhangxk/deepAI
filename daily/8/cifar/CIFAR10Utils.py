@@ -42,7 +42,7 @@ def load_CIFAR10(ROOT):
 def load_dataset(flaten=False,one_hot=True):
     def _make_one_hot(d,C=10):
         return (np.arange(C)==d[:,None]).astype(np.int32)
-    X_train,Y_train,X_test,Y_test=load_CIFAR10('CIFAR10_DATA')
+    X_train,Y_train,X_test,Y_test=load_CIFAR10('../../AI_database/cifar/CIFAR10_DATA')
     X_train/=255
     X_test/=255
     if flaten:
