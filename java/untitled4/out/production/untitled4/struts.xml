@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+    <package name="default" namespace="/user" extends="struts-default">
+        <action name="add" class="com.zxk.Test" method="hello">
+            <result name="success">/hello.jsp</result>
+        </action>
+    </package>
+
+
+    <package name="default1" namespace="/user" extends="struts-default">
+        <action name="user" method="add" class="com.hjj.action.UserAction" >
+            <result name="add">
+                /user_add_success.jsp
+            </result>
+        </action>
+        <action name="get" method="get" class="com.hjj.action.UserAction">
+            <result name="get">
+                /user_get.jsp?users=${users}
+            </result>
+        </action>
+    </package>
+</struts>
