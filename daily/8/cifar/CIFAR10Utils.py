@@ -39,10 +39,10 @@ def load_CIFAR10(ROOT):
   Xte, Yte = load_CIFAR_batch(os.path.join(ROOT, 'test_batch'))
   return Xtr, Ytr, Xte, Yte
 
-def load_dataset(flaten=False,one_hot=True):
+def load_dataset(flaten=False,one_hot=True,filename='../../AI_database/cifar/CIFAR10_DATA'):
     def _make_one_hot(d,C=10):
         return (np.arange(C)==d[:,None]).astype(np.int32)
-    X_train,Y_train,X_test,Y_test=load_CIFAR10('../../AI_database/cifar/CIFAR10_DATA')
+    X_train,Y_train,X_test,Y_test=load_CIFAR10(filename)
     X_train/=255
     X_test/=255
     if flaten:

@@ -111,7 +111,7 @@ def negSamplingCostAndGradient(predicted, target, outputVectors, dataset,
     ds[0]-=1
     
     dU=np.outer(ds,predicted)
-##  because dU mean update same target,so need using a for loop
+##  because dU may update same target more than once,so need using a for loop
 ##    grad[indices]=dU
     for k in range(K+1):
         grad[indices[k]]+=dU[k]
