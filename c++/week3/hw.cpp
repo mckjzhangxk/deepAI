@@ -2,8 +2,14 @@
 #include <iostream>
 #include <vector>
 #include <list>
-using namespace std;
+#include <ctime>
+#include <map>
 
+using namespace std;
+/*
+tuple is used to store adjcent node
+
+*/
 class tuple{
 public:
 	tuple(int idx,double dis){
@@ -25,6 +31,10 @@ class Graph{
 public:
 	Graph(int size=50){
 		this->size=size;
+		/*
+			nodes are store in verctors,so I can
+		access every node as O(1)
+		*/
 		this->vertices=vector<list<tuple> >(size);
 	}
 
@@ -52,10 +62,7 @@ public:
 		x,y are index of vertex
 		*/
 		list<tuple> xadj=this->vertices[x];
-		/*for(int i=0;i<xadj.size();i++){
-	 		int t=xadj[i].getIdx();
-			if(t==i) return true;	
-		}*/
+	
 		for(list<tuple>::iterator it=xadj.begin();it!=xadj.end();it++){
 			int t=(*it).getIdx();
 			if(t==y) return true;
@@ -79,20 +86,73 @@ public:
 		adds to G the edge from x to y, if it is not there.
 		*/
 		if(this->adjacent(x,y)==false){
-			list<tuple> xadj=this->vertices[x];
-			xadj.push_back(tuple(y,w));
+			list<tuple>* xadj=&this->vertices[x];
+			xadj->push_back(tuple(y,w));
 		}
 	}
-
-	
+	friend ostream & operator<<(ostream & out,Graph& g){
+		for(int i=0;i<g.size;i++){
+			out<<i<<":";
+			list<tuple> adj=g.vertices[i];
+			for(list<tuple>::iterator it=adj.begin();it!=adj.end();it++){
+				out<<(*it).getIdx()<<"("<<(*it).getDistance()<<"),";
+			}
+			out<<endl;
+		}
+		return out;
+	}
+	void montoCarlo(int density){
+		srand(clock());
+		for(int i=0;i<this->size;i++)
+			for(int j=i+1;j<this->size;j++){
+				if((rand()%100)<=density){
+					int w=rand()%30;
+					this->add(i,j,w);
+					this->add(j,i,w);
+					
+				}	
+			}
+	}	
 private:
 	int size;
 	vector<list<tuple> > vertices;
 };
+class PriorityQueue{
+public:
+	 PriorityQueue(){
+	}
+	void insert(int node,tuple* a){
+		this->queue[node]=a;
+	}
+	bool contain(int node){
+		map<int,tuple*>::iterator it=queue.find(node);
+		return it!=queue.end();
+	}
+	int top(){
+		int min=99999;
+		int ret=-1;
+		for(map<int,tuple*>::iterator it=queue.begin();it!=queue.end();it++){
+			tuple * element=it->second;
+			if(element->getDistance()<min){
+				min=element->getDistance();
+				ret=0;
+			}
+		}
+		return ret;
+	}
+	bool empty(){
+		return this->queue.empty();
+	}
+	int size(){
+		return this->queue.size();
+	}
+private:
+	map<int,tuple*> queue;
+};
 
 int main(int argc,char * argv[]){
 	Graph g=Graph(10);
-	cout<<g.adjacent(0,1)<<endl; 
-	Graph* pg=new Graph(12);
+	g.montoCarlo(30);
+	cout<<g<<endl;
 	return 0;
 }
