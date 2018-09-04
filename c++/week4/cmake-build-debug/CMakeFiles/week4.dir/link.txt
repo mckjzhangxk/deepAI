@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/week4.dir/main.cpp.o CMakeFiles/week4.dir/Node.cpp.o CMakeFiles/week4.dir/Graph.cpp.o CMakeFiles/week4.dir/Edge.cpp.o CMakeFiles/week4.dir/PriorityQueue.cpp.o CMakeFiles/week4.dir/T.cpp.o  -o week4 

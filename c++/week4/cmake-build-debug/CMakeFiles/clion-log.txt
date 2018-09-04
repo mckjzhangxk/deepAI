@@ -1,0 +1,4 @@
+/home/zhangxk/clion-2018.2.2/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/zhangxk/PycharmProjects/untitled/deepAI/c++/week4
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/zhangxk/PycharmProjects/untitled/deepAI/c++/week4/cmake-build-debug
