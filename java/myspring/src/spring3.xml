@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="p1" class="org.zxk.javabrain.module3.Point">
+        <property name="x" value="${pointA.x}" />
+        <property name="y" value="${pointA.y}"/>
+    </bean>
+
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:org/zxk/javabrain/module3/custom.properties" />
+    </bean>
+    <!--<bean class="org.zxk.javabrain.module3.MyBeanFactoryPP" />-->
+</beans>

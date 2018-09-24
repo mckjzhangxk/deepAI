@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="triangle" class="org.zxk.javabrain.module1.Triangle">
+        <!--属性注入-->
+        <!--<property name="name" value="zhangxk" />-->
+        <!--构造器注入法，注意jdk_1.7与spring 3使用,1.8与spring 4使用-->
+        <constructor-arg index="0" value="zhangxk" />
+        <constructor-arg index="1" value="50" />
+        <property name="p1" ref="zeros_point" />
+        <property name="p2">
+            <bean class="org.zxk.javabrain.module1.Point">
+                <property name="x" value="0"/>
+                <property name="y" value="5"/>
+            </bean>
+        </property>
+        <property name="p3">
+            <bean class="org.zxk.javabrain.module1.Point">
+                <property name="x" value="5"/>
+                <property name="y" value="5"/>
+            </bean>
+        </property>
+        <property name="pts">
+            <list>
+                <ref bean="zeros_point"/>
+                <ref bean="zeros_point"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="point1" class="org.zxk.javabrain.module1.Point">
+        <property name="x" value="0"/>
+        <property name="y" value="0"/>
+    </bean>
+
+    <alias name="point1" alias="zeros_point" />
+</beans>
