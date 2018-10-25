@@ -25,8 +25,10 @@ drawNormDistribution(X,Y,Z,r'$ \mu=0,\ \sigma=I$')
 Z=(0.5/np.pi)*np.exp(-0.5*((X-1)**2+(Y-2)**2))
 drawNormDistribution(X,Y,Z,r'$\mu=[1,2],\ \sigma=I$')
 
-# cov=[3 0,0 1]
-Z=(0.5/np.pi/3)*np.exp(-((X**2)/3+Y**2))
+# cov=[1 0.5,0.5 1]
+cov=np.array([[1,.5],[.5,1]])
+inv_cov=np.linalg.inv(cov)
+Z=(0.5/np.pi/np.sqrt(0.75))*np.exp(-0.5*(inv_cov[0,0]*X**2+inv_cov[1,1]*Y**2+2*inv_cov[0,1]*X*Y))
 drawNormDistribution(X,Y,Z,r'$ \mu=0,\ \sigma=[3,0,0,1]$')
 
 
