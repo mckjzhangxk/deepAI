@@ -1,2 +1,0 @@
-import face_recognition
-face_recognition.compare_faces
