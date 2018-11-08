@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import itertools
+import cv2.opencv2
 from tensorflow.examples.tutorials.mnist import input_data
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
