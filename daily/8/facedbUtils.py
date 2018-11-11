@@ -67,7 +67,7 @@ def createValidationDataset(db,p_samples=100,n_samples=100):
 
     return Xa,Xb,Y
 def getFaceDB(path_encode='FaceRecognizationDataset/faces_db_test.pickle',
-               path_image='/home/zhangxk/projects/daily/8/facedb'):
+               path_image='../../../daily/8/facedb'):
     db = _loadDataset(path_image)
     with open(path_encode, 'wb') as handle:
         pickle.dump(db, handle, protocol=pickle.HIGHEST_PROTOCOL)
