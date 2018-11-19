@@ -1,8 +1,46 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import itertools
+from sklearn import metrics
 
 from tensorflow.examples.tutorials.mnist import input_data
+def plotROC(fp,tp,auc,thresholds,ratio=0.02):
+    plt.figure(facecolor='w')
+    plt.plot(fp,tp,label='ROC Curve,Auc:%f'%(auc))
+    bestIndex=np.argwhere(fp<=ratio)[-1][0]
+    c_fp,c_tp=fp[bestIndex],tp[bestIndex]
+    print('best rule is score<=%f,under this rule,TPR is %f,FPR is %f'%(1-thresholds[bestIndex],c_tp,c_fp))
+    plt.plot([c_fp],[c_tp],'ro',label='chioce with fpr <=%.3f'%ratio)
+    plt.xlabel('fpr')
+    plt.ylabel('tpr')
+    plt.title('ROC analysis')
+    plt.grid()
+    plt.legend()
+
+
+def ROC_AUC(y, y_score, flag='multi'):
+    '''
+    when Flag is multi,return micro ROC and ROC for every classes
+    m_fp,m_tp,m_thresholds:1-D array,the fpr,tpr,threshold,auc 
+    fp,tp,thresholds,auc:fp[i],tp[i] is for i'th classes
+
+
+    '''
+    if flag == 'multi':
+        n_class = y_score.shape[1]
+        fp, tp, thresholds, auc = {}, {}, {}, {}
+        for i in range(n_class):
+            fp[i], tp[i], thresholds[i] = metrics.roc_curve(y[:, i], y_score[:, i], drop_intermediate=False)
+            auc[i] = metrics.auc(fp[i], tp[i])
+            m_fp, m_tp, m_thresholds = metrics.roc_curve(y.ravel(), y_score.ravel())
+            m_auc = metrics.auc(m_fp, m_tp)
+
+            return (m_fp, m_tp, m_thresholds, m_auc, fp, tp, thresholds, auc)
+    else:
+        m_fp, m_tp, m_thresholds = metrics.roc_curve(y, y_score)
+        m_auc = metrics.auc(m_fp, m_tp)
+        return (m_fp, m_tp, m_thresholds, m_auc)
+
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
