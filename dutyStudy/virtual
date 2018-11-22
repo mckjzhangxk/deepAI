@@ -1,0 +1,4 @@
+Virtualenv Command Not Found
+
+
+sudo /usr/bin/easy_install virtualenv

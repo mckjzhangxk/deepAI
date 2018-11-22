@@ -1,0 +1,43 @@
+https://www.linode.com/docs/applications/remote-desktop/install-vnc-on-ubuntu-16-04/#connect-to-vnc-from-your-desktop
+
+
+1.sudo apt-get install --no-install-recommends ubuntu-desktop gnome-panel gnome-settings-daemon metacity nautilus gnome-terminal
+2.sudo apt-get install vnc4server
+3.~/.vnc/xstartup
+#!/bin/sh
+
+# Uncomment the following two lines for normal desktop:
+# unset SESSION_MANAGER
+# exec /etc/X11/xinit/xinitrc
+
+[ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
+[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources
+xsetroot -solid grey
+vncconfig -iconic &
+x-terminal-emulator -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+x-window-manager &
+
+gnome-panel &
+gnome-settings-daemon &
+metacity &
+nautilus &
+
+4.vncserver :1
+5.vncserver -kill :1
+
+
+===========ftp=========
+https://devanswers.co/installing-ftp-server-vsftpd-ubuntu-16-04-17-04/
+1.sudo apt-get install vsftpd
+2.sudo service vsftpd status
+3.sudo nano /etc/vsftpd.conf
+4.uncomment write_enable=YES
+===========ssh===================
+https://www.cnblogs.com/EasonJim/p/7189509.html
+sudo apt-get install openssh-server
+sudo vim /etc/ssh/sshd_config:Port 22
+无密码登录
+sshpass -p 'jnchengf' ssh jncf@192.168.20.14
+==================开启启动===========================
+https://www.shellhacks.com/ubuntu-centos-enable-disable-service-autostart-linux/
+systemctl is-enabled vsftpd

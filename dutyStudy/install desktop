@@ -1,0 +1,14 @@
+https://www.server-world.info/en/note?os=CentOS_6&p=x
+ 	
+Desktop Environment is not neccessary for Server usage, though. But Sometimes installation or using an application requires Desktop Environment, then build Desktop Environment as follwos.
+[1]	Install GNOME Desktop Environment on here.
+[root@dlp ~]# sudo yum -y groupinstall "X Window System" 
+[root@dlp ~]# sudo yum -y groupinstall "Desktop" 
+[root@dlp ~]# sudo yum -y groupinstall "General Purpose Desktop"
+[2]	Input a command like below after finishing installation of new packages.
+[root@dlp ~]# startx
+[3]	GNOME Desktop Environments starts like follows.
+tigervnc-server
+
+yum -y install tigervnc-server
+yum -y groupinstall "X Window System"  "Desktop"  "General Purpose Desktop"

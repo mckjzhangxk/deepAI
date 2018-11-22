@@ -1,0 +1,33 @@
+好了,我们的jdk要派上用场了
+
+打开你的终端或者命令行或者其他黑窗口,输入:
+keytool -genkey -v -alias testKey -keyalg RSA -validity 3650 -keystore ~/Lee/test.keystore
+alias: 别名 这里起名testKey
+keyalg: 证书算法，RSA
+validity：证书有效时间，10年
+keystore：证书生成的目标路径和文件名,替换成你自己的路径即可,我定义的是~/Lee/test.keystore
+回车,然后会让你输入一些信息,其中秘钥库口令和秘要口令最好输入同一个,并且记下这个口令,其他的随便填即可
+
+
+image.png
+在你刚才的目标路径里拿到生成好的test.keystore.
+四、tomcat配置https
+把keystore证书上传到你的tomcat服务器上(如果你的tomcat在本地,那么不移动也可以),并记下证书所在路径.
+cd到tomcat的conf目录下,打开server.xml文件,搜索https找到下面这项:
+
+
+tomcat配置文件
+先去掉注释,然后将keystoreFile和keystorePass处替换成你自己的证书路径和生成证书时的口令即可.
+<Connector port="8443" protocol="org.apache.coyote.http11.Http11Protocol"
+               maxThreads="150" SSLEnabled="true" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS" keystoreFile="你的keystore路径" keystorePass="生成证书时的口令"  />
+port: https的端口,默认8443
+clientAuth:设置是否双向验证，默认为false，设置为true代表双向验证keystoreFile
+keystoreFile: keystore证书的路径
+keystorePass: 生成keystore时的口令
+启动tomcat,然后就可以使用https和8443端口访问你的服务了! _
+
+作者：夜_雪
+链接：https://www.jianshu.com/p/a55590f486a2
+來源：简书
+简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。

@@ -1,0 +1,4 @@
+https://developer.nvidia.com/cuda-downloads
+nvcc -ccbin clang-3.8 cube.cu
+https://stackoverflow.com/questions/6622454/cuda-incompatible-with-my-gcc-version
+http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#axzz4VZnqTJ2A

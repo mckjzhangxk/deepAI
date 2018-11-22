@@ -1,0 +1,2 @@
+netstat -tnl|grep 8080
+http://lazybios.com/2015/03/netstat-notes/
