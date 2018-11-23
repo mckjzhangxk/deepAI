@@ -11,3 +11,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local/lib/python3.5
 
 
 https://github.com/milq/milq/blob/master/scripts/bash/install-opencv.sh#L51
+
+
+
+https://www.youtube.com/watch?v=Oi_jE5sp-A0&list=PLh6SAYydrIpctChfPFBlopqw-TGjwWf_8&index=3
