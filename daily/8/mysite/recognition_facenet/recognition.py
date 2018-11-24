@@ -14,7 +14,7 @@ def face_encodings(filename,imageSize=160):
     if I is None:return []
 
     if I.shape!=4:
-        I.shape=(1,imageSize,imageSize,3)
+        I.shape=(-1,imageSize,imageSize,3)
     code=model.predict(I)
     return [code[0]]
 
