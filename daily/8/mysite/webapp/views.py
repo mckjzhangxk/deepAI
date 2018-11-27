@@ -6,6 +6,7 @@ import pickle
 from . import Persondb as db
 import os.path
 import json
+import base64
 
 #database
 baseweb,_=os.path.split(os.path.realpath(__file__))
@@ -21,16 +22,31 @@ if (os.path.exists(path_np)):
 else:
     service=db.FaceService(D=512)
     service.loaddb(path_db,path_np)
+def downLoadFile(params,outpath):
+    if 'file' not in params:return
+    filestr=params['file']
+
+    ori_image_data = base64.b64decode(filestr)
+    fout = open(outpath, 'wb')
+    fout.write(ori_image_data)
+    fout.close()
+
 
 def checkface(request):
-    params=request.GET
+    postBody =request.body.decode(encoding='utf-8')
+    params=json.loads(postBody)
     filename=params['filename']
+    downLoadFile(params,os.path.join(path_detect,filename))
+    
     name,confident=service.detectFace(os.path.join(path_detect,filename))
     retstr=json.dumps({'name':name,'confident':confident})
     return HttpResponse(retstr)
 def addface(request):
-    params=request.GET
+    postBody =request.body.decode(encoding='utf-8')
+    params=json.loads(postBody)
     filename=params['filename']
+    downLoadFile(params,os.path.join(path_db,filename))
+    
     bl=service.addFace2db(os.path.join(path_db,filename))
 
     retstr='fail'
@@ -44,8 +60,10 @@ def listfaces(request):
     return HttpResponse(retStr)
 
 def removeface(request):
-    params=request.GET
+    postBody =request.body.decode(encoding='utf-8')
+    params=json.loads(postBody)
     filename=params['filename']
+    
     bl=service.deleteFile(filename)
     retstr = 'FaceNotExist'
 

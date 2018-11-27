@@ -6,21 +6,24 @@ import numpy as np
 import tensorflow as tf
 import facenet.facenet as facenet
 import matplotlib.pyplot as plt
+from recognition_facenet.ImageProcess import modify_autoContract,equalization
 import os
 
 
-def face_encodings(filename,imageSize=160):
-    I=_detectSingleFace(filename,image_size=imageSize)
+def face_encodings(filename,imageSize=160,pad=22,prefunc=None):
+    I=_detectSingleFace(filename,image_size=imageSize,pad=pad,preprocsingFunc=prefunc)
     if I is None:return []
-
+    
     if I.shape!=4:
         I.shape=(-1,imageSize,imageSize,3)
     code=model.predict(I)
     return [code[0]]
 
-def _detectSingleFace(path, minsize=50, threshold = [0.6, 0.7, 0.7], factor=0.709,pad=5,image_size=160):
+def _detectSingleFace(path, minsize=50, threshold = [0.6, 0.7, 0.7], factor=0.709,pad=5,image_size=160,preprocsingFunc=None):
 
     I=imread(path,mode='RGB')
+    if preprocsingFunc:
+        I=preprocsingFunc(I)
     box, point=detect_face(I,minsize,pnet_fun,rnet_fun,onet_fun,threshold,factor)
 
     if len(box)==0:

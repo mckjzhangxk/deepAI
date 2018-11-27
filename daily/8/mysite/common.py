@@ -4,12 +4,14 @@ import itertools
 from sklearn import metrics
 
 from tensorflow.examples.tutorials.mnist import input_data
-def plotROC(fp,tp,auc,thresholds,ratio=0.02):
+def plotROC(fp,tp,auc,thresholds,ratio=0.02,acc=None):
     plt.figure(facecolor='w')
     plt.plot(fp,tp,label='ROC Curve,Auc:%f'%(auc))
     bestIndex=np.argwhere(fp<=ratio)[-1][0]
     c_fp,c_tp=fp[bestIndex],tp[bestIndex]
     print('best rule is score<=%f,under this rule,TPR is %f,FPR is %f'%(thresholds[bestIndex],c_tp,c_fp))
+    if acc is not None:
+        print('accuracy is %.4f'%(acc[bestIndex]))
     plt.plot([c_fp],[c_tp],'ro',label='chioce with fpr <=%.3f'%ratio)
     plt.xlabel('fpr')
     plt.ylabel('tpr')

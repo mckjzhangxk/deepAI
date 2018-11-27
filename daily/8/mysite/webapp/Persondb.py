@@ -4,7 +4,7 @@ import numpy as np
 import os
 from scipy.misc import imread,imresize,imshow
 import pickle
-
+from recognition_facenet.recognition import modify_autoContract,equalization
 class FaceService():
     def __init__(self,N=100,D=128):
         self.N=N
@@ -28,7 +28,7 @@ class FaceService():
             pickle.dump(self, handle, protocol=pickle.HIGHEST_PROTOCOL)
         print('load face database successful,load #%d faces!'%(self._num))
     def addFace2db(self,filename):
-        characters = face_recognition.face_encodings(filename)
+        characters = face_recognition.face_encodings(filename,prefunc=modify_autoContract)
         if len(characters)==0:return False
         self._appendFace(characters[0])
         self.faceid.append(filename[filename.rfind('/')+1:])
@@ -52,7 +52,7 @@ class FaceService():
             return False
     def detectFace(self,filename):
         
-        cf=face_recognition.face_encodings(filename)
+        cf=face_recognition.face_encodings(filename,prefunc=modify_autoContract)
         if(len(cf)==0):return (None,1000)
 
         distance=np.linalg.norm(self._db[:self._num]-cf[0],axis=1)
