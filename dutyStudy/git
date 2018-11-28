@@ -1,1 +1,6 @@
 https://www.youtube.com/watch?v=HVsySz-h9r4
+undo add :git reset
+https://stackoverflow.com/questions/348170/how-to-undo-git-add-before-commit
+uodo commit to last version:git reset --soft HEAD~1
+https://www.git-tower.com/learn/git/faq/undo-last-commit
+
