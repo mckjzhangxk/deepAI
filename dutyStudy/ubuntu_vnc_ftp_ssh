@@ -38,6 +38,8 @@ sudo apt-get install openssh-server
 sudo vim /etc/ssh/sshd_config:Port 22
 无密码登录
 sshpass -p 'jnchengf' ssh jncf@192.168.20.14
+ROOT登录
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/v2v_guide/preparation_before_the_p2v_migration-enable_root_login_over_ssh
 ==================开启启动===========================
 https://www.shellhacks.com/ubuntu-centos-enable-disable-service-autostart-linux/
 systemctl is-enabled vsftpd
