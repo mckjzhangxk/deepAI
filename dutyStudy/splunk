@@ -1,0 +1,12 @@
+cd splunk
+./splunk start --accept-license
+
+//
+./splunk enable boot-start-user zxk
+
+https://www.splunk.com/page/download_track?file=6.2.8/linux/splunk-6.2.8-275559-Linux-x86_64.tgz&platform=Linux&architecture=x86_64&version=6.2.8&product=splunk&typed=release&name=linux_installer
+
+
+source="census.csv"  sourcetype="csv"  STNAME = "California" OR CENSUS2010POP>=1000000 |sort CENSUS2010POP asc|TABLE CTYNAME,,STNAME,CENSUS2010POP
+
+STNAME = "California" | stats sum(CENSUS2010POP)

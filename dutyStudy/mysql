@@ -1,0 +1,5 @@
+mysql -u fooUser -p -h 44.55.66.77
+https://support.rackspace.com/how-to/mysql-connect-to-your-database-remotely/
+=================远程连接=============================
+sudo apt install mysql-workbench
+==================客户端========================
