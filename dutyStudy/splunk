@@ -6,7 +6,15 @@ cd splunk
 
 https://www.splunk.com/page/download_track?file=6.2.8/linux/splunk-6.2.8-275559-Linux-x86_64.tgz&platform=Linux&architecture=x86_64&version=6.2.8&product=splunk&typed=release&name=linux_installer
 
-
+source="census.csv"  sourcetype="csv"|stats count//查询并统计数量
+source="census.csv"  sourcetype="csv" STNAME="California"|stats count//统计加州的数量,20
+source="census.csv"  sourcetype="csv" STNAME="California" OR STNAME="Alaska"|stats count//统计加州或者按拉斯家的数量,178
+source="census.csv"  sourcetype="csv" STNAME="California" AND CENSUS2010POP>1000000|stats count//加州竟选超100W的,20
+source="census.csv"  sourcetype="csv" STNAME="California" AND CENSUS2010POP>1000000|table CTYNAME//提取列名
+source="census.csv"  sourcetype="csv" STNAME="California" AND CENSUS2010POP>1000000|sort CENSUS2010POP desc|table CTYNAME,CENSUS2010POP//提取列名,排序
+source="census.csv"  sourcetype="csv" STNAME="California"|stats sum(CENSUS2010POP) //统计加州选民数量,149015824
 source="census.csv"  sourcetype="csv"  STNAME = "California" OR CENSUS2010POP>=1000000 |sort CENSUS2010POP asc|TABLE CTYNAME,,STNAME,CENSUS2010POP
+
+
 
 STNAME = "California" | stats sum(CENSUS2010POP)
