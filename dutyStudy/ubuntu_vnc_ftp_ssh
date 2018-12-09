@@ -40,6 +40,9 @@ sudo vim /etc/ssh/sshd_config:Port 22
 sshpass -p 'jnchengf' ssh jncf@192.168.20.14
 ROOT登录
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/v2v_guide/preparation_before_the_p2v_migration-enable_root_login_over_ssh
+
+nano /etc/ssh/sshd_config
+PermitRootLogin yes
 ==================开启启动===========================
 https://www.shellhacks.com/ubuntu-centos-enable-disable-service-autostart-linux/
 systemctl is-enabled vsftpd
