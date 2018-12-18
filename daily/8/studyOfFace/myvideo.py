@@ -3,10 +3,15 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-def bigPicture(a,b,c,d):
-    h,w,ch=a.shape
-
-    out=np.zeros((2*h,2*w,ch),dtype=np.uint8)
+def bigPicture(a,b,c,d,h=None,w=None):
+    if h:
+        a=cv2.resize(a, (w, h), interpolation=cv2.INTER_AREA)
+        b=cv2.resize(b, (w, h), interpolation=cv2.INTER_AREA)
+        c=cv2.resize(c, (w, h), interpolation=cv2.INTER_AREA)
+        d=cv2.resize(d, (w, h), interpolation=cv2.INTER_AREA)
+    else:
+        h,w,_=a.shape
+    out=np.zeros((2*h,2*w,3),dtype=np.uint8)
     out[0:h,0:w] =a
     out[0:h,w:2*w]  =b
     out[h:2*h,0:w]  =c
@@ -23,7 +28,7 @@ while True:
     # ret=True
     ret, frame=cap.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
+    
     if ret:
         boxes, out = p_stage(frame, pnet=pnet, minsize=50, factor=0.709, t=0.6, debug=False)
         pImage=drawDectectBox(frame, boxes, scores=boxes[:, 4])
@@ -38,7 +43,7 @@ while True:
         else:
             oImage=frame
 
-        I= bigPicture(frame, pImage, rImage, oImage)[:, :, ::-1]
+        I= bigPicture(frame, pImage, rImage, oImage,320,426)[:, :, ::-1]
         cv2.imshow('myvideo',I)
 
     if cv2.waitKey(1)==ord('q'):break
