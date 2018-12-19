@@ -21,10 +21,12 @@ public class MyConfigure {
 //        System.out.println(HDFS.class.getResource("/conf/ha/core-site.xml"));
         conf.addResource(MyConfigure.class.getResource(prefix+"/core-site.xml"));
         conf.addResource(MyConfigure.class.getResource(prefix+"/hdfs-site.xml"));
+//        conf.addResource(MyConfigure.class.getResource(prefix+"/mapred-site.xml"));
+//        conf.addResource(MyConfigure.class.getResource(prefix+"/yarn-site.xml"));
 
 //        System.out.println(conf.get("fs.defaultFS"));
 //        System.out.println(conf.get("dfs.replication"));
-        System.out.println(MyConfigure.class.getResource(""));
+//        System.out.println(MyConfigure.class.getResource(""));
         return conf;
     }
 }

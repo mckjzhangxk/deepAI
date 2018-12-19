@@ -15,7 +15,7 @@ public class HDFS {
         FileStatus[] fileStatuses = fs.listStatus(path);
         System.out.println("文件系统 默认块大小(M):"+(fs.getDefaultBlockSize()/1024/1024));
         for(FileStatus s:fileStatuses)
-            System.out.println(s.getPath()+" blocksize(M):"+s.getBlockSize()/1024/1024+" copys:"+s.getReplication());
+            System.out.println(s.getPath()+" blocksize(M):"+s.getBlockSize()/1024/1024+" ,copys:"+s.getReplication()+",size(M)"+s.getLen()/1024/1024);
 
     }
 
@@ -34,7 +34,7 @@ public class HDFS {
         //注意,必须设置环境变量HADOOP_USER_NAME 与hdfs保持一致
         System.out.println(System.getenv("HADOOP_USER_NAME"));
 
-        Configuration conf= MyConfigure.getConfigure("ha");
+        Configuration conf= MyConfigure.getConfigure("full");
         FileSystem fs=FileSystem.get(URI.create(""),conf,"root");
 
 
@@ -51,19 +51,19 @@ public class HDFS {
         IOUtils.copyBytes(inputStream,outputStream,4096,true);
 
         //上传文件代码
-        p=new Path("/face.jpeg");
-        inputStream=new FileInputStream("/home/zxk/IdeaProjects/hadoop/src/data/timg.jpeg");
+        p=new Path("/words.txt");
+        inputStream=new FileInputStream("/home/zxk/PycharmProjects/deepAI/dutyStudy/hadoop/hadoop/src/data/words.txt");
         outputStream = fs.create(p);
         IOUtils.copyBytes(inputStream,outputStream,4096,true);
 
 
-        blockLocation(fs,"/jdk-8u131-linux-x64.tar.gz");
+        blockLocation(fs,"/words.txt");
 
 //        listFiles(fs);
 
 
-        fs.delete(p,true);
-//        listFiles(fs);
+//        fs.delete(p,true);
+        listFiles(fs);
 
 
         fs.close();

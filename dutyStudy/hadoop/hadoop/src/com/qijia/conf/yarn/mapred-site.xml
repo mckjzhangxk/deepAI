@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <!--
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,27 +18,11 @@
 
 <configuration>
     <property>
-        <name>fs.defaultFS</name>
-        <value>hdfs://node1:9820</value>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
     </property>
     <property>
-        <name>hadoop.tmp.dir</name>
-        <value>/root/dfs/ha</value>
+        <name>mapreduce.application.classpath</name>
+        <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
     </property>
-<!--配置HA后,由于有多个NN,所有这里指定服务名称-->
-  <property>
-  	<name>fs.defaultFS</name>
-  	<value>hdfs://myzxk</value>
-  </property>
-<!--提供zookeeper 服务地址-->
-  <property>
-  	<name>ha.zookeeper.quorum</name>
-   	<value>node2:2181,node3:2181,node4:2181</value>
-  </property>
-  
-
-  <property>
-   	<name>hadoop.http.staticuser.user</name>
-   	<value>root</value>
-  </property>
 </configuration>

@@ -21,24 +21,8 @@
         <name>fs.defaultFS</name>
         <value>hdfs://node1:9820</value>
     </property>
-    <property>
-        <name>hadoop.tmp.dir</name>
-        <value>/root/dfs/ha</value>
-    </property>
-<!--配置HA后,由于有多个NN,所有这里指定服务名称-->
-  <property>
-  	<name>fs.defaultFS</name>
-  	<value>hdfs://myzxk</value>
-  </property>
-<!--提供zookeeper 服务地址-->
-  <property>
-  	<name>ha.zookeeper.quorum</name>
-   	<value>node2:2181,node3:2181,node4:2181</value>
-  </property>
-  
-
-  <property>
-   	<name>hadoop.http.staticuser.user</name>
-   	<value>root</value>
-  </property>
+    <!--<property>-->
+        <!--<name>hadoop.tmp.dir</name>-->
+        <!--<value>/root/dfs/full</value>-->
+    <!--</property>-->
 </configuration>
