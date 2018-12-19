@@ -1,0 +1,46 @@
+	<!--reduce 自动拉回sort的排序-->
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+	<!--启用yarn的高可用-->
+    <property>
+  	<name>yarn.resourcemanager.ha.enabled</name>
+  	<value>true</value>
+    </property>
+	<!--设在yarn的集群ID-->
+    <property>
+  	<name>yarn.resourcemanager.cluster-id</name>
+  	<value>cluster1</value>
+    </property>
+	<!--对ResourceManager节点起别名-->
+    <property>
+  	<name>yarn.resourcemanager.ha.rm-ids</name>
+  	<value>rm1,rm2</value>
+    </property>
+
+	<!--逻辑对物理节点映射-->
+    <property>
+  	<name>yarn.resourcemanager.hostname.rm1</name>
+  	<value>node3</value>
+    </property>
+    <property>
+  	<name>yarn.resourcemanager.hostname.rm2</name>
+  	<value>node4</value>
+    </property>
+
+    <property>
+  	<name>yarn.resourcemanager.webapp.address.rm1</name>
+  	<value>node3:8088</value>
+    </property>
+    <property>
+  	<name>yarn.resourcemanager.webapp.address.rm2</name>
+  	<value>node4:8088</value>
+    </property>
+
+	<!--告诉yarnzookeeper在哪里,用于协调主备yarn-->
+    <property>
+  	<name>yarn.resourcemanager.zk-address</name>
+  	<value>node2:2181,node3:2181,node4:2181</value>
+    </property>

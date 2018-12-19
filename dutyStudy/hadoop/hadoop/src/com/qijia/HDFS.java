@@ -1,3 +1,6 @@
+package com.qijia;
+
+import com.qijia.conf.MyConfigure;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.IOUtils;
@@ -26,28 +29,12 @@ public class HDFS {
 //            System.out.println(b.getHosts()+",offset:"+b.getOffset()+",len:"+b.getLength());
         }
     }
-    public static Configuration getConfigure(String prefix){
 
-        //设置true会跑到src目录下找XML文件,false不会去找
-        Configuration conf=new Configuration(false);
-
-        //这里是手动制定文件路径
-//        conf.addResource(new Path(""));
-//        conf.addResource(new Path(""));
-//        System.out.println(HDFS.class.getResource("/conf/ha/core-site.xml"));
-        conf.addResource(HDFS.class.getResource(prefix+"/core-site.xml"));
-        conf.addResource(HDFS.class.getResource(prefix+"/hdfs-site.xml"));
-
-//        System.out.println(conf.get("fs.defaultFS"));
-//        System.out.println(conf.get("dfs.replication"));
-//        System.out.println(conf);
-        return conf;
-    }
     public static void main(String[] gras) throws IOException, InterruptedException {
         //注意,必须设置环境变量HADOOP_USER_NAME 与hdfs保持一致
         System.out.println(System.getenv("HADOOP_USER_NAME"));
 
-        Configuration conf=getConfigure("conf/ha");
+        Configuration conf= MyConfigure.getConfigure("ha");
         FileSystem fs=FileSystem.get(URI.create(""),conf,"root");
 
 
