@@ -2,51 +2,43 @@ import os
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-from scipy.misc import imsave
-
-# name='17--Ceremony/17_Ceremony_Ceremony_17_129.jpg'
-# cnt=1
-# line='941 301 22 29 1 0 1 0 0 0'
-# filename=os.path.join(path,name)
-#
-# if os.path.exists(filename):
-#     I=cv2.imread(filename)
-#     I=I[:,:,::-1]
-#     H,W,_=I.shape
-#
-#
-#     for i in range(cnt):
-#         splits=line.split(' ')
-#         x1,y1,w,h=int(splits[0]),int(splits[1]),int(splits[2]),int(splits[3])
-#         x2,y2=x1+w,y1+h
-#
-#         pad=int((0.8*np.random.rand()+0.2)*max(w,h))
-#         subx1, suby1=max(x1-pad,0),max(y1-pad,0)
-#         #临时的末端点
-#         subx2,suby2=min(x2+pad,W),min(y2+pad,H)
-#         subw,subh=subx2-subx1,suby2-suby1
-#         l=max(subw,subh)
-#         #最终末端点
-#         subx2,suby2=min(subx1+l,W),min(suby1+l,H)
-#
-#         Iface=I[suby1:suby2,subx1:subx2,:]
-#
-#         boxX1=float(x1-subx1)/subw
-#         boxX2 = float(x2 - subx1) / subw
-#         boxY1=float(y1-suby1)/subh
-#         boxY2 = float(y2 - suby1) / subh
-#
-#         I12=cv2.resize(Iface,(12,12),interpolation=cv2.INTER_AREA)
-#         I24 =cv2.resize(Iface, (24, 24))
-#         I48 =cv2.resize(Iface, (48, 48))
-#
-#         Y=np.array([0,1])
-#         YBOX=np.array([boxX1,boxY1,boxX2,boxY2])
 
 
-# cv2.imwrite('xx.jpg',I)
+def filter(I,faceid,line):
+    I=I.copy()
+    splits=line.split(' ')
+
+
+    x1, y1, w, h = int(splits[0]), int(splits[1]), int(splits[2]), int(splits[3])
+    x2, y2 = x1 + w, y1 + h
+    blur, expression, illumination, invalid, occlusion, pose=int(splits[4]),int(splits[5]),int(splits[6]),int(splits[7]),int(splits[8]),int(splits[9])
+
+
+
+    # if _invalid==invalid:
+    #     cv2.imwrite('hello.jpg',I[y1:y2,x1:x2])
+    #     print('ss')
+    if invalid==0 and occlusion==0 and w>=12 and h>=12:
+        cv2.imwrite('hello.jpg', I)
+        # invalid='invalid' if invalid==1 else ''
+        # occlusion='occ' if occlusion>0 else ''
+        # illumination='E' if illumination>0 else 'N'
+        # pose='H' if pose>0 else 'L'
+        cv2.imwrite('%d.jpg' % (faceid), I[y1:y2, x1: x2])
+        cv2.rectangle(I, (x1, y1), (x2, y2), (255, 0, 255), 2)
+        cv2.imwrite('hello%d.jpg' % (faceid), I)
+
+        return x1,y1,x2,y2,w,h
+    else:return None
+def testMyPicture(I,I12,I24,I48):
+    cv2.imwrite('test/I.jpg' , I)
+    for k in range(len(I12)):
+        cv2.imwrite('test/I12_%d.jpg'%k,I12[k])
+        cv2.imwrite('test/I24_%d.jpg' % k, I24[k])
+        cv2.imwrite('test/I48_%d.jpg' % k, I48[k])
 
 def onePicture(fs,path):
+    def isNotSquare(X):return X.shape[0]!=X.shape[1]
     name=fs.readline()
     if name=='':return None
     name=name.replace('\n','')
@@ -63,35 +55,34 @@ def onePicture(fs,path):
         I = I[:, :, ::-1]
         H, W, _ = I.shape
 
-        tmp=[]
+        tmp=[]#save() face position,then using it to crop non-face region later
         for i in range(cnt):
             line = fs.readline()
-            splits = line.split(' ')
-            x1, y1, w, h = int(splits[0]), int(splits[1]), int(splits[2]), int(splits[3])
-            x2, y2 = x1 + w, y1 + h
+            fret=filter(I,i ,line)
+            if fret==None:continue
+            x1, y1, x2, y2, w, h=fret
 
-
-            pad = int((0.8 * np.random.rand() + 0.2) * max(w, h))
-            subx1, suby1 = max(x1 - pad, 0), max(y1 - pad, 0)
+            #预留出4%-15%的margin
+            pad = int(0.5 * min(w, h))
+            print(pad)
+            sx1, sy1 = max(x1 - pad, 0), max(y1 - pad, 0)
             # 临时的末端点
-            subx2, suby2 = min(x2 + pad, W), min(y2 + pad, H)
-            subw, subh = subx2 - subx1, suby2 - suby1
-            l = max(subw, subh)
-            if subw==0 or subh==0:
-                continue
+            sx2, sy2 = min(x2 + pad, W), min(y2 + pad, H)
+            sw, sh = sx2 - sx1, sy2 - sy1
+            l = max(sw, sh)
+
             # 最终末端点
-            subx2, suby2 = min(subx1 + l, W), min(suby1 + l, H)
+            sx2, sy2 = min(sx1 + l, W), min(sy1 + l, H)
 
-            Iface = I[suby1:suby2, subx1:subx2, :]
+            Iface=np.zeros((l,l,3),dtype=np.uint8)
+            Iface[0:sy2-sy1,0:sx2-sx1]=I[sy1:sy2,sx1:sx2]
 
-            boxX1 = float(x1 - subx1) / subw
-            boxX2 = float(x2 - subx1) / subw
-            boxY1 = float(y1 - suby1) / subh
-            boxY2 = float(y2 - suby1) / subh
-            if Iface.size==0:
-                print('error:',filename)
-                print(x1, y1, w, h)
-                continue
+            cv2.imwrite('H%d.jpg' % (i), Iface)
+
+            boxX1 = float(x1 - sx1) / sw
+            boxX2 = float(x2 - sx1) / sw
+            boxY1 = float(y1 - sy1) / sh
+            boxY2 = float(y2 - sy1) / sh
 
             #保存所有结果
             I12 = cv2.resize(Iface, (12, 12), interpolation=cv2.INTER_AREA)
@@ -99,22 +90,25 @@ def onePicture(fs,path):
             I48 = cv2.resize(Iface, (48, 48), interpolation=cv2.INTER_AREA)
             Y = np.array([0, 1])
             YBOX = np.array([boxX1, boxY1, boxX2, boxY2])
-
+            print(YBOX)
             RetI12.append(I12)
             RetI24.append(I24)
             RetI48.append(I48)
             RetY.append(Y)
             RetYBOX.append(YBOX)
 
+
             #一个正例对应一个负例,+-例图片大小应该一样.都是lxl的图片,并且不想交叉
-            tmp.append((x1, y1, x2, y2,l))
+            tmp.append((x1, y1, x2, y2))
             #负例
 
         numExample=len(tmp)
         for i in range(numExample):
-            nx1,ny1,nx2,ny2,Ineg=sampleNeg(I,tmp,i)
+            r=sampleNeg(I,tmp,i)
+            if r is None:continue
+            nx1,ny1,nx2,ny2,Ineg=r
             #这一步是为了生成的新负例子,不和已产生的例子相交
-            tmp.append((nx1,ny1,nx2,ny2,-1))
+            tmp.append((nx1,ny1,nx2,ny2))
             I12 = cv2.resize(Ineg, (12, 12), interpolation=cv2.INTER_AREA)
             I24 = cv2.resize(Ineg, (24, 24), interpolation=cv2.INTER_AREA)
             I48 = cv2.resize(Ineg, (48, 48), interpolation=cv2.INTER_AREA)
@@ -126,28 +120,32 @@ def onePicture(fs,path):
             RetI48.append(I48)
             RetY.append(Y)
             RetYBOX.append(YBOX)
-
+    # testMyPicture(I,RetI12,RetI24,RetI48)
     return RetI12,RetI24,RetI48,RetY,RetYBOX
 
-def sampleNeg(I,tmp,i):
+def sampleNeg(I,tmp,i,maxTry=10):
     def intersect(x1,y1,x2,y2):
-        for bx1,by1,bx2,by2,_ in tmp:
+        for bx1,by1,bx2,by2 in tmp:
             cx1,cy1=max(x1,bx1),  max(y1,by1)
             cx2,cy2=min(x2, bx2), min(y2, by2)
 
             if cx1<=cx2 and cy1<=cy2:return True
         return False
     H,W,_=I.shape
-    size=tmp[i][4]
+    w,h=tmp[i][2]-tmp[i][0],tmp[i][3]-tmp[i][1]
 
-    while True:
-        x1=np.random.randint(0,W-size)
-        y1=np.random.randint(0, H-size)
-        x2=x1+size
-        y2=y1+size
+    if W==w or H==h:return None
+
+    while maxTry>0:
+        x1=np.random.randint(0,W-w)
+        y1=np.random.randint(0, H-h)
+        x2=x1+w
+        y2=y1+h
 
         if intersect(x1,y1,x2,y2)==False:
             return (x1,y1,x2,y2,I[y1:y2,x1:x2,:])
+        maxTry-=1
+    return None
 def outputSample(path,round,RetI12,RetI24,RetI48,RetY,RetYBOX):
     filename1 = os.path.join(path,'X12_%d'%round)
     filename2 = os.path.join(path,'X24_%d.npy' % round)
@@ -160,11 +158,12 @@ def outputSample(path,round,RetI12,RetI24,RetI48,RetY,RetYBOX):
     np.save(filename3, np.array(RetI48))
     np.save(filename4, np.array(RetY))
     np.save(filename5, np.array(RetYBOX))
+
 if __name__ == '__main__':
     N=1000
-    path='/home/zhangxk/下载/WIDER_train/images'
-    path_sample='/home/zhangxk/下载/samples'
-    path_box='/home/zhangxk/下载/wider_face_split/wider_face_train_bbx_gt.txt'
+    path='/home/zxk/AI/data/widerface/WIDER_train/images'
+    path_sample='/home/zxk/AI/data/widerface/WIDER_train/samples'
+    path_box='/home/zxk/AI/data/widerface/wider_face_split/wider_face_train_bbx_gt.txt'
 
     fs=open(path_box)
     RetI12,RetI24,RetI48,RetY,RetYBOX=[],[],[],[],[]
@@ -178,8 +177,10 @@ if __name__ == '__main__':
         RetY.extend(ret[3])
         RetYBOX.extend(ret[4])
         cnt+=1
+
         if cnt%N==0:
             outputSample(path_sample,cnt//N,RetI12,RetI24,RetI48,RetY,RetYBOX)
             print(cnt // N, len(RetI12))
             RetI12, RetI24, RetI48, RetY, RetYBOX = [], [], [], [], []
+    outputSample(path_sample, (cnt // N)+1, RetI12, RetI24, RetI48, RetY, RetYBOX)
     fs.close()

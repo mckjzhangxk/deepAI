@@ -20,15 +20,17 @@ def bigPicture(a,b,c,d,h=None,w=None):
 
 sess=tf.Session()
 pnet,rnet,onet=create_mtcnn(sess)
+saver=tf.train.Saver()
+saver.restore(sess,'/home/zxk/PycharmProjects/deepAI/daily/8/studyOfFace/logs/models/facedect.ckpt-37')
 cap=cv2.VideoCapture(0)
 
 while True:
+
+    ret, frame=cap.read()
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     # frame=cv2.imread('images/M.jpg')
     # frame=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     # ret=True
-    ret, frame=cap.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    
     if ret:
         boxes, out = p_stage(frame, pnet=pnet, minsize=50, factor=0.709, t=0.6, debug=False)
         pImage=drawDectectBox(frame, boxes, scores=boxes[:, 4])

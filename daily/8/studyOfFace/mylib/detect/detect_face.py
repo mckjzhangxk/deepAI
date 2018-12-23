@@ -846,8 +846,9 @@ def o_stage(orignimage, total_boxes, images, onet, t, debug=False):
 # path,_=os.path.split(os.path.realpath(__file__))
 # sess=tf.Session()
 # pnet,rnet,onet=create_mtcnn(sess,path)
-#
-# image=cv2.imread('../../images/timg.jpg')
+# # saver=tf.train.Saver()
+# # saver.restore(sess,'/home/zxk/PycharmProjects/deepAI/daily/8/studyOfFace/logs/models/facedect.ckpt-37')
+# image=cv2.imread('../../images/zly.jpg')
 # image=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
 #
 # print('p_net---->totalbox and next input:')
