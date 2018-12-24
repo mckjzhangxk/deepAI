@@ -1,4 +1,4 @@
-package com.qijia.mapreduce;
+package com.qijia.mapreduce.wordcount;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;

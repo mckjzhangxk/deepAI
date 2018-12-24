@@ -1,9 +1,7 @@
-package com.qijia.mapreduce;
+package com.qijia.mapreduce.wordcount;
 
-import com.qijia.HDFS;
 import com.qijia.conf.MyConfigure;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -13,7 +11,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
-import java.net.URI;
 
 /**
  * Created by zhangxk on 18-12-19.
