@@ -15,6 +15,11 @@ import java.io.IOException;
  * Created by zhangxk on 18-12-24.
  */
 public class MapReduceMain {
+    /**
+     * 输入/tq.txt
+     * 输出/tqout
+     *
+     * */
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf= MyConfigure.getConfigure("yarn");
         Job job=Job.getInstance(conf);
