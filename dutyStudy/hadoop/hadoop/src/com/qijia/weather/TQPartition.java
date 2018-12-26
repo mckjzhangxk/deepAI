@@ -10,6 +10,7 @@ public class TQPartition extends Partitioner<TQ,IntWritable> {
     @Override
 
     public int getPartition(TQ tq, IntWritable intWritable, int i) {
+
         if (tq.getYear()<=1950)
             return 0;
         else return 1;

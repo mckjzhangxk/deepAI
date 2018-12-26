@@ -18,10 +18,10 @@ public class MyReduce extends Reducer<TQ,IntWritable,Text,IntWritable> {
 
     @Override
     protected void reduce(TQ key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+        //不要让上一次干预
+        cache.clear();
         boolean first=true;
         for(IntWritable v :values){
-//            key = context.getCurrentKey();
-
             if(first){
                 int day=key.getDay();
                 cache.put(day,1);

@@ -39,6 +39,7 @@ public class MyMapper extends Mapper<LongWritable,Text,TQ,IntWritable>{
             this.key.setTemperature(temperature);
             this.value.set(temperature);
 
+            context.write(this.key,this.value);
         } catch (ParseException e) {
             e.printStackTrace();
         }

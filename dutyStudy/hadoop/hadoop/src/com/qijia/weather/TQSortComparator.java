@@ -7,12 +7,16 @@ import org.apache.hadoop.io.WritableComparator;
  * Created by zhangxk on 18-12-24.
  */
 public class TQSortComparator extends WritableComparator {
+    //要重写构造,告诉要咋比较
     public TQSortComparator() {
         super(TQ.class,true);
     }
-
+    /**
+     * 对map的输出进行排序,这里排序的次序是year-mouth-temperature,其中temperature是下降序列
+     * */
     @Override
     public int compare(WritableComparable a, WritableComparable b) {
+
         TQ q1= (TQ) a;
         TQ q2= (TQ) b;
 

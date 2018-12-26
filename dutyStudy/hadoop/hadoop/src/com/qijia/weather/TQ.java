@@ -52,7 +52,8 @@ public class TQ implements WritableComparable<TQ>{
         this.temperature = temperature;
     }
 
-    //mapper输出key,val对,key要决定如何比较,在BUFFER满了之后,对结果进行sort,然后输出到磁盘
+    //mapper输出key,val对,key要决定如何比较,在BUFFER满了之后,对结果进行quicksort,然后输出到磁盘
+    //这里选择按照年月日排序
     @Override
     public int compareTo(TQ o) {
         int c1=Integer.compare(year,o.year);
@@ -67,10 +68,11 @@ public class TQ implements WritableComparable<TQ>{
 
     @Override
     public void write(DataOutput dataOutput) throws IOException {
-        dataOutput.write(year);
-        dataOutput.write(mouth);
-        dataOutput.write(day);
-        dataOutput.write(temperature);
+        //失误写成write造成IO错误
+        dataOutput.writeInt(year);
+        dataOutput.writeInt(mouth);
+        dataOutput.writeInt(day);
+        dataOutput.writeInt(temperature);
     }
 
     @Override

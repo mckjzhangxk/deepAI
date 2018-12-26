@@ -7,6 +7,10 @@ import org.apache.hadoop.io.WritableComparator;
  * Created by zhangxk on 18-12-24.
  */
 public class TQGroupComparator extends WritableComparator {
+    //要重写构造,告诉要咋比较,不然会报buffer 空指针
+    public TQGroupComparator() {
+        super(TQ.class,true);
+    }
     //相同年月是一组
     @Override
     public int compare(WritableComparable a, WritableComparable b) {

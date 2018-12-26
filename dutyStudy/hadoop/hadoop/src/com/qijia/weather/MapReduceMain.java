@@ -6,8 +6,10 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.yarn.server.resourcemanager.monitor.capacity.TempQueuePerPartition;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 
@@ -16,9 +18,9 @@ import java.io.IOException;
  */
 public class MapReduceMain {
     /**
-     * 输入/tq.txt
-     * 输出/tqout
-     *
+     * 输入/data/weather
+     * 输出/out/weather
+     *  目的: 按照月份,输出每个月最高温度的两天,注意这2天不能是相同日期
      * */
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf= MyConfigure.getConfigure("yarn");
@@ -26,28 +28,30 @@ public class MapReduceMain {
         job.setJarByClass(MapReduceMain.class);
 
         //准备输入,输出
-        Path p=new Path("/data/tq");
+        Path p=new Path("/data/weather");
         FileInputFormat.addInputPath(job,p);
-        p=new Path("/out/tq");
+        p=new Path("/out/weather");
         if(p.getFileSystem(conf).exists(p)){
             p.getFileSystem(conf).delete(p,true);
         }
+        FileOutputFormat.setOutputPath(job,p);
+
         //准备mapper
         job.setMapperClass(MyMapper.class);
         job.setMapOutputKeyClass(TQ.class);
         job.setMapOutputValueClass(IntWritable.class);
 
-        //设在如何把map的输出分给reduce
+        //设置如何把map的输出分给reduce
         job.setPartitionerClass(TQPartition.class);
-        //设在输出key是如何排序的
+        //设在map的输出 如何排序的,year-mouth-temperature
         job.setSortComparatorClass(TQSortComparator.class);
-        //设在输入框Key如何成为一组
+        //设置相同的KEY为一组,这里相同的year-mouth是一组,在前面的记录温度高于后面的
         job.setGroupingComparatorClass(TQGroupComparator.class);
 
         //准备reduce
-        job.setNumReduceTasks(2);
-        job.setReducerClass(MyReduce.class);
 
+        job.setReducerClass(MyReduce.class);
+        job.setNumReduceTasks(2);
         job.waitForCompletion(true);
     }
 }
