@@ -26,9 +26,9 @@ public class MapReduceMain {
         job.setJarByClass(MapReduceMain.class);
 
         //准备输入,输出
-        Path p=new Path("/tq.txt");
+        Path p=new Path("/data/tq");
         FileInputFormat.addInputPath(job,p);
-        p=new Path("/tqout");
+        p=new Path("/out/tq");
         if(p.getFileSystem(conf).exists(p)){
             p.getFileSystem(conf).delete(p,true);
         }

@@ -31,7 +31,7 @@ public class MapReduceMain {
 
 
         //设置输入输出文件名
-        Path inputpat=new Path("/words.txt");
+        Path inputpat=new Path("/data/wc");
         /**源码解析1:
          * 文件存储是按照block(128M)为基本单位的,
          * 文件处理(mr)是安装splitsize为基本单位的
@@ -47,7 +47,7 @@ public class MapReduceMain {
 //        FileInputFormat.setMaxInputSplitSize(job,1024*1024); splitSize<=1k
 //        FileInputFormat.setMinInputSplitSize(job,1024*1024*1024*256); splitSize>=256M
 
-        Path outputpath=new Path("/cc");
+        Path outputpath=new Path("/out/wc");
         if(outputpath.getFileSystem(conf).exists(outputpath)){
             outputpath.getFileSystem(conf).delete(outputpath,true);
         }

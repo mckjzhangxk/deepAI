@@ -26,9 +26,9 @@ public class MainReduceMain {
         //reduce
         job.setReducerClass(MyReduce.class);
         //input,output
-        Path p=new Path("/friend.txt");
+        Path p=new Path("/data/friend");
         FileInputFormat.addInputPath(job,p);
-        p=new Path("/friendout");
+        p=new Path("/out/friend");
         if(p.getFileSystem(conf).exists(p)){
             p.getFileSystem(conf).delete(p,true);
         }
