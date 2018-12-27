@@ -25,4 +25,5 @@ public class TQGroupComparator extends WritableComparator {
         return c2;
 
     }
+
 }

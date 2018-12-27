@@ -1,5 +1,9 @@
+yum install mysql-server
+apt-get install mysql-server
 mysql -u fooUser -p -h 44.55.66.77
 https://support.rackspace.com/how-to/mysql-connect-to-your-database-remotely/
 =================远程连接=============================
 sudo apt install mysql-workbench
 ==================客户端========================
+ubuntu 下面
+systemctl status mysql.service

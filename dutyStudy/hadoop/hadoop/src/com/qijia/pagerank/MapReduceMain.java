@@ -9,6 +9,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.StringUtils;
 
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class MapReduceMain {
             if(p.getFileSystem(conf).exists(p)){
                 p.getFileSystem(conf).delete(p,true);
             }
+            FileOutputFormat.setOutputPath(job,p);
 
             boolean f=job.waitForCompletion(true);
             if(f){
