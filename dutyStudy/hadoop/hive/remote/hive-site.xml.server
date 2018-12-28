@@ -20,6 +20,11 @@
   <!-- WARNING!!! You must make your changes in hive-site.xml instead.         -->
   <!-- Hive Execution Parameters -->
 
+<!必要?>
+<property>
+    <name>hive.metastore.schema.verification</name>
+    <value>false</value>
+</property>
 
 <property>  
   <name>hive.metastore.warehouse.dir</name>  
