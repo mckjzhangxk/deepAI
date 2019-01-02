@@ -30,7 +30,7 @@ public class MapReduceMain {
         my
     }
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        Configuration conf= MyConfigure.getConfigure("yarn",true);
+        Configuration conf= MyConfigure.getConfigure("ha",true);
 
         String inputpath="/data/pagerank.txt";
         String outputpath="/out/pagerank/pr";

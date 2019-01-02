@@ -4,7 +4,9 @@
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,70 +22,68 @@
         <value>3</value>
     </property>
 
-    <!--定义服务名称-->
-    <property>
-        <name>dfs.nameservices</name>
-        <value>myzxk</value>
-    </property>
+<!--定义服务名 -->
+<property>
+  <name>dfs.nameservices</name>
+  <value>myzxk</value>
+</property>
+<!--定义服务名称下的NameNode的名称-->
+<property>
+  <name>dfs.ha.namenodes.myzxk</name>
+  <value>nn1,nn2</value>
+</property>
 
-    <!--定义服务名称下的NameNode的名称-->
-    <property>
-        <name>dfs.ha.namenodes.myzxk</name>
-        <value>nn1,nn2</value>
-    </property>
+<!--关于节点通信的配置,这个是逻辑名香真实物理的映射 -->
+<property>
+  <name>dfs.namenode.rpc-address.myzxk.nn1</name>
+  <value>node1:8020</value>
+</property>
+<property>
+  <name>dfs.namenode.rpc-address.myzxk.nn2</name>
+  <value>node2:8020</value>
+</property>
+<!-- 同上,对HTTP通信的配置-->
+<property>
+  <name>dfs.namenode.http-address.myzxk.nn1</name>
+  <value>node1:50070</value>
+</property>
+<property>
+  <name>dfs.namenode.http-address.myzxk.nn2</name>
+  <value>node2:50070</value>
+</property>
+<!--journal是用于主,备份NameNode同步用的,这里要指定这些joirnal服务的地址,并设在一个ID,表示这些是一个cluter的journal服务,共同还维护主,备份节点的
+同步 -->
+<property>
+  <name>dfs.namenode.shared.edits.dir</name>
+  <value>qjournal://node1:8485;node2:8485;node3:8485/mycluster</value>
+</property>
+<!--这个代理类,适用于帮助客户端,解析active NN的,因为配置了多个,所以必须给客户端一个代理,来找到active NN-->
+<property>
+  <name>dfs.client.failover.proxy.provider.myzxk</name>
+  <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+</property>
 
-    <!--关于节点通信的配置,这个是逻辑名 与 真实物理的映射 -->
-    <property>
-        <name>dfs.namenode.rpc-address.myzxk.nn1</name>
-        <value>node1:8020</value>
-    </property>
+<!--为保证主NN当机,从NN顺利提升自己为主,并不产生SPLIT-BRAIN,从NN要有某种机制,先试图关掉当前的NN,然后提升自己,这里选用HADOOP自带的sshfence-->
+<property>
+      <name>dfs.ha.fencing.methods</name>
+      <value>sshfence</value>
+</property>
+<!--sshfence是登录目标机器,杀掉进程,所有要配置无密钥登录-->
+<property>
+      <name>dfs.ha.fencing.ssh.private-key-files</name>
+      <value>/root/.ssh/id_rsa</value>
+</property>
 
-    <property>
-        <name>dfs.namenode.rpc-address.myzxk.nn2</name>
-        <value>node2:8020</value>
-    </property>
-    <!-- 同上,对HTTP通信的配置,web控制台地址-->
-    <property>
-        <name>dfs.namenode.http-address.myzxk.nn1</name>
-        <value>node1:9870</value>
-    </property>
-    <property>
-        <name>dfs.namenode.http-address.myzxk.nn2</name>
-        <value>node2:9870</value>
-    </property>
+<!--joirnal服务器,保存NN状态的目录地址-->
+<property>
+  <name>dfs.journalnode.edits.dir</name>
+  <value>/root/hadoop2x/dfs/ha/journalFile</value>
+</property>
 
-    <!--journal是用于主,备份NameNode同步用的,这里要指定这些journal服务的地址,并设在一个ID,表示这些是一个cluter的journal服务,共同还维护主,备份节点的
-    同步 -->
-    <property>
-        <name>dfs.namenode.shared.edits.dir</name>
-        <value>qjournal://node1:8485;node2:8485;node3:8485/mycluster</value>
-    </property>
-    <!--这个代理类,适用于帮助客户端,解析active NN的,因为配置了多个NN,所以必须给客户端一个代理,来找到active NN-->
-    <property>
-        <name>dfs.client.failover.proxy.provider.myzxk</name>
-        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
-    </property>
+<!--允许失败自启动,自动故障转移-->
+<property>
+   <name>dfs.ha.automatic-failover.enabled</name>
+   <value>true</value>
+</property>
 
-    <!--为保证主NN宕机,从NN顺利提升自己为主,并不产生SPLIT-BRAIN,从NN要有某种机制,先试图关掉当前的NN,然后提升自己,这里选用HADOOP自带的sshfence-->
-    <property>
-        <name>dfs.ha.fencing.methods</name>
-        <value>sshfence</value>
-    </property>
-    <!--sshfence是登录目标机器,杀掉进程,所有要配置无密钥登录-->
-    <property>
-        <name>dfs.ha.fencing.ssh.private-key-files</name>
-        <value>/root/.ssh/id_rsa</value>
-    </property>
-
-    <!--joirnal服务器,保存NN状态的目录地址-->
-    <property>
-        <name>dfs.journalnode.edits.dir</name>
-        <value>/root/dfs/ha/journalFile</value>
-    </property>
-
-    <!--允许失败自启动,自动故障转移-->
-    <property>
-        <name>dfs.ha.automatic-failover.enabled</name>
-        <value>true</value>
-    </property>
 </configuration>

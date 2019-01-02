@@ -29,7 +29,7 @@ public class TFJob {
      * */
     public static boolean doJob(String inputpath,String outputpath) throws IOException, ClassNotFoundException, InterruptedException {
 
-        Configuration conf= MyConfigure.getConfigure("yarn");
+        Configuration conf= MyConfigure.getConfigure("ha");
         Job job=Job.getInstance(conf);
         job.setJarByClass(TFJob.class);
 

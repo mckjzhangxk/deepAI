@@ -21,7 +21,7 @@ public class MapReduceMain {
      *  目的: 按照月份,输出每个月最高温度的两天,注意这2天不能是相同日期
      * */
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        Configuration conf= MyConfigure.getConfigure("yarn");
+        Configuration conf= MyConfigure.getConfigure("ha");
         Job job=Job.getInstance(conf);
         job.setJar("/home/zxk/PycharmProjects/deepAI/dutyStudy/hadoop/hadoop/out/artifacts/zxk/zxk.jar");
         job.setJarByClass(MapReduceMain.class);

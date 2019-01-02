@@ -34,7 +34,7 @@ public class HDFS {
         //注意,必须设置环境变量HADOOP_USER_NAME 与hdfs保持一致
         System.out.println(System.getenv("HADOOP_USER_NAME"));
 
-        Configuration conf= MyConfigure.getConfigure("full");
+        Configuration conf= MyConfigure.getConfigure("ha");
         FileSystem fs=FileSystem.get(URI.create(""),conf,"root");
 
 
@@ -51,13 +51,13 @@ public class HDFS {
         IOUtils.copyBytes(inputStream,outputStream,4096,true);
 
         //上传文件代码
-        p=new Path("/words.txt");
-        inputStream=new FileInputStream("/home/zxk/PycharmProjects/deepAI/dutyStudy/hadoop/hadoop/src/data/words.txt");
+        p=new Path("/timg.jpeg");
+        inputStream=new FileInputStream("/home/zxk/PycharmProjects/deepAI/dutyStudy/hadoop/hadoop/src/data/timg.jpeg");
         outputStream = fs.create(p);
         IOUtils.copyBytes(inputStream,outputStream,4096,true);
 
 
-        blockLocation(fs,"/words.txt");
+        blockLocation(fs,"/timg.jpeg");
 
 //        listFiles(fs);
 
