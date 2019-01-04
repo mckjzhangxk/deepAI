@@ -20,8 +20,8 @@ def bigPicture(a,b,c,d,h=None,w=None):
 
 sess=tf.Session()
 pnet,rnet,onet=create_mtcnn(sess)
-saver=tf.train.Saver()
-saver.restore(sess,'/home/zxk/PycharmProjects/deepAI/daily/8/studyOfFace/logs/models/facedect.ckpt-37')
+#saver=tf.train.Saver()
+#saver.restore(sess,'/home/zxk/PycharmProjects/deepAI/daily/8/studyOfFace/logs/models/facedect.ckpt-37')
 cap=cv2.VideoCapture(0)
 
 while True:
