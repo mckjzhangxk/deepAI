@@ -19,8 +19,13 @@ public class MyConfigure {
 //        conf.addResource(new Path(""));
 //        conf.addResource(new Path(""));
 //        System.out.println(HDFS.class.getResource("/conf/ha/core-site.xml"));
-        conf.addResource(MyConfigure.class.getResource(prefix+"/core-site.xml"));
-        conf.addResource(MyConfigure.class.getResource(prefix+"/hdfs-site.xml"));
+        if(!prefix.contains("hbase")){
+            conf.addResource(MyConfigure.class.getResource(prefix+"/core-site.xml"));
+            conf.addResource(MyConfigure.class.getResource(prefix+"/hdfs-site.xml"));
+        }else {
+            conf.addResource(MyConfigure.class.getResource(prefix+"/hbase-site.xml"));
+            conf.addResource(MyConfigure.class.getResource(prefix+"/hdfs-site.xml"));
+        }
 
 
 

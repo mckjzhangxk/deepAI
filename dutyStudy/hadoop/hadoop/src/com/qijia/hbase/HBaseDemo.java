@@ -15,10 +15,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by zhangxk on 19-1-4.
@@ -60,16 +57,16 @@ public class HBaseDemo {
 
     public static void getOne(HTable tb,String cfName,String rowkey) throws IOException {
         Get get=new Get(rowkey.getBytes());
-//        get.addColumn("member".getBytes(),"name".getBytes());
+        get.addColumn("member".getBytes(),"name".getBytes());
         Result result = tb.get(get);
         while (result.advance()){
             result.current();
 //            Cell cell = result.getColumnLatestCell(cfName.getBytes(), "name".getBytes());
             Cell cell=result.current();
-            String cf=new String(cell.getFamilyArray());
-            String field=new String(cell.getQualifierArray());
+//            String cf=new String(cell.getFamilyArray());
+//            String field=new String(cell.getQualifierArray());
             String value = new String(CellUtil.cloneValue(cell));
-            System.out.println(cf+":"+field+"  "+value);
+            System.out.println(value);
 
 
         }
@@ -84,6 +81,7 @@ public class HBaseDemo {
      * */
     public static void putList(HTable tb,String cfName) throws InterruptedIOException, RetriesExhaustedWithDetailsException {
         List<Put> list=new ArrayList<>();
+        HashSet set=new HashSet();
         for(int n=0;n<1000;n++){
             String phonenum1=getPhone("186");
             for(int k=0;k<10;k++){
@@ -92,16 +90,21 @@ public class HBaseDemo {
                 String phonenum2=getPhone("139");
                 Date t=getRandomDate();
                 String time=sdf.format(t);
-                String rowkey=(Long.MAX_VALUE-t.getTime())+"";
+                String rowkey=(Long.MAX_VALUE-t.getTime())+"_"+phonenum1;
+                set.add(rowkey);
 
                 Put put=new Put(rowkey.getBytes());
                 put.add(cfName.getBytes(),"duration".getBytes(),duration.getBytes());
                 put.add(cfName.getBytes(),"type".getBytes(),type.getBytes());
                 put.add(cfName.getBytes(),"phonenum2".getBytes(),phonenum2.getBytes());
                 put.add(cfName.getBytes(),"time".getBytes(),time.getBytes());
+
+                list.add(put);
             }
         }
+        System.out.println(set.size());
         tb.put(list);
+        tb.flushCommits();
     }
 
     public static void scan(HTable tb,String cfName) throws IOException, ParseException {
@@ -153,21 +156,25 @@ public class HBaseDemo {
         return prefix+String.format("%08d", new Random().nextInt(99999999));
     }
 
-    public static void main(String[] args) throws IOException {
-//        HBaseAdmin admin=createConnection();
-//        HTable table=createTable(admin,"myfamily","member",true);
-//        putOne(table,"member","1");
+    public static void main(String[] args) throws IOException, ParseException {
+        HBaseAdmin admin=createConnection();
+
+        String cfname="member";
+        HTable table=createTable(admin,"myfamily",cfname,true);
+
+//        putOne(table,cfname,"1");
+//        putOne(table,cfname,"2");
 //        getOne(table,"member","1");
-        SimpleDateFormat df=new SimpleDateFormat("yyyyMMdd");
-        System.out.println(df.format(getRandomDate()));
+        putList(table,cfname);
+        find(table,cfname);
+        admin.close();
     }
 
     public static Date getRandomDate() {
         long l=3600*1000*24*15;
 
-        long seed=new Random().nextInt(3000);
-
+        long seed=new Random().nextInt(30000);
         return new Date(seed*l);
-//        System.out.println(new Date(0));;
+
     }
 }
