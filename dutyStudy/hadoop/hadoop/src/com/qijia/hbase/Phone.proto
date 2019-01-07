@@ -1,0 +1,11 @@
+package com.qijia.hbase; 
+message PhoneDetail
+ { 
+    required string    phonenum2 = 1;  // ID 
+    required string    type = 2;  // str 
+    required string    duration = 3;  // str 
+    required string    time = 4;  // str 
+ }
+message PhoneDatailDay{
+    repeated PhoneDetail days=1
+}

@@ -13,6 +13,7 @@ import org.apache.hadoop.hbase.filter.SingleColumnValueExcludeFilter;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.ProtocolException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -107,6 +108,53 @@ public class HBaseDemo {
         tb.flushCommits();
     }
 
+    public static void putListWithProto(HTable tb,String cfName) throws InterruptedIOException, RetriesExhaustedWithDetailsException {
+        List<Put> list=new ArrayList<>();
+
+        for(int n=0;n<10;n++){
+            String phonenum1=getPhone("186");
+            String rowkey=phonenum1;
+            Put put=new Put(rowkey.getBytes());
+            //创建集合对象
+            Phone.PhoneDatailDay.Builder days=Phone.PhoneDatailDay.newBuilder();
+
+
+            for(int k=0;k<100;k++){
+                String duration=""+ (new Random().nextInt(100)+1);
+                String type=""+ (new Random().nextInt(2));
+                String phonenum2=getPhone("139");
+                Date t=getRandomDate();
+                String time=sdf.format(t);
+
+                //创建集合元素
+                Phone.PhoneDetail.Builder phone=Phone.PhoneDetail.newBuilder();
+                phone.setDuration(duration);
+                phone.setType(type);
+                phone.setTime(time);
+                phone.setPhonenum2(phonenum2);
+                //对象添加元素
+                days.addDays(phone);
+            }
+            put.add(cfName.getBytes(),"days".getBytes(),days.build().toByteArray());
+            list.add(put);
+        }
+
+        tb.put(list);
+        tb.flushCommits();
+    }
+
+    public static void getListWithProto(HTable tb,String cfName) throws IOException {
+        //这里要修改rowkey
+        Get get=new Get("xxx".getBytes());
+
+        Result result = tb.get(get);
+        byte[] bytes=CellUtil.cloneValue(result.getColumnLatestCell(cfName.getBytes(),"days".getBytes()));
+
+        Phone.PhoneDatailDay days = Phone.PhoneDatailDay.parseFrom(bytes);
+        for (Phone.PhoneDetail p:days.getDaysList()) {
+            System.out.println(p);
+        }
+    }
     public static void scan(HTable tb,String cfName) throws IOException, ParseException {
         String phoneNum = "18676604687";
         String startRow = phoneNum + "_" + (Long.MAX_VALUE - sdf.parse("20180301").getTime());
