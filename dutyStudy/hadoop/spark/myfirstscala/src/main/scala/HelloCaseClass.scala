@@ -1,3 +1,4 @@
+package main.scala
 /**
   * 实现了类构造参数的getter方法
   *，它将帮你实现setter和getter方法。

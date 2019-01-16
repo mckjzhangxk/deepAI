@@ -2,6 +2,7 @@
   * Created by zhangxk on 19-1-15.
   */
 
+package main.scala
 trait IsEqual{
   def isEqual(p:Any):Boolean;
   def isNotEqual(p:Any): Boolean ={
