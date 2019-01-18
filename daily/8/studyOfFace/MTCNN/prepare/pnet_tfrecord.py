@@ -56,4 +56,4 @@ def cvtTxt2TF(shuffle=True):
                 print('>>%d/%d images has been converted'%(idx + 1,len(records)))
 
 if __name__ == '__main__':
-    cvtTxt2TF(True)
+    cvtTxt2TF(False)
