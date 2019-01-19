@@ -1,33 +1,8 @@
-""" Tensorflow implementation of the face detection / alignment algorithm found at
-https://github.com/kpzhang93/MTCNN_face_detection_alignment
-"""
-# MIT License
-# 
-# Copyright (c) 2016 David Sandberg
-# 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from six import string_types, iteritems
-
+import model.mtcnn_model as mtcnn
 import numpy as np
 import tensorflow as tf
 #from math import floor
@@ -35,265 +10,30 @@ import cv2
 import os
 from scipy.misc import imsave
 
-def layer(op):
-    """Decorator for composable network layers."""
 
-    def layer_decorated(self, *args, **kwargs):
-        # Automatically set a name if not provided.
-        name = kwargs.setdefault('name', self.get_unique_name(op.__name__))
-        # Figure out the layer inputs.
-        if len(self.terminals) == 0:
-            raise RuntimeError('No input variables found for layer %s.' % name)
-        elif len(self.terminals) == 1:
-            layer_input = self.terminals[0]
-        else:
-            layer_input = list(self.terminals)
-        # Perform the operation and get the output.
-        layer_output = op(self, layer_input, *args, **kwargs)
-        # Add to layer LUT.
-        self.layers[name] = layer_output
-        # This output is now the input for the next layer.
-        self.feed(layer_output)
-        # Return self for chained calls.
-        return self
+def create_mtcnn(sess,pnet_path=None,rnet_path=None,onet_path=None):
+    pnet_fun, rnet_fun, onet_fun=None,None,None
 
-    return layer_decorated
+    if pnet_path:
+        # with tf.variable_scope('pnet'):
+        data = tf.placeholder(tf.float32, (None,None,None,3))
+        prob_tensor, regbox_tensor=mtcnn.createPNet(data, False)
+        saver = tf.train.Saver()
+        saver.restore(sess, pnet_path)
+        pnet_fun = lambda img: sess.run((regbox_tensor,prob_tensor), feed_dict={data: img})
 
-class Network(object):
+    if rnet_path:
+        with tf.variable_scope('rnet'):
+            data = tf.placeholder(tf.float32, (None,24,24,3), 'input')
+        mtcnn.createPNet(data, False)
+    if onet_path:
+        with tf.variable_scope('onet'):
+            data = tf.placeholder(tf.float32, (None,48,48,3), 'input')
+        mtcnn.createPNet(data, False)
 
-    def __init__(self, inputs, trainable=True):
-        # The input nodes for this network
-        self.inputs = inputs
-        # The current list of terminal nodes
-        self.terminals = []
-        # Mapping from layer names to layers
-        self.layers = dict(inputs)
-        # If true, the resulting variables are set as trainable
-        self.trainable = trainable
-
-        self.setup()
-
-    def setup(self):
-        """Construct the network. """
-        raise NotImplementedError('Must be implemented by the subclass.')
-
-    def load(self, data_path, session, ignore_missing=False):
-        """Load network weights.
-        data_path: The path to the numpy-serialized network weights
-        session: The current TensorFlow session
-        ignore_missing: If true, serialized weights for missing layers are ignored.
-        """
-        data_dict = np.load(data_path, encoding='latin1').item() #pylint: disable=no-member
-
-        for op_name in data_dict:
-            with tf.variable_scope(op_name, reuse=True):
-                for param_name, data in iteritems(data_dict[op_name]):
-                    try:
-                        var = tf.get_variable(param_name)
-                        session.run(var.assign(data))
-                    except ValueError:
-                        if not ignore_missing:
-                            raise
-
-    def feed(self, *args):
-        """Set the input(s) for the next operation by replacing the terminal nodes.
-        The arguments can be either layer names or the actual layers.
-        """
-        assert len(args) != 0
-        self.terminals = []
-        for fed_layer in args:
-            if isinstance(fed_layer, string_types):
-                try:
-                    fed_layer = self.layers[fed_layer]
-                except KeyError:
-                    raise KeyError('Unknown layer name fed: %s' % fed_layer)
-            self.terminals.append(fed_layer)
-        return self
-
-    def get_output(self):
-        """Returns the current network output."""
-        return self.terminals[-1]
-
-    def get_unique_name(self, prefix):
-        """Returns an index-suffixed unique name for the given prefix.
-        This is used for auto-generating layer names based on the type-prefix.
-        """
-        ident = sum(t.startswith(prefix) for t, _ in self.layers.items()) + 1
-        return '%s_%d' % (prefix, ident)
-
-    def make_var(self, name, shape):
-        """Creates a new TensorFlow variable."""
-        return tf.get_variable(name, shape, trainable=self.trainable)
-
-    def validate_padding(self, padding):
-        """Verifies that the padding is one of the supported ones."""
-        assert padding in ('SAME', 'VALID')
-
-    @layer
-    def conv(self,
-             inp,
-             k_h,
-             k_w,
-             c_o,
-             s_h,
-             s_w,
-             name,
-             relu=True,
-             padding='SAME',
-             group=1,
-             biased=True):
-        # Verify that the padding is acceptable
-        self.validate_padding(padding)
-        # Get the number of channels in the input
-        c_i = int(inp.get_shape()[-1])
-        # Verify that the grouping parameter is valid
-        assert c_i % group == 0
-        assert c_o % group == 0
-        # Convolution for a given input and kernel
-        convolve = lambda i, k: tf.nn.conv2d(i, k, [1, s_h, s_w, 1], padding=padding)
-        with tf.variable_scope(name) as scope:
-            kernel = self.make_var('weights', shape=[k_h, k_w, c_i // group, c_o])
-            # This is the common-case. Convolve the input without any further complications.
-            output = convolve(inp, kernel)
-            # Add the biases
-            if biased:
-                biases = self.make_var('biases', [c_o])
-                output = tf.nn.bias_add(output, biases)
-            if relu:
-                # ReLU non-linearity
-                output = tf.nn.relu(output, name=scope.name)
-            return output
-
-    @layer
-    def prelu(self, inp, name):
-        with tf.variable_scope(name):
-            i = int(inp.get_shape()[-1])
-            alpha = self.make_var('alpha', shape=(i,))
-            output = tf.nn.relu(inp) + tf.multiply(alpha, -tf.nn.relu(-inp))
-        return output
-
-    @layer
-    def max_pool(self, inp, k_h, k_w, s_h, s_w, name, padding='SAME'):
-        self.validate_padding(padding)
-        return tf.nn.max_pool(inp,
-                              ksize=[1, k_h, k_w, 1],
-                              strides=[1, s_h, s_w, 1],
-                              padding=padding,
-                              name=name)
-
-    @layer
-    def fc(self, inp, num_out, name, relu=True):
-        with tf.variable_scope(name):
-            input_shape = inp.get_shape()
-            if input_shape.ndims == 4:
-                # The input is spatial. Vectorize it first.
-                dim = 1
-                for d in input_shape[1:].as_list():
-                    dim *= int(d)
-                feed_in = tf.reshape(inp, [-1, dim])
-            else:
-                feed_in, dim = (inp, input_shape[-1].value)
-            weights = self.make_var('weights', shape=[dim, num_out])
-            biases = self.make_var('biases', [num_out])
-            op = tf.nn.relu_layer if relu else tf.nn.xw_plus_b
-            fc = op(feed_in, weights, biases, name=name)
-            return fc
-
-
-    """
-    Multi dimensional softmax,
-    refer to https://github.com/tensorflow/tensorflow/issues/210
-    compute softmax along the dimension of target
-    the native softmax only supports batch_size x dimension
-    """
-    @layer
-    def softmax(self, target, axis, name=None):
-        max_axis = tf.reduce_max(target, axis, keepdims=True)
-        target_exp = tf.exp(target-max_axis)
-        normalize = tf.reduce_sum(target_exp, axis, keepdims=True)
-        softmax = tf.div(target_exp, normalize, name)
-        return softmax
-    
-class PNet(Network):
-    def setup(self):
-        (self.feed('data') #pylint: disable=no-value-for-parameter, no-member
-             .conv(3, 3, 10, 1, 1, padding='VALID', relu=False, name='conv1')
-             .prelu(name='PReLU1')
-             .max_pool(2, 2, 2, 2, name='pool1')
-             .conv(3, 3, 16, 1, 1, padding='VALID', relu=False, name='conv2')
-             .prelu(name='PReLU2')
-             .conv(3, 3, 32, 1, 1, padding='VALID', relu=False, name='conv3')
-             .prelu(name='PReLU3')
-             .conv(1, 1, 2, 1, 1, relu=False, name='conv4-1')
-             .softmax(3,name='prob1'))
-
-        (self.feed('PReLU3') #pylint: disable=no-value-for-parameter
-             .conv(1, 1, 4, 1, 1, relu=False, name='conv4-2'))
-        
-class RNet(Network):
-    def setup(self):
-        (self.feed('data') #pylint: disable=no-value-for-parameter, no-member
-             .conv(3, 3, 28, 1, 1, padding='VALID', relu=False, name='conv1')
-             .prelu(name='prelu1')
-             .max_pool(3, 3, 2, 2, name='pool1')
-             .conv(3, 3, 48, 1, 1, padding='VALID', relu=False, name='conv2')
-             .prelu(name='prelu2')
-             .max_pool(3, 3, 2, 2, padding='VALID', name='pool2')
-             .conv(2, 2, 64, 1, 1, padding='VALID', relu=False, name='conv3')
-             .prelu(name='prelu3')
-             .fc(128, relu=False, name='conv4')
-             .prelu(name='prelu4')
-             .fc(2, relu=False, name='conv5-1')
-             .softmax(1,name='prob1'))
-
-        (self.feed('prelu4') #pylint: disable=no-value-for-parameter
-             .fc(4, relu=False, name='conv5-2'))
-
-class ONet(Network):
-    def setup(self):
-        (self.feed('data') #pylint: disable=no-value-for-parameter, no-member
-             .conv(3, 3, 32, 1, 1, padding='VALID', relu=False, name='conv1')
-             .prelu(name='prelu1')
-             .max_pool(3, 3, 2, 2, name='pool1')
-             .conv(3, 3, 64, 1, 1, padding='VALID', relu=False, name='conv2')
-             .prelu(name='prelu2')
-             .max_pool(3, 3, 2, 2, padding='VALID', name='pool2')
-             .conv(3, 3, 64, 1, 1, padding='VALID', relu=False, name='conv3')
-             .prelu(name='prelu3')
-             .max_pool(2, 2, 2, 2, name='pool3')
-             .conv(2, 2, 128, 1, 1, padding='VALID', relu=False, name='conv4')
-             .prelu(name='prelu4')
-             .fc(256, relu=False, name='conv5')
-             .prelu(name='prelu5')
-             .fc(2, relu=False, name='conv6-1')
-             .softmax(1, name='prob1'))
-
-        (self.feed('prelu5') #pylint: disable=no-value-for-parameter
-             .fc(4, relu=False, name='conv6-2'))
-
-        (self.feed('prelu5') #pylint: disable=no-value-for-parameter
-             .fc(10, relu=False, name='conv6-3'))
-
-def create_mtcnn(sess, model_path=None):
-    if not model_path:
-        model_path,_ = os.path.split(os.path.realpath(__file__))
-    print(model_path)
-    with tf.variable_scope('pnet'):
-        data = tf.placeholder(tf.float32, (None,None,None,3), 'input')
-        pnet = PNet({'data':data})
-        pnet.load(os.path.join(model_path, 'det1.npy'), sess)
-    with tf.variable_scope('rnet'):
-        data = tf.placeholder(tf.float32, (None,24,24,3), 'input')
-        rnet = RNet({'data':data})
-        rnet.load(os.path.join(model_path, 'det2.npy'), sess)
-    with tf.variable_scope('onet'):
-        data = tf.placeholder(tf.float32, (None,48,48,3), 'input')
-        onet = ONet({'data':data})
-        onet.load(os.path.join(model_path, 'det3.npy'), sess)
-        
-    pnet_fun = lambda img : sess.run(('pnet/conv4-2/BiasAdd:0', 'pnet/prob1:0'), feed_dict={'pnet/input:0':img})
-    rnet_fun = lambda img : sess.run(('rnet/conv5-2/conv5-2:0', 'rnet/prob1:0'), feed_dict={'rnet/input:0':img})
-    onet_fun = lambda img : sess.run(('onet/conv6-2/conv6-2:0', 'onet/conv6-3/conv6-3:0', 'onet/prob1:0'), feed_dict={'onet/input:0':img})
+    # pnet_fun = lambda img : sess.run(('pnet/conv4-2/BiasAdd:0', 'pnet/prob1:0'), feed_dict={'pnet/input:0':img})
+    # rnet_fun = lambda img : sess.run(('rnet/conv5-2/conv5-2:0', 'rnet/prob1:0'), feed_dict={'rnet/input:0':img})
+    # onet_fun = lambda img : sess.run(('onet/conv6-2/conv6-2:0', 'onet/conv6-3/conv6-3:0', 'onet/prob1:0'), feed_dict={'onet/input:0':img})
     return pnet_fun, rnet_fun, onet_fun
 
 
@@ -522,7 +262,12 @@ def bulk_detect_face(images, detection_window_size_ratio, pnet, rnet, onet, thre
     return ret
 
 
-# function [boundingbox] = bbreg(boundingbox,reg)
+'''
+boundingbox的修正,
+boundingbox:(N,9)或者(N,4)
+reg:(N,4)
+return:(N,4)
+'''
 def bbreg(boundingbox,reg):
     """Calibrate bounding boxes"""
     if reg.shape[1]==1:
@@ -536,27 +281,55 @@ def bbreg(boundingbox,reg):
     b4 = boundingbox[:,3]+reg[:,3]*h
     boundingbox[:,0:4] = np.transpose(np.vstack([b1, b2, b3, b4 ]))
     return boundingbox
- 
+'''
+    imap,reg 输入分别表示经过PNET得到的区域概率和修正
+    imap:[H',W']
+    reg:[H',W',4]
+    scale表示原输入到PNET的图片缩放了 scale,所以还原会/scale
+    t:>t的区域才会被保存
+    
+    :return (N',9)
+    N'是筛选后的人脸数
+    9:x1,y1,x2,y2,score,rx1,ry1,rx2,ry2
+    这里的x1,x2,y1,y2是相对于原始图片的坐标!!
+'''
 def generateBoundingBox(imap, reg, scale, t):
     """Use heatmap to generate bounding boxes"""
     stride=2
     cellsize=12
 
     imap = np.transpose(imap)
+    '''
+    imap,dx1,dx2,dy1,dy2的第一个维度沿着W,第二个维度沿着H
+    
+    在imap的(i,j)映射回原图取区域后imap[i][j]表示这个区域是人脸的概率
+    
+    dx1[i][j]表示对左上角坐标沿着X(W)轴的修正!
+    dy1[i][j]表示对左上角坐标沿着Y(H)轴的修正!
+    
+    dx2[i][j]表示对右下角坐标沿着X(W)轴的修正!
+    dy2[i][j]表示对右下角坐标沿着Y(H)轴的修正!
+    '''
     dx1 = np.transpose(reg[:,:,0])
     dy1 = np.transpose(reg[:,:,1])
     dx2 = np.transpose(reg[:,:,2])
     dy2 = np.transpose(reg[:,:,3])
+    '''
+    y(W)是第一个维度,x(H)是第二个维度
+    '''
     y, x = np.where(imap >= t)
     if y.shape[0]==1:
         dx1 = np.flipud(dx1)
         dy1 = np.flipud(dy1)
         dx2 = np.flipud(dx2)
         dy2 = np.flipud(dy2)
-    score = imap[(y,x)]
-    reg = np.transpose(np.vstack([ dx1[(y,x)], dy1[(y,x)], dx2[(y,x)], dy2[(y,x)] ]))
+    score = imap[y,x] #(N',)
+
+    #vstack->(4,N') -->(N'4)
+    reg = np.transpose(np.vstack([ dx1[y,x], dy1[y,x], dx2[y,x], dy2[y,x] ]))
     if reg.size==0:
         reg = np.empty((0,3))
+    #bb是(N'2) bb[:,0]是X轴坐标,bb[:,1]是Y轴坐标,不要被变量命名干扰!
     bb = np.transpose(np.vstack([y,x]))
     q1 = np.fix((stride*bb+1)/scale)
     q2 = np.fix((stride*bb+cellsize-1+1)/scale)
@@ -577,10 +350,14 @@ def nms(boxes, threshold, method):
     pick = np.zeros_like(s, dtype=np.int16)
     counter = 0
     while I.size>0:
+        #每次选最后一个,因为分数最大
         i = I[-1]
-        pick[counter] = i
+        pick[counter] = i #记录
         counter += 1
-        idx = I[0:-1]
+        idx = I[0:-1] #其他的box 所有,排除i
+        '''
+        i是选择的box索引,idx是至今为止没有被选择的
+        '''
         xx1 = np.maximum(x1[i], x1[idx])
         yy1 = np.maximum(y1[i], y1[idx])
         xx2 = np.minimum(x2[i], x2[idx])
@@ -592,10 +369,29 @@ def nms(boxes, threshold, method):
             o = inter / np.minimum(area[i], area[idx])
         else:
             o = inter / (area[i] + area[idx] - inter)
+        #np.where(o<=threshold)和选择区域相交<threshold进入下一轮
         I = I[np.where(o<=threshold)]
     pick = pick[0:counter]
     return pick
 
+'''
+    y,ey,x,ex:在原图片裁剪下的区域
+
+    dy,edy,dx,edx:在目标(新图片)裁剪图片粘贴 到的区域
+    tmpw,tmph新图片的大小
+    
+    对boxex进行修正,是他满足一下关系.
+    tempw,temph分别表示没修正之前的box长宽.
+    把这个box平移(-oldx+1,-oldy+1),得到新的矩形(1,1),(tempw,temph),这个标准矩形
+    
+    (x,y),(ex,ey)分别表示修正后左上角和右下角的坐标,x>=1,y>=1,ex<=w,ey<=y
+    
+    (dx,dy),(dex,dey),是上面矩形的标准化的变化,面积一样,
+    例如x<0,x->1
+    dx=1+(-x+1)=2-x
+    x>w,x->w
+    dex=tmpw+(-ex+w)
+'''
 # function [dy edy dx edx y ey x ex tmpw tmph] = pad(total_boxes,w,h)
 def pad(total_boxes, w, h):
     """Compute the padding coordinates (pad the bounding boxes to square)"""
@@ -631,7 +427,10 @@ def pad(total_boxes, w, h):
     
     return dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph
 
-# function [bboxA] = rerec(bboxA)
+'''
+对bboxA做了长宽修正,(w,h)->(l,l) l=max(w,h)
+box中心没有变!,没有考虑是否超过边界
+'''
 def rerec(bboxA):
     """Convert bboxA to square."""
     h = bboxA[:,3]-bboxA[:,1]
@@ -656,7 +455,7 @@ def normalize(im_data):
 def feedImage(image):
     if image.ndim==3:
         image=np.expand_dims(image,axis=0)
-    image=np.transpose(image,(0,2,1,3))
+    # image=np.transpose(image,(0,2,1,3))
     return image
 
 
@@ -676,7 +475,11 @@ def bb_landmark(box,landmarks):
     landmarks[:, 5:10] = landmarks[:, 5:10] * h + box[:, 1]
 
     return landmarks
-
+'''
+orignImage:原始图片
+total_boxes:(N',4)人脸在orignImage的坐标
+size:输出图片尺寸
+'''
 def outputImage2NextStage(orignImage,total_boxes,size):
     total_boxes=total_boxes.copy()
     h,w,_=orignImage.shape
@@ -687,12 +490,22 @@ def outputImage2NextStage(orignImage,total_boxes,size):
     make sure the index is integer,before pass it to pad function
     '''
     total_boxes[:, 0:4]=np.fix(total_boxes[:,0:4])
+
+    '''
+    y,ey,x,ex:在原图片裁剪下的区域
+    
+    dy,edy,dx,edx:在目标(新图片)裁剪图片粘贴 到的区域
+    tmpw,tmph新图片的大小
+    '''
     dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph=pad(total_boxes, w, h)
 
 
     target=np.empty((0,size,size,3),dtype=np.uint8)
     for n in range(numBox):
-        tmp=np.zeros(( int(tmph[n]),int(tmpw[n]),3),dtype=np.uint8)
+        _h,_w=int(tmph[n]),int(tmpw[n])
+        # if _w<=0 or _h<=0:continue
+        # print(_w,_h)
+        tmp=np.zeros((_h,_w,3),dtype=np.uint8)
         tmp[dy[n] - 1:edy[n], dx[n] - 1:edx[n]]=orignImage[y[n]-1:ey[n],x[n]-1:ex[n]]
         tmp=imresample(tmp,(size,size))
 
@@ -722,7 +535,14 @@ def drawLandMarks(orignImage,landmarks):
             pt=landmarks[n][k],landmarks[n][k+5]
             cv2.circle(_I,pt,1,(0,255,0),2)
     return _I
-def p_stage(img,minsize,pnet,factor,t,debug=False):
+
+'''
+这里有2次调用NMS,参数分别是0.5,0.6
+分别是对一张图的所有box的阈值和对 所有scale图片处理完成,保存的box的阈值
+return:total_boxes (N'4)
+       pout  (N',24,24,3)
+'''
+def p_stage(img,minsize,pnet,factor,t,debug=False,nms_default=[0.5,0.6],cut_image=True):
 
     h,w,_=img.shape
     l=min(h,w)
@@ -751,25 +571,32 @@ def p_stage(img,minsize,pnet,factor,t,debug=False):
         im_data=normalize(im_data)
         img_x = feedImage(im_data)
         out=pnet(img_x)
-        #
-        regressor=np.transpose(out[0],(0,2,1,3))[0]
-        score = np.transpose(out[1], (0, 2, 1, 3))[0][:,:,1]
-
+        #out[0]是regressor,0表示第一张图片,shape[H',W',4]
+        regressor=out[0][0]
+        #out[1]是prosibility,out[1][0]是第一张图片,shape[H',W',2]
+        score = out[1][0][:,:,1]
+        #bbox是原图的坐标,(N',9),N'是概率>t保留下来的人脸数量
         bbox,_=generateBoundingBox(score.copy(),regressor.copy(),scale,t)
         if bbox.size>1:
-            pick=nms(bbox.copy(),0.5,'Union')
+            pick=nms(bbox.copy(),nms_default[0],'Union')
             bbox=bbox[pick]
             total_boxes = np.append(total_boxes, bbox, axis=0)
 
     if len(total_boxes)>1:
-        pick=nms(total_boxes.copy(),0.6,'Union')
+        pick=nms(total_boxes.copy(),nms_default[1],'Union')
         total_boxes = total_boxes[pick]
         '''
         using regress to adjust
         '''
         total_boxes=bbreg(total_boxes,total_boxes[:,5:9])
-        total_boxes=rerec(total_boxes.copy())
+        total_boxes = rerec(total_boxes.copy())
+        '''
+        进一步过滤长宽不合法的
+        '''
+        _w = total_boxes[:,2]- total_boxes[:,0]
+        total_boxes=total_boxes[np.where(_w>0)[0]]
 
+        if not cut_image: return (total_boxes, None)
         pout=outputImage2NextStage(img,total_boxes,24)
 
 
@@ -845,9 +672,21 @@ def o_stage(orignimage, total_boxes, images, onet, t, debug=False):
             imsave('debug/onet.jpg',_I)
     return boxes,landmarks,score
 
-# path,_=os.path.split(os.path.realpath(__file__))
-# sess=tf.Session()
-# pnet,rnet,onet=create_mtcnn(sess,path)
+
+
+if __name__ == '__main__':
+    sess = tf.Session()
+    pnet, rnet, onet = create_mtcnn(sess, '/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model/PNet-3')
+    image = cv2.imread('/home/zhangxk/AIProject/WIDER_train/images/0--Parade/0_Parade_Parade_0_904.jpg')
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    print('p_net---->totalbox and next input:')
+    totalbox,out=p_stage(image,minsize=50,pnet=pnet,factor=0.709,t=0.6,debug=True,nms_default=[0.5,0.7])
+    print(totalbox.shape)
+    print(out.shape)
+
+    image=drawDectectBox(image.copy(), totalbox, scores=None)
+    imsave('ssss.jpg',image)
+
 # # saver=tf.train.Saver()
 # # saver.restore(sess,'/home/zxk/PycharmProjects/deepAI/daily/8/studyOfFace/logs/models/facedect.ckpt-37')
 # image=cv2.imread('../../images/zly.jpg')

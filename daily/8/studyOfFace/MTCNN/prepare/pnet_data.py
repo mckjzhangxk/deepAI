@@ -1,4 +1,4 @@
-from Configure import WIDER_TRAINSET,WIDER_ANNOTION,PNET_DATASET_PATH,BASE_NUM,POSITIVE_COPYS,NEGATIVE_COPYS,NEG_NUM
+from Configure import WIDER_TRAINSET,WIDER_ANNOTION,PNET_DATASET_PATH,BASE_NUM,POSITIVE_COPYS,NEGATIVE_COPYS,NEG_NUM_FOR_PNET
 from utils.roi_utils import IoU,GetRegressBox
 import os
 import cv2
@@ -279,6 +279,6 @@ def gen_pnet_data(posCopys, negCopys, negNum):
 
 if __name__ == '__main__':
     SIZE=12
-    gen_pnet_data(posCopys=POSITIVE_COPYS, negCopys=NEGATIVE_COPYS, negNum=NEG_NUM)
+    # gen_pnet_data(posCopys=POSITIVE_COPYS, negCopys=NEGATIVE_COPYS, negNum=NEG_NUM)
     # _summary()
     merge_pnet_dataset()

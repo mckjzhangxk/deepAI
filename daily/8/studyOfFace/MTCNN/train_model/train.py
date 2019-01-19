@@ -64,7 +64,7 @@ def start_train(model_name):
 
     # 开始训练
 
-    MAX_STEPS = svConf.EPOCH * (svConf.EXAMPLES // svConf.LoopPerEpoch)
+    MAX_STEPS = svConf.EPOCH *  svConf.LoopPerEpoch
 
     with tf.Session() as sess:
         saver = tf.train.Saver(max_to_keep=0)
