@@ -7,6 +7,9 @@ WIDER_TRAINSET='/home/zhangxk/AIProject/WIDER_train/images'
 WIDER_ANNOTION='/home/zhangxk/AIProject/WIDER_train/wider_face_train_bbx_gt_test.txt'
 FACE_MIN_SIZE=50 #最小人脸尺寸
 SCALE=0.79    #人脸金字塔,每次缩放比例
+DETECT_EPOCHS=[3,4,5]  #生成hardexample时候,P,R,O分别使用第EPOCH?个训练的模型
+NMS_DEFAULT=[0.5,0.7,0.7]
+THRESHOLD=[0.3, 0.1, 0.4]
 '''
 
 PNET 网络区
@@ -26,6 +29,12 @@ RNET 网络区
 '''
 #RNET数据处理
 RNET_DATASET_PATH='/home/zhangxk/AIProject/MTCNN_TRAIN/rnet/dataset'
-NMS_DEFAULT=[0.5,0.7]
-PNET_THREAD=0.3
+#一张图片生成最多NEG_NUM_FOR_RNET张人脸
 NEG_NUM_FOR_RNET=60
+'''
+
+'''
+#RNET数据处理
+ONET_DATASET_PATH='/home/zhangxk/AIProject/MTCNN_TRAIN/onet/dataset'
+#一张图片生成最多NEG_NUM_FOR_RNET张人脸
+NEG_NUM_FOR_ONET=60

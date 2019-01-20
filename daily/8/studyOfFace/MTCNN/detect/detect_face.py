@@ -1,15 +1,36 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from six import string_types, iteritems
 import model.mtcnn_model as mtcnn
 import numpy as np
 import tensorflow as tf
-#from math import floor
 import cv2
-import os
 from scipy.misc import imsave
 
+'''
+这应该是本模块对外提供的唯一方法:
+    输入:filename:
+        minsize:最小尺寸
+        factor:金字塔缩放参数
+        thresholds:经过3个网络 放行概率
+        
+    返回:np.array([N',5]),
+        9表示x1,y1,x2,y2,score
+
+'''
+def detect_face(filename,minsize,factor,thresholds=[0.3,0.1,0.4],sess=None,models=[None,None,None]):
+    pnet_path, rnet_path, onet_path=models
+    pnet,rnet,onet=create_mtcnn(sess,pnet_path,rnet_path,onet_path)
+
+    image = cv2.imread(filename)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    assert image is not None,'%s not exist'%filename
+
+
+    if pnet:
+        total_box,_=p_stage(image,minsize,pnet,factor,thresholds[0],nms_default,False)
+        if len(total_box)>0:
+            total_box=total_box[:,0:4] #返回的是9维的,只要前4
 
 def create_mtcnn(sess,pnet_path=None,rnet_path=None,onet_path=None):
     pnet_fun, rnet_fun, onet_fun=None,None,None
@@ -37,230 +58,62 @@ def create_mtcnn(sess,pnet_path=None,rnet_path=None,onet_path=None):
     return pnet_fun, rnet_fun, onet_fun
 
 
+'''
+    imap,reg 输入分别表示经过PNET得到的区域概率和修正
+    imap:[H',W']
+    reg:[H',W',4]
+    scale表示原输入到PNET的图片缩放了 scale,所以还原会/scale
+    t:>t的区域才会被保存
 
-def bulk_detect_face(images, detection_window_size_ratio, pnet, rnet, onet, threshold, factor):
-    """Detects faces in a list of images
-    images: list containing input images
-    detection_window_size_ratio: ratio of minimum face size to smallest image dimension
-    pnet, rnet, onet: caffemodel
-    threshold: threshold=[th1 th2 th3], th1-3 are three steps's threshold [0-1]
-    factor: the factor used to create a scaling pyramid of face sizes to detect in the image.
-    """
-    all_scales = [None] * len(images)
-    images_with_boxes = [None] * len(images)
+    :return (N',9)
+    N'是筛选后的人脸数
+    9:x1,y1,x2,y2,score,rx1,ry1,rx2,ry2
+    这里的x1,x2,y1,y2是相对于原始图片的坐标!!
+'''
 
-    for i in range(len(images)):
-        images_with_boxes[i] = {'total_boxes': np.empty((0, 9))}
 
-    # create scale pyramid
-    for index, img in enumerate(images):
-        all_scales[index] = []
-        h = img.shape[0]
-        w = img.shape[1]
-        minsize = int(detection_window_size_ratio * np.minimum(w, h))
-        factor_count = 0
-        minl = np.amin([h, w])
-        if minsize <= 12:
-            minsize = 12
+def generateBoundingBox(imap, reg, scale, t):
+    """Use heatmap to generate bounding boxes"""
+    stride = 2
+    cellsize = 12
 
-        m = 12.0 / minsize
-        minl = minl * m
-        while minl >= 12:
-            all_scales[index].append(m * np.power(factor, factor_count))
-            minl = minl * factor
-            factor_count += 1
+    imap = np.transpose(imap)
+    '''
+    imap,dx1,dx2,dy1,dy2的第一个维度沿着W,第二个维度沿着H
 
-    # # # # # # # # # # # # #
-    # first stage - fast proposal network (pnet) to obtain face candidates
-    # # # # # # # # # # # # #
+    在imap的(i,j)映射回原图取区域后imap[i][j]表示这个区域是人脸的概率
 
-    images_obj_per_resolution = {}
+    dx1[i][j]表示对左上角坐标沿着X(W)轴的修正!
+    dy1[i][j]表示对左上角坐标沿着Y(H)轴的修正!
 
-    # TODO: use some type of rounding to number module 8 to increase probability that pyramid images will have the same resolution across input images
+    dx2[i][j]表示对右下角坐标沿着X(W)轴的修正!
+    dy2[i][j]表示对右下角坐标沿着Y(H)轴的修正!
+    '''
+    dx1 = np.transpose(reg[:, :, 0])
+    dy1 = np.transpose(reg[:, :, 1])
+    dx2 = np.transpose(reg[:, :, 2])
+    dy2 = np.transpose(reg[:, :, 3])
+    '''
+    y(W)是第一个维度,x(H)是第二个维度
+    '''
+    y, x = np.where(imap >= t)
+    if y.shape[0] == 1:
+        dx1 = np.flipud(dx1)
+        dy1 = np.flipud(dy1)
+        dx2 = np.flipud(dx2)
+        dy2 = np.flipud(dy2)
+    score = imap[y, x]  # (N',)
 
-    for index, scales in enumerate(all_scales):
-        h = images[index].shape[0]
-        w = images[index].shape[1]
-
-        for scale in scales:
-            hs = int(np.ceil(h * scale))
-            ws = int(np.ceil(w * scale))
-
-            if (ws, hs) not in images_obj_per_resolution:
-                images_obj_per_resolution[(ws, hs)] = []
-
-            im_data = imresample(images[index], (hs, ws))
-            im_data = (im_data - 127.5) * 0.0078125
-            img_y = np.transpose(im_data, (1, 0, 2))  # caffe uses different dimensions ordering
-            images_obj_per_resolution[(ws, hs)].append({'scale': scale, 'image': img_y, 'index': index})
-
-    for resolution in images_obj_per_resolution:
-        images_per_resolution = [i['image'] for i in images_obj_per_resolution[resolution]]
-        outs = pnet(images_per_resolution)
-
-        for index in range(len(outs[0])):
-            scale = images_obj_per_resolution[resolution][index]['scale']
-            image_index = images_obj_per_resolution[resolution][index]['index']
-            out0 = np.transpose(outs[0][index], (1, 0, 2))
-            out1 = np.transpose(outs[1][index], (1, 0, 2))
-
-            boxes, _ = generateBoundingBox(out1[:, :, 1].copy(), out0[:, :, :].copy(), scale, threshold[0])
-
-            # inter-scale nms
-            pick = nms(boxes.copy(), 0.5, 'Union')
-            if boxes.size > 0 and pick.size > 0:
-                boxes = boxes[pick, :]
-                images_with_boxes[image_index]['total_boxes'] = np.append(images_with_boxes[image_index]['total_boxes'],
-                                                                          boxes,
-                                                                          axis=0)
-
-    for index, image_obj in enumerate(images_with_boxes):
-        numbox = image_obj['total_boxes'].shape[0]
-        if numbox > 0:
-            h = images[index].shape[0]
-            w = images[index].shape[1]
-            pick = nms(image_obj['total_boxes'].copy(), 0.7, 'Union')
-            image_obj['total_boxes'] = image_obj['total_boxes'][pick, :]
-            regw = image_obj['total_boxes'][:, 2] - image_obj['total_boxes'][:, 0]
-            regh = image_obj['total_boxes'][:, 3] - image_obj['total_boxes'][:, 1]
-            qq1 = image_obj['total_boxes'][:, 0] + image_obj['total_boxes'][:, 5] * regw
-            qq2 = image_obj['total_boxes'][:, 1] + image_obj['total_boxes'][:, 6] * regh
-            qq3 = image_obj['total_boxes'][:, 2] + image_obj['total_boxes'][:, 7] * regw
-            qq4 = image_obj['total_boxes'][:, 3] + image_obj['total_boxes'][:, 8] * regh
-            image_obj['total_boxes'] = np.transpose(np.vstack([qq1, qq2, qq3, qq4, image_obj['total_boxes'][:, 4]]))
-            image_obj['total_boxes'] = rerec(image_obj['total_boxes'].copy())
-            image_obj['total_boxes'][:, 0:4] = np.fix(image_obj['total_boxes'][:, 0:4]).astype(np.int32)
-            dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph = pad(image_obj['total_boxes'].copy(), w, h)
-
-            numbox = image_obj['total_boxes'].shape[0]
-            tempimg = np.zeros((24, 24, 3, numbox))
-
-            if numbox > 0:
-                for k in range(0, numbox):
-                    tmp = np.zeros((int(tmph[k]), int(tmpw[k]), 3))
-                    tmp[dy[k] - 1:edy[k], dx[k] - 1:edx[k], :] = images[index][y[k] - 1:ey[k], x[k] - 1:ex[k], :]
-                    if tmp.shape[0] > 0 and tmp.shape[1] > 0 or tmp.shape[0] == 0 and tmp.shape[1] == 0:
-                        tempimg[:, :, :, k] = imresample(tmp, (24, 24))
-                    else:
-                        return np.empty()
-
-                tempimg = (tempimg - 127.5) * 0.0078125
-                image_obj['rnet_input'] = np.transpose(tempimg, (3, 1, 0, 2))
-
-    # # # # # # # # # # # # #
-    # second stage - refinement of face candidates with rnet
-    # # # # # # # # # # # # #
-
-    bulk_rnet_input = np.empty((0, 24, 24, 3))
-    for index, image_obj in enumerate(images_with_boxes):
-        if 'rnet_input' in image_obj:
-            bulk_rnet_input = np.append(bulk_rnet_input, image_obj['rnet_input'], axis=0)
-
-    out = rnet(bulk_rnet_input)
-    out0 = np.transpose(out[0])
-    out1 = np.transpose(out[1])
-    score = out1[1, :]
-
-    i = 0
-    for index, image_obj in enumerate(images_with_boxes):
-        if 'rnet_input' not in image_obj:
-            continue
-
-        rnet_input_count = image_obj['rnet_input'].shape[0]
-        score_per_image = score[i:i + rnet_input_count]
-        out0_per_image = out0[:, i:i + rnet_input_count]
-
-        ipass = np.where(score_per_image > threshold[1])
-        image_obj['total_boxes'] = np.hstack([image_obj['total_boxes'][ipass[0], 0:4].copy(),
-                                              np.expand_dims(score_per_image[ipass].copy(), 1)])
-
-        mv = out0_per_image[:, ipass[0]]
-
-        if image_obj['total_boxes'].shape[0] > 0:
-            h = images[index].shape[0]
-            w = images[index].shape[1]
-            pick = nms(image_obj['total_boxes'], 0.7, 'Union')
-            image_obj['total_boxes'] = image_obj['total_boxes'][pick, :]
-            image_obj['total_boxes'] = bbreg(image_obj['total_boxes'].copy(), np.transpose(mv[:, pick]))
-            image_obj['total_boxes'] = rerec(image_obj['total_boxes'].copy())
-
-            numbox = image_obj['total_boxes'].shape[0]
-
-            if numbox > 0:
-                tempimg = np.zeros((48, 48, 3, numbox))
-                image_obj['total_boxes'] = np.fix(image_obj['total_boxes']).astype(np.int32)
-                dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph = pad(image_obj['total_boxes'].copy(), w, h)
-
-                for k in range(0, numbox):
-                    tmp = np.zeros((int(tmph[k]), int(tmpw[k]), 3))
-                    tmp[dy[k] - 1:edy[k], dx[k] - 1:edx[k], :] = images[index][y[k] - 1:ey[k], x[k] - 1:ex[k], :]
-                    if tmp.shape[0] > 0 and tmp.shape[1] > 0 or tmp.shape[0] == 0 and tmp.shape[1] == 0:
-                        tempimg[:, :, :, k] = imresample(tmp, (48, 48))
-                    else:
-                        return np.empty()
-                tempimg = (tempimg - 127.5) * 0.0078125
-                image_obj['onet_input'] = np.transpose(tempimg, (3, 1, 0, 2))
-
-        i += rnet_input_count
-
-    # # # # # # # # # # # # #
-    # third stage - further refinement and facial landmarks positions with onet
-    # # # # # # # # # # # # #
-
-    bulk_onet_input = np.empty((0, 48, 48, 3))
-    for index, image_obj in enumerate(images_with_boxes):
-        if 'onet_input' in image_obj:
-            bulk_onet_input = np.append(bulk_onet_input, image_obj['onet_input'], axis=0)
-
-    out = onet(bulk_onet_input)
-
-    out0 = np.transpose(out[0])
-    out1 = np.transpose(out[1])
-    out2 = np.transpose(out[2])
-    score = out2[1, :]
-    points = out1
-
-    i = 0
-    ret = []
-    for index, image_obj in enumerate(images_with_boxes):
-        if 'onet_input' not in image_obj:
-            ret.append(None)
-            continue
-
-        onet_input_count = image_obj['onet_input'].shape[0]
-
-        out0_per_image = out0[:, i:i + onet_input_count]
-        score_per_image = score[i:i + onet_input_count]
-        points_per_image = points[:, i:i + onet_input_count]
-
-        ipass = np.where(score_per_image > threshold[2])
-        points_per_image = points_per_image[:, ipass[0]]
-
-        image_obj['total_boxes'] = np.hstack([image_obj['total_boxes'][ipass[0], 0:4].copy(),
-                                              np.expand_dims(score_per_image[ipass].copy(), 1)])
-        mv = out0_per_image[:, ipass[0]]
-
-        w = image_obj['total_boxes'][:, 2] - image_obj['total_boxes'][:, 0] + 1
-        h = image_obj['total_boxes'][:, 3] - image_obj['total_boxes'][:, 1] + 1
-        points_per_image[0:5, :] = np.tile(w, (5, 1)) * points_per_image[0:5, :] + np.tile(
-            image_obj['total_boxes'][:, 0], (5, 1)) - 1
-        points_per_image[5:10, :] = np.tile(h, (5, 1)) * points_per_image[5:10, :] + np.tile(
-            image_obj['total_boxes'][:, 1], (5, 1)) - 1
-
-        if image_obj['total_boxes'].shape[0] > 0:
-            image_obj['total_boxes'] = bbreg(image_obj['total_boxes'].copy(), np.transpose(mv))
-            pick = nms(image_obj['total_boxes'].copy(), 0.7, 'Min')
-            image_obj['total_boxes'] = image_obj['total_boxes'][pick, :]
-            points_per_image = points_per_image[:, pick]
-
-            ret.append((image_obj['total_boxes'], points_per_image))
-        else:
-            ret.append(None)
-
-        i += onet_input_count
-
-    return ret
-
+    # vstack->(4,N') -->(N'4)
+    reg = np.transpose(np.vstack([dx1[y, x], dy1[y, x], dx2[y, x], dy2[y, x]]))
+    if reg.size == 0:
+        reg = np.empty((0, 3))
+    # bb是(N'2) bb[:,0]是X轴坐标,bb[:,1]是Y轴坐标,不要被变量命名干扰!
+    bb = np.transpose(np.vstack([y, x]))
+    q1 = np.fix((stride * bb + 1) / scale)
+    q2 = np.fix((stride * bb + cellsize - 1 + 1) / scale)
+    boundingbox = np.hstack([q1, q2, np.expand_dims(score, 1), reg])
+    return boundingbox, reg
 
 '''
 boundingbox的修正,
@@ -281,61 +134,95 @@ def bbreg(boundingbox,reg):
     b4 = boundingbox[:,3]+reg[:,3]*h
     boundingbox[:,0:4] = np.transpose(np.vstack([b1, b2, b3, b4 ]))
     return boundingbox
-'''
-    imap,reg 输入分别表示经过PNET得到的区域概率和修正
-    imap:[H',W']
-    reg:[H',W',4]
-    scale表示原输入到PNET的图片缩放了 scale,所以还原会/scale
-    t:>t的区域才会被保存
-    
-    :return (N',9)
-    N'是筛选后的人脸数
-    9:x1,y1,x2,y2,score,rx1,ry1,rx2,ry2
-    这里的x1,x2,y1,y2是相对于原始图片的坐标!!
-'''
-def generateBoundingBox(imap, reg, scale, t):
-    """Use heatmap to generate bounding boxes"""
-    stride=2
-    cellsize=12
 
-    imap = np.transpose(imap)
-    '''
-    imap,dx1,dx2,dy1,dy2的第一个维度沿着W,第二个维度沿着H
-    
-    在imap的(i,j)映射回原图取区域后imap[i][j]表示这个区域是人脸的概率
-    
-    dx1[i][j]表示对左上角坐标沿着X(W)轴的修正!
-    dy1[i][j]表示对左上角坐标沿着Y(H)轴的修正!
-    
-    dx2[i][j]表示对右下角坐标沿着X(W)轴的修正!
-    dy2[i][j]表示对右下角坐标沿着Y(H)轴的修正!
-    '''
-    dx1 = np.transpose(reg[:,:,0])
-    dy1 = np.transpose(reg[:,:,1])
-    dx2 = np.transpose(reg[:,:,2])
-    dy2 = np.transpose(reg[:,:,3])
-    '''
-    y(W)是第一个维度,x(H)是第二个维度
-    '''
-    y, x = np.where(imap >= t)
-    if y.shape[0]==1:
-        dx1 = np.flipud(dx1)
-        dy1 = np.flipud(dy1)
-        dx2 = np.flipud(dx2)
-        dy2 = np.flipud(dy2)
-    score = imap[y,x] #(N',)
+'''
+对bboxA做了长宽修正,(w,h)->(l,l) l=max(w,h)
+box中心没有变!,没有考虑是否超过边界
+'''
+def rerec(bboxA):
+    """Convert bboxA to square."""
+    h = bboxA[:,3]-bboxA[:,1]
+    w = bboxA[:,2]-bboxA[:,0]
+    l = np.maximum(w, h)
+    bboxA[:,0] = bboxA[:,0]+w*0.5-l*0.5
+    bboxA[:,1] = bboxA[:,1]+h*0.5-l*0.5
+    bboxA[:,2:4] = bboxA[:,0:2] + np.transpose(np.tile(l,(2,1)))
+    return bboxA
 
-    #vstack->(4,N') -->(N'4)
-    reg = np.transpose(np.vstack([ dx1[y,x], dy1[y,x], dx2[y,x], dy2[y,x] ]))
-    if reg.size==0:
-        reg = np.empty((0,3))
-    #bb是(N'2) bb[:,0]是X轴坐标,bb[:,1]是Y轴坐标,不要被变量命名干扰!
-    bb = np.transpose(np.vstack([y,x]))
-    q1 = np.fix((stride*bb+1)/scale)
-    q2 = np.fix((stride*bb+cellsize-1+1)/scale)
-    boundingbox = np.hstack([q1, q2, np.expand_dims(score,1), reg])
-    return boundingbox, reg
- 
+
+'''
+    y,ey,x,ex:在原图片裁剪下的区域
+
+    dy,edy,dx,edx:在目标(新图片)裁剪图片粘贴 到的区域
+    tmpw,tmph新图片的大小
+
+    对boxex进行修正,是他满足一下关系.
+    tempw,temph分别表示没修正之前的box长宽.
+    把这个box平移(-oldx+1,-oldy+1),得到新的矩形(1,1),(tempw,temph),这个标准矩形
+
+    (x,y),(ex,ey)分别表示修正后左上角和右下角的坐标,x>=1,y>=1,ex<=w,ey<=y
+
+    (dx,dy),(dex,dey),是上面矩形的标准化的变化,面积一样,
+    例如x<0,x->1
+    dx=1+(-x+1)=2-x
+    x>w,x->w
+    dex=tmpw+(-ex+w)
+'''
+
+
+def pad(total_boxes, w, h):
+    """Compute the padding coordinates (pad the bounding boxes to square)"""
+    tmpw = (total_boxes[:, 2] - total_boxes[:, 0] + 1).astype(np.int32)
+    tmph = (total_boxes[:, 3] - total_boxes[:, 1] + 1).astype(np.int32)
+    numbox = total_boxes.shape[0]
+
+    dx = np.ones((numbox), dtype=np.int32)
+    dy = np.ones((numbox), dtype=np.int32)
+    edx = tmpw.copy().astype(np.int32)
+    edy = tmph.copy().astype(np.int32)
+
+    x = total_boxes[:, 0].copy().astype(np.int32)
+    y = total_boxes[:, 1].copy().astype(np.int32)
+    ex = total_boxes[:, 2].copy().astype(np.int32)
+    ey = total_boxes[:, 3].copy().astype(np.int32)
+
+    tmp = np.where(ex > w)
+    edx.flat[tmp] = np.expand_dims(-ex[tmp] + w + tmpw[tmp], 1)
+    ex[tmp] = w
+
+    tmp = np.where(ey > h)
+    edy.flat[tmp] = np.expand_dims(-ey[tmp] + h + tmph[tmp], 1)
+    ey[tmp] = h
+
+    tmp = np.where(x < 1)
+    dx.flat[tmp] = np.expand_dims(2 - x[tmp], 1)
+    x[tmp] = 1
+
+    tmp = np.where(y < 1)
+    dy.flat[tmp] = np.expand_dims(2 - y[tmp], 1)
+    y[tmp] = 1
+
+    return dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph
+
+def validbox(total_boxes):
+    '''
+    过滤长宽不合法的
+    '''
+    _w = total_boxes[:, 2] - total_boxes[:, 0]
+    total_boxes = total_boxes[np.where(_w > 0)[0]]
+    _h = total_boxes[:, 3] - total_boxes[:, 1]
+    total_boxes = total_boxes[np.where(_h > 0)[0]]
+
+    return total_boxes
+def bb_landmark(box,landmarks):
+    box=np.fix(np.expand_dims(box,axis=2))
+    w=box[:,2]-box[:,0]+1
+    h=box[:,3]-box[:,1]+1
+
+    landmarks[:,0:5]=landmarks[:,0:5]*w+box[:,0]
+    landmarks[:, 5:10] = landmarks[:, 5:10] * h + box[:, 1]
+
+    return landmarks
 # function pick = nms(boxes,threshold,type)
 def nms(boxes, threshold, method):
     if boxes.size==0:
@@ -374,72 +261,9 @@ def nms(boxes, threshold, method):
     pick = pick[0:counter]
     return pick
 
-'''
-    y,ey,x,ex:在原图片裁剪下的区域
 
-    dy,edy,dx,edx:在目标(新图片)裁剪图片粘贴 到的区域
-    tmpw,tmph新图片的大小
-    
-    对boxex进行修正,是他满足一下关系.
-    tempw,temph分别表示没修正之前的box长宽.
-    把这个box平移(-oldx+1,-oldy+1),得到新的矩形(1,1),(tempw,temph),这个标准矩形
-    
-    (x,y),(ex,ey)分别表示修正后左上角和右下角的坐标,x>=1,y>=1,ex<=w,ey<=y
-    
-    (dx,dy),(dex,dey),是上面矩形的标准化的变化,面积一样,
-    例如x<0,x->1
-    dx=1+(-x+1)=2-x
-    x>w,x->w
-    dex=tmpw+(-ex+w)
-'''
-# function [dy edy dx edx y ey x ex tmpw tmph] = pad(total_boxes,w,h)
-def pad(total_boxes, w, h):
-    """Compute the padding coordinates (pad the bounding boxes to square)"""
-    tmpw = (total_boxes[:,2]-total_boxes[:,0]+1).astype(np.int32)
-    tmph = (total_boxes[:,3]-total_boxes[:,1]+1).astype(np.int32)
-    numbox = total_boxes.shape[0]
 
-    dx = np.ones((numbox), dtype=np.int32)
-    dy = np.ones((numbox), dtype=np.int32)
-    edx = tmpw.copy().astype(np.int32)
-    edy = tmph.copy().astype(np.int32)
 
-    x = total_boxes[:,0].copy().astype(np.int32)
-    y = total_boxes[:,1].copy().astype(np.int32)
-    ex = total_boxes[:,2].copy().astype(np.int32)
-    ey = total_boxes[:,3].copy().astype(np.int32)
-
-    tmp = np.where(ex>w)
-    edx.flat[tmp] = np.expand_dims(-ex[tmp]+w+tmpw[tmp],1)
-    ex[tmp] = w
-    
-    tmp = np.where(ey>h)
-    edy.flat[tmp] = np.expand_dims(-ey[tmp]+h+tmph[tmp],1)
-    ey[tmp] = h
-
-    tmp = np.where(x<1)
-    dx.flat[tmp] = np.expand_dims(2-x[tmp],1)
-    x[tmp] = 1
-
-    tmp = np.where(y<1)
-    dy.flat[tmp] = np.expand_dims(2-y[tmp],1)
-    y[tmp] = 1
-    
-    return dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph
-
-'''
-对bboxA做了长宽修正,(w,h)->(l,l) l=max(w,h)
-box中心没有变!,没有考虑是否超过边界
-'''
-def rerec(bboxA):
-    """Convert bboxA to square."""
-    h = bboxA[:,3]-bboxA[:,1]
-    w = bboxA[:,2]-bboxA[:,0]
-    l = np.maximum(w, h)
-    bboxA[:,0] = bboxA[:,0]+w*0.5-l*0.5
-    bboxA[:,1] = bboxA[:,1]+h*0.5-l*0.5
-    bboxA[:,2:4] = bboxA[:,0:2] + np.transpose(np.tile(l,(2,1)))
-    return bboxA
 
 def imresample(img, sz):
     im_data = cv2.resize(img, (sz[1], sz[0]), interpolation=cv2.INTER_AREA) #@UndefinedVariable
@@ -452,10 +276,11 @@ def normalize(im_data):
 '''
 默认的PNET网络,输入是(N,W,H,C=3)
 '''
-def feedImage(image):
+def feedImage(image,transform=False):
     if image.ndim==3:
         image=np.expand_dims(image,axis=0)
-    # image=np.transpose(image,(0,2,1,3))
+    if transform:
+        image=np.transpose(image,(0,2,1,3))
     return image
 
 
@@ -466,15 +291,7 @@ def filter(rule,args):
         if x is None:output.append(None)
         else:output.append(x[rule])
     return output
-def bb_landmark(box,landmarks):
-    box=np.fix(np.expand_dims(box,axis=2))
-    w=box[:,2]-box[:,0]+1
-    h=box[:,3]-box[:,1]+1
 
-    landmarks[:,0:5]=landmarks[:,0:5]*w+box[:,0]
-    landmarks[:, 5:10] = landmarks[:, 5:10] * h + box[:, 1]
-
-    return landmarks
 '''
 orignImage:原始图片
 total_boxes:(N',4)人脸在orignImage的坐标
@@ -515,6 +332,10 @@ def outputImage2NextStage(orignImage,total_boxes,size):
     return target
 
 def drawDectectBox(orignImage,total_boxes,scores=None):
+    if isinstance(orignImage,str):
+        orignImage=cv2.imread(orignImage)
+        orignImage=cv2.cvtColor(orignImage,cv2.COLOR_BGR2RGB)
+
     h,w,_=orignImage.shape
     _tb = np.fix(total_boxes)
     dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph = pad(_tb, w, h)
@@ -560,7 +381,7 @@ def p_stage(img,minsize,pnet,factor,t,debug=False,nms_default=[0.5,0.6],cut_imag
 
     total_boxes = np.empty((0, 9))
     pout = np.empty((0, 24, 24, 3))
-
+    #不同的scale经过筛选后的total_box没有经过修正
     for i,scale in enumerate(scales):
         hs,ws=int(np.ceil(scale*h)),int(np.ceil(scale*w))
 
@@ -674,18 +495,18 @@ def o_stage(orignimage, total_boxes, images, onet, t, debug=False):
 
 
 
-if __name__ == '__main__':
-    sess = tf.Session()
-    pnet, rnet, onet = create_mtcnn(sess, '/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model/PNet-3')
-    image = cv2.imread('/home/zhangxk/AIProject/WIDER_train/images/0--Parade/0_Parade_Parade_0_904.jpg')
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    print('p_net---->totalbox and next input:')
-    totalbox,out=p_stage(image,minsize=50,pnet=pnet,factor=0.709,t=0.6,debug=True,nms_default=[0.5,0.7])
-    print(totalbox.shape)
-    print(out.shape)
-
-    image=drawDectectBox(image.copy(), totalbox, scores=None)
-    imsave('ssss.jpg',image)
+# if __name__ == '__main__':
+#     sess = tf.Session()
+#     pnet, rnet, onet = create_mtcnn(sess, '/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model/PNet-3')
+#     image = cv2.imread('/home/zhangxk/AIProject/WIDER_train/images/0--Parade/0_Parade_Parade_0_904.jpg')
+#     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+#     print('p_net---->totalbox and next input:')
+#     totalbox,out=p_stage(image,minsize=50,pnet=pnet,factor=0.709,t=0.6,debug=True,nms_default=[0.5,0.7])
+#     print(totalbox.shape)
+#     print(out.shape)
+#
+#     image=drawDectectBox(image.copy(), totalbox, scores=None)
+#     imsave('ssss.jpg',image)
 
 # # saver=tf.train.Saver()
 # # saver.restore(sess,'/home/zxk/PycharmProjects/deepAI/daily/8/studyOfFace/logs/models/facedect.ckpt-37')

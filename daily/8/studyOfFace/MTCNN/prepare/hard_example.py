@@ -1,13 +1,17 @@
-import tensorflow as tf
-import numpy as np
-from Configure import RNET_DATASET_PATH,PNET_THREAD,NMS_DEFAULT,SCALE,FACE_MIN_SIZE,NEG_NUM_FOR_RNET
-from Solver_Configure import MODEL_CHECKPOINT_DIR
-from utils.dbutils import get_WIDER_Set,get_WIDER_Set_ImagePath
-from detect.detect_face import create_mtcnn,p_stage,outputImage2NextStage
-import cv2
 import os
-from utils.roi_utils import IoU,GetRegressBox
+import cv2
+import numpy as np
+import tensorflow as tf
 
+from Configure import RNET_DATASET_PATH, THRESHOLD, NMS_DEFAULT, SCALE, FACE_MIN_SIZE, NEG_NUM_FOR_RNET,DETECT_EPOCHS,ONET_DATASET_PATH
+from detect.detect_face import outputImage2NextStage
+from detect.Detector import Detector_tf as Detector
+import train_model.solver.pnet_solver as pnet_solver
+import train_model.solver.rnet_solver as rnet_solver
+
+from utils.dbutils import get_WIDER_Set, get_WIDER_Set_ImagePath
+from utils.roi_utils import IoU, GetRegressBox
+from utils.common import progess_print
 
 def _prepareOutDir(dataset_path):
     pos_dir=os.path.join(dataset_path, 'pos')
@@ -22,23 +26,17 @@ def _prepareOutDir(dataset_path):
     if not os.path.exists(part_dir):
         os.mkdir(part_dir)
 #第一步,使用PNET,对数据集图片生成候选box,map<imagepath,total_box>  predict
-def step1(display_every=2):
-    sess=tf.Session()
-    pnet,_,_=create_mtcnn(sess,os.path.join(MODEL_CHECKPOINT_DIR,'PNet-3'))
+def step1(detector,display_every=2):
 
     imlist=get_WIDER_Set_ImagePath()
     tmp_db={}
-    for idx,filename in enumerate(imlist):
-        image=cv2.imread(filename)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        if image is None:continue
 
-        #这里minsize=16,返回的toal_box用于候选,这里不要切割图片
-        total_box,_=p_stage(image,FACE_MIN_SIZE,pnet,factor=SCALE,t=PNET_THREAD,nms_default=NMS_DEFAULT,cut_image=False)
+    for idx,filename in enumerate(imlist):
+        total_box=detector.detect_face(filename)
         if len(total_box)>0:
             tmp_db[filename]=total_box[:,0:4] #返回的是9维的,只要前4
         if idx%display_every==0:
-            print('step1,detection tark,finish %d/%d'%(idx+1,len(imlist)))
+            progess_print('step1,detection task,finish %d/%d'%(idx+1,len(imlist)))
     return tmp_db
 #第二部,调用get_WIDER_Set,获得标注集合,map<imagepath,total_box> groudtrue
 def step2():
@@ -77,27 +75,27 @@ def step3(dets, gts, IMG_SIZE, output_dir,display_every=100):
     '''
     for im_path,det_box in dets.items():
         if image_done % display_every == 0:
-            print("step3,generate new image task,%d images done" % image_done)
+            progess_print("step3,generate new image task,%d/%d images done" % (image_done,len(dets)))
         image_done += 1
         #标注文件如果有这个,这一步是必要的,因为忽略了标注文件中过小的人脸,可能有的原文件标注不再gts里
         if im_path in gts:
             img = cv2.imread(im_path)
             neg_num = 0
             gts_box=gts[im_path] #标注的针对本图的人脸
-
+            #一个det_box与所有gt_box比较,决定是否通过!
             for box in det_box:
                 x1, y1, x2, y2=box.astype(int)
                 width = x2-x1
                 height = y2-y1
 
-                # ignore box that is too small or beyond image border
+                # 忽略过小,超边框的box
                 if min(width,height) < 20 or x1 < 0 or y1 < 0 or x2 > img.shape[1]  or y2 >img.shape[0] :
                     continue
 
                 # 检测出来的box与标注box的IOU
                 iou = IoU(box, gts_box)
                 iou_max=np.max(iou)
-
+                #给出原图,剪切区域,生成目标图片大小,就能得到目标图片,注意这里是批处理,所以加[0]和[]
                 resized_im=outputImage2NextStage(img,np.array([box]),IMG_SIZE)[0]
                 #iou<0.3判定是负样本,针对一张图片不能超过 NEG_NUM_FOR_RNET=60张负样本
                 if iou_max < 0.3 and neg_num < NEG_NUM_FOR_RNET:
@@ -127,16 +125,32 @@ def step3(dets, gts, IMG_SIZE, output_dir,display_every=100):
     neg_file.close()
     pos_file.close()
     part_file.close()
+
+    print()
     print('total positive samples %d' % p_idx)
     print('total negative samples %d' % n_idx)
     print('total part     samples %d' % d_idx)
 
-
-def gen_hart_example(net):
-    if net=='PNet':
+detector=None
+def gen_hard_example(net):
+    sess = tf.Session()
+    model_path = [os.path.join(pnet_solver.MODEL_CHECKPOINT_DIR, 'PNet-%d' % DETECT_EPOCHS[0])]
+    if net=='RNet':
         target_dir=RNET_DATASET_PATH
         IMSIZE=24
+
+    if net=='ONet':
+        target_dir=ONET_DATASET_PATH
+        IMSIZE=48
+        model_path.append(os.path.join(rnet_solver.MODEL_CHECKPOINT_DIR, 'RNet-%d' % DETECT_EPOCHS[1]))
+    detector = Detector(sess,
+                        minsize=FACE_MIN_SIZE,
+                        scaleFactor=SCALE,
+                        nms=NMS_DEFAULT,
+                        threshold=THRESHOLD,
+                        model_path=model_path
+                        )
     _prepareOutDir(target_dir)
-    dets=step1()
+    dets=step1(detector)
     gts=step2()
     step3(dets,gts,IMSIZE,target_dir)

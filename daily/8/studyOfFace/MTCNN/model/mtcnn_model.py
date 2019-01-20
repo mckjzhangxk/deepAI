@@ -96,7 +96,10 @@ class Network(object):
 
     def make_var(self, name, shape):
         """Creates a new TensorFlow variable."""
-        return tf.get_variable(name, shape, trainable=self.trainable)
+
+        v=tf.get_variable(name, shape, trainable=self.trainable)
+        tf.add_to_collection(self.netname, v)
+        return v
 
     def validate_padding(self, padding):
         """Verifies that the padding is one of the supported ones."""
@@ -188,6 +191,7 @@ class Network(object):
         return softmax
 class PNet(Network):
     def setup(self):
+        self.netname='PNet'
         (self.feed('data') #pylint: disable=no-value-for-parameter, no-member
              .conv(3, 3, 10, 1, 1, padding='VALID', relu=False, name='conv1')
              .prelu(name='PReLU1')
@@ -201,9 +205,6 @@ class PNet(Network):
 
         (self.feed('PReLU3') #pylint: disable=no-value-for-parameter
              .conv(1, 1, 4, 1, 1, relu=False, name='conv4-2'))
-
-
-
 '''
 输入一批图片,inp,shape[None,12,12,3] for train_model
                      [None,None,None,3] for detection
@@ -219,4 +220,64 @@ def createPNet(inp,trainable):
     g = tf.get_default_graph()
     prob_tensor=g.get_tensor_by_name('pnet/prob1:0')
     regbox_tensor=g.get_tensor_by_name('pnet/conv4-2/BiasAdd:0')
+    return prob_tensor,regbox_tensor
+class RNet(Network):
+    def setup(self):
+        self.netname = 'RNet'
+        (self.feed('data') #pylint: disable=no-value-for-parameter, no-member
+             .conv(3, 3, 28, 1, 1, padding='VALID', relu=False, name='conv1')
+             .prelu(name='prelu1')
+             .max_pool(3, 3, 2, 2, name='pool1')
+             .conv(3, 3, 48, 1, 1, padding='VALID', relu=False, name='conv2')
+             .prelu(name='prelu2')
+             .max_pool(3, 3, 2, 2, padding='VALID', name='pool2')
+             .conv(2, 2, 64, 1, 1, padding='VALID', relu=False, name='conv3')
+             .prelu(name='prelu3')
+             .fc(128, relu=False, name='conv4')
+             .prelu(name='prelu4')
+             .fc(2, relu=False, name='conv5-1')
+             .softmax(1,name='prob1'))
+
+        (self.feed('prelu4') #pylint: disable=no-value-for-parameter
+             .fc(4, relu=False, name='conv5-2'))
+def createRNet(inp,trainable):
+    assert inp.get_shape()[3]==3,'Input must have 3 channel'
+    with tf.variable_scope('rnet'):
+        RNet({'data':inp},trainable)
+    g = tf.get_default_graph()
+    prob_tensor=g.get_tensor_by_name('rnet/prob1:0')
+    regbox_tensor=g.get_tensor_by_name('rnet/conv5-2/conv5-2:0')
+    return prob_tensor,regbox_tensor
+class ONet(Network):
+    def setup(self):
+        self.netname='ONet'
+        (self.feed('data') #pylint: disable=no-value-for-parameter, no-member
+             .conv(3, 3, 32, 1, 1, padding='VALID', relu=False, name='conv1')
+             .prelu(name='prelu1')
+             .max_pool(3, 3, 2, 2, name='pool1')
+             .conv(3, 3, 64, 1, 1, padding='VALID', relu=False, name='conv2')
+             .prelu(name='prelu2')
+             .max_pool(3, 3, 2, 2, padding='VALID', name='pool2')
+             .conv(3, 3, 64, 1, 1, padding='VALID', relu=False, name='conv3')
+             .prelu(name='prelu3')
+             .max_pool(2, 2, 2, 2, name='pool3')
+             .conv(2, 2, 128, 1, 1, padding='VALID', relu=False, name='conv4')
+             .prelu(name='prelu4')
+             .fc(256, relu=False, name='conv5')
+             .prelu(name='prelu5')
+             .fc(2, relu=False, name='conv6-1')
+             .softmax(1, name='prob1'))
+
+        (self.feed('prelu5') #pylint: disable=no-value-for-parameter
+             .fc(4, relu=False, name='conv6-2'))
+
+        (self.feed('prelu5') #pylint: disable=no-value-for-parameter
+             .fc(10, relu=False, name='conv6-3'))
+def createONet(inp,trainable):
+    assert inp.get_shape()[3]==3,'Input must have 3 channel'
+    with tf.variable_scope('onet'):
+        RNet({'data':inp},trainable)
+    g = tf.get_default_graph()
+    prob_tensor=g.get_tensor_by_name('onet/prob1:0')
+    regbox_tensor=g.get_tensor_by_name('onet/conv5-2/conv5-2:0')
     return prob_tensor,regbox_tensor

@@ -18,7 +18,9 @@ def classLosses(prob,label,eps=1e-10):
     而是采用根据label的只是,选取参与计算loss
     的p
     '''
-    prob=tf.squeeze(prob,[1,2])
+    #对于PNet的输出
+    if len(prob.shape)==4:
+        prob=tf.squeeze(prob,[1,2])
     N=tf.shape(prob)[0]                 #获得样本个数
     ones = tf.ones(shape=[N,],dtype=tf.int32)
     zeros=tf.zeros(shape=[N,],dtype=tf.int32)
@@ -54,7 +56,8 @@ return:
     regress loss,mse
 '''
 def boxesLoss(regbox,roi,label):
-    regbox=tf.squeeze(regbox,[1,2])
+    if len(regbox.shape) == 4:
+        regbox=tf.squeeze(regbox,[1,2])
     pse_loss=tf.reduce_sum((regbox-roi)**2,axis=1)
 
 
@@ -76,8 +79,8 @@ def boxesLoss(regbox,roi,label):
 统计 分类的正确性,注意,只统计label=1,0的
 '''
 def calAccuracy(prob,label):
-
-    prob=tf.squeeze(prob,[1,2])
+    if len(prob.shape) == 4:
+        prob=tf.squeeze(prob,[1,2])
     logit=tf.cast(tf.arg_max(prob,1),tf.float32)
 
     #计算判断正确的总数,label=-1的一定对于0
@@ -94,3 +97,22 @@ def calAccuracy(prob,label):
 
     acc=right_predict/valid_num
     return acc
+
+'''
+因为对于PNET,RNET,ONET,三个loss都是一样的,只是比例不一样,所有
+独立出公共方法,后续要加入regular_loss和landmark loss
+loss=cl_loss*cls_ratio+reg_loss*reg_ratio
+
+'''
+def mtcnn_loss_acc(prob,regbox,label,roi,cls_ratio=1.0,reg_ratio=0.5):
+    cls_loss=classLosses(prob,label)
+    reg_loss=boxesLoss(regbox,roi,label)
+    total_loss=cls_ratio*cls_loss+reg_ratio*reg_loss
+    acc=calAccuracy(prob,label)
+
+    tf.summary.scalar('cls_loss',cls_loss)
+    tf.summary.scalar('reg_loss',reg_loss)
+    tf.summary.scalar('total_loss', total_loss)
+    tf.summary.scalar('accuracy', acc)
+
+    return total_loss, acc

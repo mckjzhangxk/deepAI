@@ -1,40 +1,15 @@
-from Configure import PNET_DATASET_PATH
-from  utils.tf_utils import readTFRecord
-from model.mtcnn_model import createPNet
-from train_model.losses import classLosses,boxesLoss,calAccuracy
 import tensorflow as tf
 import os
-
-
+getInput=None
+buildModel=None
+buildLoss=None
 svConf=None
+
 def prepare():
     if not os.path.exists(svConf.MODEL_LOG_DIR):
         os.mkdir(svConf.MODEL_LOG_DIR)
     if not os.path.exists(svConf.MODEL_CHECKPOINT_DIR):
         os.mkdir(svConf.MODEL_CHECKPOINT_DIR)
-
-def getInput(image_size):
-    tf_filename=os.path.join(PNET_DATASET_PATH,'PNet_shuffle')
-    assert os.path.exists(tf_filename) ,'PNet TFRecord does not exist'
-    image_batch,label_batch,roi_batch=readTFRecord(tf_filename,svConf.BATCH_SIZE,image_size)
-    return image_batch,label_batch,roi_batch
-
-def buildModel(input_images):
-    p_prob, p_regbox = createPNet(input_images, trainable=True)
-    return p_prob,p_regbox
-
-def buildLoss(prob,regbox,label,roi):
-    cls_loss=classLosses(prob,label)
-    reg_loss=boxesLoss(regbox,roi,label)
-    total_loss=cls_loss+0.5*reg_loss
-    acc=calAccuracy(prob,label)
-
-    tf.summary.scalar('cls_loss',cls_loss)
-    tf.summary.scalar('reg_loss',reg_loss)
-    tf.summary.scalar('total_loss', total_loss)
-    tf.summary.scalar('accuracy', acc)
-
-    return total_loss,acc
 
 def buildTarget(loss):
     LoopPerEpoch=svConf.EXAMPLES//svConf.BATCH_SIZE+1
@@ -49,10 +24,10 @@ def buildTarget(loss):
     optimizer=tf.train.AdamOptimizer(lr).minimize(loss,global_step)
     return optimizer
 
-def start_train(model_name):
+def start_train():
     prepare()
     # 第一步,获取输入
-    image_batch, label_batch, roi_batch = getInput(svConf.IMG_SIZE)
+    image_batch, label_batch, roi_batch = getInput()
     # 第二部,搭建网络
     p_prob, p_regbox = buildModel(image_batch)
     # 第三部,获得loss, class_loss,reg_loss,l2_loss,以及accuracy
@@ -82,7 +57,7 @@ def start_train(model_name):
                         _acc, _loss, _summary = sess.run([dis_acc, dis_total_loss, op_summary])
                         print('Total Loss is %.3f,Accuracy is %.3f' % (_loss, _acc))
                     if i % svConf.LoopPerEpoch == 0:
-                        saver.save(sess, os.path.join(svConf.MODEL_CHECKPOINT_DIR,model_name),i // svConf.LoopPerEpoch)
+                        saver.save(sess, os.path.join(svConf.MODEL_CHECKPOINT_DIR,svConf.model_name),i // svConf.LoopPerEpoch)
             finally:
                 coord.request_stop()
 

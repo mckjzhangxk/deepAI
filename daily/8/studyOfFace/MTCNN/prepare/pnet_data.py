@@ -279,6 +279,6 @@ def gen_pnet_data(posCopys, negCopys, negNum):
 
 if __name__ == '__main__':
     SIZE=12
-    # gen_pnet_data(posCopys=POSITIVE_COPYS, negCopys=NEGATIVE_COPYS, negNum=NEG_NUM)
+    gen_pnet_data(posCopys=POSITIVE_COPYS, negCopys=NEGATIVE_COPYS, negNum=NEG_NUM_FOR_PNET)
     # _summary()
     merge_pnet_dataset()

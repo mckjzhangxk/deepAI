@@ -2,6 +2,8 @@ from Configure import WIDER_ANNOTION,WIDER_TRAINSET
 import os
 import numpy as np
 import cv2
+
+
 '''
 返回一个dict
     key:图片名:
@@ -51,8 +53,6 @@ def get_WIDER_Set():
     print('total num of images %d' % numOFImages)
     print('total num of faces %d' % numOFFace)
     return ret
-
-
 def get_WIDER_Set_ImagePath():
     ret=[]
     fs = open(WIDER_ANNOTION, 'r')
@@ -73,3 +73,23 @@ def get_WIDER_Set_ImagePath():
             ret.append(imagepath)
     fs.close()
     return ret
+
+'''
+统计pos+neg+part 样本数量
+'''
+def get_example_nums(basedir,fnames=None):
+    if fnames is None:
+        fnames=['pos.txt','neg.txt','part.txt']
+    if not isinstance(fnames,list):
+        fnames=[fnames]
+
+    cnt=0
+    for i,fname in enumerate(fnames):
+        file_dir=os.path.join(basedir,fname)
+        assert os.path.exists(file_dir), '%s not exist' % file_dir
+        fs=open(file_dir,'r')
+        examples=len(fs.readlines())
+        print('%s have %d exmaples'%(fname,examples))
+        cnt+=examples
+    print('Total have %d exmaples' % (cnt))
+    return cnt

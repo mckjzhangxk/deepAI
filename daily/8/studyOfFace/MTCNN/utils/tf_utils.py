@@ -1,4 +1,33 @@
 import tensorflow as tf
+import cv2
+import random
+import os
+from utils.common import progess_print
+'''
+
+从原文件到目标文件的输出
+原文件:.txt文件
+目标文件:TFRECORD 文件
+'''
+def cvtTxt2TF(BASE_DIR, srcname, dscname, shuffle=True,display=100):
+    print('convert %s-------->%s'%(srcname,dscname))
+    with open(os.path.join(BASE_DIR, srcname)) as fs:
+        records = fs.readlines()
+        if shuffle:
+            random.shuffle(records)
+
+
+    #输出TF文件名称
+    tf_filename=os.path.join(BASE_DIR, dscname)
+    if tf.gfile.Exists(tf_filename):
+        print('Dataset files already exist. Exiting without re-creating them.')
+        return
+
+    with tf.io.TFRecordWriter(tf_filename) as writer:
+        for idx,x in enumerate(records):
+            writeTFRecord(x, writer)
+            if (idx+1)%display==0:
+                progess_print('%d/%d record have been converted'%(idx+1,len(records)))
 
 '''
 把一个tfrecord_file,转化成tensorflow的一个输入数据源,batch_size个.生成图片不同尺寸,归一化处理[-1,1]
@@ -35,6 +64,39 @@ def readTFRecord(tf_file,batchSize,imgsize=12):
                    capacity=batchSize)
     return image_batch,label_batch,roi_batch
 
+
+'''
+record:是一行记录,空格分开
+    imagepath label rx1 ry1 yx2 ry2
+
+转化成了TF记录,写入文件!
+'''
+
+def writeTFRecord(record, writer):
+    '''
+    把一图片转化称为了bytes数组
+    '''
+
+    def _imagecode(imagepath):
+        I = cv2.imread(imagepath)
+        assert len(I.shape) == 3, 'invalid image!'
+        assert I.shape[2] == 3, ' image must have 3 channels!'
+        I = I[:, :, ::-1]
+        return I.tostring()
+
+    sps = record.split(' ')
+    imagepath = sps[0]
+
+    imagedata = _imagecode(imagepath)
+    label = int(sps[1])
+    roi = list(map(float, sps[2:]))
+
+    example = tf.train.Example(features=tf.train.Features(feature={
+        'image/encoded': _bytes_feature(imagedata),
+        'image/label': _int64_feature(label),
+        'image/roi': _float_feature(roi)
+    }))
+    writer.write(example.SerializeToString())
 
 def _int64_feature(value):
     """Wrapper for insert int64 feature into Example proto."""
