@@ -104,7 +104,7 @@ def calAccuracy(prob,label):
 loss=cl_loss*cls_ratio+reg_loss*reg_ratio
 
 '''
-def mtcnn_loss_acc(prob,regbox,label,roi,cls_ratio=1.0,reg_ratio=0.5):
+def mtcnn_loss_acc(prob,regbox,landmark,label,roi,cls_ratio=1.0,reg_ratio=0.5,landmark_ratio=0.5):
     cls_loss=classLosses(prob,label)
     reg_loss=boxesLoss(regbox,roi,label)
     total_loss=cls_ratio*cls_loss+reg_ratio*reg_loss

@@ -4,6 +4,8 @@ package main.scala
   */
 object HelloList {
   def  testArray():Unit={
+    var xx: Array[Nothing] =new Array(3)
+
     var arr=Array(10,20,30,"sdsasd")
     arr.foreach((x)=>{
       println(x)

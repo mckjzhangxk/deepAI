@@ -18,15 +18,16 @@ object SparkPI {
     var trails=1 to N
     var tasks: RDD[Int] =sc.parallelize(trails,partitions)
     var rdd: RDD[Int] =tasks.map((_)=>{
-      var x=math.random*2-1
-      var y=math.random*2-1
-      if(x*x+y*y<1) 1
+      var x=math.random
+      var y=math.random
+
+      if( math.pow((x-0.5),2)+math.pow((y-0.5),2) <1) 1
       else 0
     })
 
     var result: Int =rdd.reduce({_+_})
 
-    var pi=1.0*result/N*4
+    var pi=1.0*result/N
     println(pi)
   }
 }

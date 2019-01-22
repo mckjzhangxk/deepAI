@@ -205,6 +205,8 @@ class PNet(Network):
 
         (self.feed('PReLU3') #pylint: disable=no-value-for-parameter
              .conv(1, 1, 4, 1, 1, relu=False, name='conv4-2'))
+        (self.feed('PReLU3') #pylint: disable=no-value-for-parameter
+             .conv(1, 1, 10, 1, 1, relu=False, name='conv4-3'))
 '''
 输入一批图片,inp,shape[None,12,12,3] for train_model
                      [None,None,None,3] for detection
@@ -220,7 +222,9 @@ def createPNet(inp,trainable):
     g = tf.get_default_graph()
     prob_tensor=g.get_tensor_by_name('pnet/prob1:0')
     regbox_tensor=g.get_tensor_by_name('pnet/conv4-2/BiasAdd:0')
-    return prob_tensor,regbox_tensor
+    landmark_tensor = g.get_tensor_by_name('pnet/conv4-3/BiasAdd:0')
+
+    return prob_tensor,regbox_tensor,landmark_tensor
 class RNet(Network):
     def setup(self):
         self.netname = 'RNet'
@@ -240,6 +244,8 @@ class RNet(Network):
 
         (self.feed('prelu4') #pylint: disable=no-value-for-parameter
              .fc(4, relu=False, name='conv5-2'))
+        (self.feed('prelu4') #pylint: disable=no-value-for-parameter
+             .fc(10, relu=False, name='conv5-3'))
 def createRNet(inp,trainable):
     assert inp.get_shape()[3]==3,'Input must have 3 channel'
     with tf.variable_scope('rnet'):
@@ -247,7 +253,8 @@ def createRNet(inp,trainable):
     g = tf.get_default_graph()
     prob_tensor=g.get_tensor_by_name('rnet/prob1:0')
     regbox_tensor=g.get_tensor_by_name('rnet/conv5-2/conv5-2:0')
-    return prob_tensor,regbox_tensor
+    landmark_tensor = g.get_tensor_by_name('rnet/conv5-3/conv5-3:0')
+    return prob_tensor,regbox_tensor,landmark_tensor
 class ONet(Network):
     def setup(self):
         self.netname='ONet'
@@ -278,6 +285,8 @@ def createONet(inp,trainable):
     with tf.variable_scope('onet'):
         RNet({'data':inp},trainable)
     g = tf.get_default_graph()
+    # 'onet/conv6-2/conv6-2:0', 'onet/conv6-3/conv6-3:0', 'onet/prob1:0'
     prob_tensor=g.get_tensor_by_name('onet/prob1:0')
-    regbox_tensor=g.get_tensor_by_name('onet/conv5-2/conv5-2:0')
-    return prob_tensor,regbox_tensor
+    regbox_tensor=g.get_tensor_by_name('onet/conv6-2/conv6-2:0')
+    landmark_tensor = g.get_tensor_by_name('onet/conv6-3/conv6-3:0')
+    return prob_tensor,regbox_tensor,landmark_tensor

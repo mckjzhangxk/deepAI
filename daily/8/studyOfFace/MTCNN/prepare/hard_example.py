@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 
 from Configure import RNET_DATASET_PATH, THRESHOLD, NMS_DEFAULT, SCALE, FACE_MIN_SIZE, NEG_NUM_FOR_RNET,DETECT_EPOCHS,ONET_DATASET_PATH
-from detect.detect_face import outputImage2NextStage
+from detect import cutImage
 from detect.Detector import Detector_tf as Detector
 import train_model.solver.pnet_solver as pnet_solver
 import train_model.solver.rnet_solver as rnet_solver
@@ -96,12 +96,12 @@ def step3(dets, gts, IMG_SIZE, output_dir,display_every=100):
                 iou = IoU(box, gts_box)
                 iou_max=np.max(iou)
                 #给出原图,剪切区域,生成目标图片大小,就能得到目标图片,注意这里是批处理,所以加[0]和[]
-                resized_im=outputImage2NextStage(img,np.array([box]),IMG_SIZE)[0]
+                resized_im=cutImage(img, np.array([box]), IMG_SIZE)[0]
                 #iou<0.3判定是负样本,针对一张图片不能超过 NEG_NUM_FOR_RNET=60张负样本
                 if iou_max < 0.3 and neg_num < NEG_NUM_FOR_RNET:
                     # save the examples
                     save_file = os.path.join(neg_dir, "%s.jpg" % n_idx)
-                    neg_file.write(save_file + ' 0\n')
+                    neg_file.write(save_file + ' 0 0 0 0 0\n')
                     cv2.imwrite(save_file, resized_im)
                     n_idx += 1
                     neg_num += 1

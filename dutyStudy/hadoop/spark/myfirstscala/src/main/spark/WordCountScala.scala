@@ -14,40 +14,24 @@ object WordCountScala {
     *   local,standalone,yarn,...
     * 2.应用名称
     * 3.资源分配...conf.set
+    * 避免手生,重写wc,第30行的时候忘记赋值sort结果导致 浪费时间
     * */
     var conf=new SparkConf()
-    conf.setMaster("local");
-    conf.setAppName("scala_WC");
-
-
+    conf.setAppName("wc").setMaster("local")
     var sc=new SparkContext(conf)
-    //读取本机文件,然后返回一个RDD
-    var lines: RDD[String] =sc.textFile("./wc.txt")
 
-    //flatmap 是一对多映射
-    var words: RDD[String] =lines.flatMap((l:String)=>{
-      l.split(" ")
-    })
-    //map是一对一,返回单词,1元祖
-    var wc: RDD[(String, Int)] =words.map({(_,1)})
+    var line_rdd=sc.textFile("./wc.txt")
+    var word_rdd=line_rdd.flatMap(_.split(" "))
+    var wr_rdd=word_rdd.map((_,1))
 
-    //返回单词的统计,但是没有排序
-    var reduce: RDD[(String, Int)] =wc.reduceByKey({_+_})
+    var rd_rdd=wr_rdd.reduceByKey(_+_)
 
-    reduce=reduce.sortBy((x:Tuple2[String,Int])=>{
-      x._2
-    })
-    reduce.foreach(println)
-
-//    var rdd1: RDD[(Int, String)] =reduce.map((x)=>{
-//        x.swap
-//    })
-//
-//    rdd1=rdd1.sortByKey()
-//    var rdd2=rdd1.map({_.swap})
-//
-//
-//    rdd2.foreach(println)
+//    var rd_rdd1: RDD[(Int, String)] =rd_rdd.map(_.swap)
+//    rd_rdd1=rd_rdd1.sortByKey()
+//    rd_rdd=rd_rdd1.map(_.swap)
+    rd_rdd=rd_rdd.sortBy(_._2,false)
+    rd_rdd.foreach(println)
+    sc.stop()
 
   }
 }

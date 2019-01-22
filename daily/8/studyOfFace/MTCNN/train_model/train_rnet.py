@@ -15,7 +15,7 @@ import os
 def getInput():
     image_batch, label_batch, roi_batch=[],[],[]
     ratio=[1/4,1/4,2/4]
-    fnames=['RNet_pos_shuffle','RNet_part_shuffle','RNet_part_shuffle']
+    fnames=['RNet_pos_shuffle','RNet_part_shuffle','RNet_neg_shuffle']
     for r,fname in zip(ratio,fnames):
         tf_filename=os.path.join(RNET_DATASET_PATH,fname)
         assert os.path.exists(tf_filename) ,'%s TFRecord does not exist'%fname
@@ -31,11 +31,11 @@ def getInput():
     return image_batch,label_batch,roi_batch
 
 def buildModel(input_images):
-    p_prob, p_regbox = createRNet(input_images, trainable=True)
-    return p_prob,p_regbox
+    p_prob, p_regbox,p_landmark = createRNet(input_images, trainable=True)
+    return p_prob,p_regbox,p_landmark
 
-def buildLoss(prob,regbox,label,roi):
-    return mtcnn_loss_acc(prob,regbox,label,roi,cls_ratio=1.0,reg_ratio=0.5)
+def buildLoss(prob,regbox,landmark,label,roi):
+    return mtcnn_loss_acc(prob,regbox,landmark,label,roi,cls_ratio=1.0,reg_ratio=0.5,landmark_ratio=0.5)
 
 
 if __name__ == '__main__':

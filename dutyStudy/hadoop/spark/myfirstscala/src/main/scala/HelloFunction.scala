@@ -3,6 +3,10 @@ package main.scala
   * Created by zhangxk on 19-1-14.
   */
 object HelloFunction {
+  def fun1(n:Int): Int ={
+    if (n==1) return n
+    return n*fun1(n-1)
+  }
   def fft(v:Double*):Double={
 
     var ret=0.0;
@@ -28,12 +32,9 @@ object HelloFunction {
 //    println(fun1(power = 3))
 
 //    conv2d(10,2,5,"Valid")()
-
-    var a=1 to 10
-    var b=a.map((x:Int)=>{
-      x*2
-    })
-
+    println(fun1(4))
+    var a=1 to 3
+    var b=a.map({2*_})
     b.foreach(println)
   }
 

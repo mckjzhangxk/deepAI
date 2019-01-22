@@ -24,11 +24,11 @@ object SparkOperator {
     sample_rdd.foreach(println)
   }
   def test_sortBy(rdd: RDD[String]):Unit={
-    var sortByRDD: RDD[String] =rdd.sortBy((line)=>{
-      var s: Array[String] =line.split(" ")
-      s(1)
-    },true)
-    sortByRDD.foreach(println)
+    var s=rdd.sortBy((s11)=>{
+      var c=s11.split(" ")
+      c(1)
+    })
+    s.foreach(println)
   }
 
   /*
@@ -60,11 +60,11 @@ object SparkOperator {
       var rdd: RDD[String] =sc.textFile("./wc.txt")
 //      test_filter(rdd)
 //      test_sample(rdd)
-//      test_sortBy(rdd)
+      test_sortBy(rdd)
 
 //     test_count(rdd)
 //      test_take(rdd)
-      test_collect(rdd)
+//      test_collect(rdd)
       sc.stop()
   }
 

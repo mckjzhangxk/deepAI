@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
-from detect.detect_face import generateBoundingBox,imresample,nms,bbreg,rerec,validbox,normalize,feedImage,drawDectectBox
+from detect.detect_block import generateBoundingBox,imresample,nms,bbreg,rerec,validbox,normalize,feedImage,nextInput,bb_landmark,pickfilter,pad,drawDectectBox
 import tensorflow as tf
-from model import createPNet,createRNet
+from model import createPNet,createRNet,createONet
 from scipy.misc import imsave
 
 class Detector():
@@ -16,7 +16,7 @@ class Detector():
                  sess=None,
                  minsize=50,
                  scaleFactor=0.7,
-                 nms=[0.5,0.7,None,None],
+                 nms=[0.5,0.7,0.7,None],
                  threshold=[0.6,0.3,None],
                  model_path=[None,None,None],
                  save_stage=False):
@@ -63,8 +63,8 @@ class Detector():
             total_box = self.r_stage(image,total_box)
             if self.m_save_stage:
                 stage_box.append(total_box.copy())
-        if self.rnet and len(total_box) > 0:
-            total_box = self.o_stage(image,total_box)
+        if self.onet and len(total_box) > 0:
+            total_box,landmark = self.o_stage(image,total_box)
             if self.m_save_stage:
                 stage_box.append(total_box.copy())
         if self.m_save_stage:
@@ -133,9 +133,54 @@ class Detector():
             total_boxes = rerec(total_boxes.copy())
             total_boxes=validbox(total_boxes)
         return total_boxes[:,:5]
+    '''
+    total_box是N,4
+    image:(H,W,3)
+    '''
+    def r_stage(self,orignImage,total_boxes):
+        #先根据total_box的信息,裁剪出来给onet图片,缩放成24,24,3
+        images=nextInput(orignImage, total_boxes, 24)
+        if len(images)==0:return np.empty((0,5))
+        #feed  into rnet
+        images=self.preprocessing(images)
+        out=self.rnet(images)
 
-    def r_stage(self,image,total_box):pass
-    def o_stage(self):pass
+        regressor,score=out[0] ,out[1][:,1] #(N',4),#(N',)
+
+        ipass=score>self.m_threshold[1]
+        total_boxes, score, regressor=pickfilter(ipass,[total_boxes,score,regressor])
+        if len(total_boxes)>0:
+            pick=nms(total_boxes,self.m_nms[2],'Union')
+            total_boxes, score, regressor = pickfilter(pick, [total_boxes, score, regressor])
+            total_boxes=rerec(bbreg(total_boxes,regressor))
+            total_boxes[:,4]=score
+        return total_boxes
+
+    def o_stage(self,orignImage, total_boxes):
+        #先根据total_box的信息,裁剪出来给onet图片,缩放成48,48,3
+        images=nextInput(orignImage, total_boxes, 48)
+        if len(images)==0:return np.empty((0,5))
+        #feed  into rnet
+        images=self.preprocessing(images)
+        out=self.onet(images)
+
+        regressor,score,landmark=out[0] ,out[1][:,1],out[2] #(N',4),#(N',)
+
+        ipass=score>self.m_threshold[2]
+        total_boxes, score, regressor,landmark=pickfilter(ipass,[total_boxes,score,regressor,landmark])
+        if len(total_boxes)>0:
+            total_boxes = bbreg(total_boxes, regressor)
+            pick=nms(total_boxes,self.m_nms[2],'Min')
+            total_boxes, score,landmark = pickfilter(pick, [total_boxes, score,landmark])
+            total_boxes[:,4]=score
+            '''
+            这里没有使用rect
+            '''
+            w,h,_=orignImage.shape
+            dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph = pad(total_boxes, w, h)
+            boxes = np.stack([x, y, ex, ey], axis=1)
+            landmark = bb_landmark(boxes, landmark)
+        return total_boxes,landmark
 class Detector_Caffe(Detector):pass
 class Detector_tf(Detector):
     def load(self):
@@ -149,7 +194,7 @@ class Detector_tf(Detector):
 
         if p_path:
             data_p = tf.placeholder(tf.float32, (None,None,None,3))
-            prob_tensor_p, regbox_tensor_p=createPNet(data_p, True)
+            prob_tensor_p, regbox_tensor_p,_=createPNet(data_p, True)
             self.pnet=lambda img: sess.run((regbox_tensor_p,prob_tensor_p), feed_dict={data_p: img})
 
             varlist=tf.get_collection('PNet')
@@ -158,12 +203,19 @@ class Detector_tf(Detector):
 
         if r_path:
             data_r = tf.placeholder(tf.float32, (None, 24, 24, 3))
-            prob_tensor_r, regbox_tensor_r =createRNet(data_r, True)
+            prob_tensor_r, regbox_tensor_r,_ =createRNet(data_r, True)
             self.rnet = lambda img: sess.run((regbox_tensor_r, prob_tensor_r), feed_dict={data_r: img})
 
             varlist=tf.get_collection('RNet')
             saver = tf.train.Saver(var_list=varlist)
             saver.restore(sess, r_path)
+        if o_path:
+            data_o=tf.placeholder(tf.float32, (None, 48, 48, 3))
+            prob_tensor_o, regbox_tensor_o, landmark_tensor_o = createONet(data_o, True)
+            self.onet = lambda img: sess.run((regbox_tensor_o, prob_tensor_o,landmark_tensor_o), feed_dict={data_o: img})
+            varlist=tf.get_collection('ONet')
+            saver = tf.train.Saver(var_list=varlist)
+            saver.restore(sess, o_path)
 
     def preprocessing(self,img):
         img=normalize(img)
@@ -176,6 +228,7 @@ class Detector_tf(Detector):
 #     imagepath='/home/zhangxk/AIProject/WIDER_train/images/0--Parade/0_Parade_Parade_0_904.jpg'
 #     pnet_path='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model/PNet-3'
 #     rnet_path = '/home/zhangxk/AIProject/MTCNN_TRAIN/rnet/model/RNet-1'
+#
 #     # rnet_path=None
 #     print('p_net---->totalbox and next input:')
 #
@@ -184,9 +237,9 @@ class Detector_tf(Detector):
 #                 minsize=50,
 #                 scaleFactor=0.7,
 #                 nms=[0.5,0.7,0.5,None],
-#                 threshold=[0.6,0.3,None],
-#                      model_path=[pnet_path],
-#                      save_stage=False
+#                 threshold=[0.6,0.3,0.5],
+#                 model_path=[pnet_path,rnet_path],
+#                 save_stage=False
 #                 )
 #     totalbox=df.detect_face(imagepath)
 #     print(totalbox.shape)
