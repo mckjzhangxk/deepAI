@@ -29,9 +29,10 @@ public class TFJob {
      * */
     public static boolean doJob(String inputpath,String outputpath) throws IOException, ClassNotFoundException, InterruptedException {
 
-        Configuration conf= MyConfigure.getConfigure("ha");
+        Configuration conf= MyConfigure.getConfigure("yarn",true);
         Job job=Job.getInstance(conf);
         job.setJarByClass(TFJob.class);
+        job.setJar("/home/zxk/PycharmProjects/deepAI/dutyStudy/hadoop/hadoop/out/artifacts/zxk/zxk.jar");
 
         job.setMapperClass(MyMapper.class);
         job.setMapOutputKeyClass(Weibo.class);

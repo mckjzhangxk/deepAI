@@ -35,9 +35,9 @@ public class MyConfigure {
         return conf;
     }
 
-    public static Configuration getConfigure(String prefix,boolean local){
+    public static Configuration getConfigure(String prefix,boolean onyarn){
         Configuration conf=getConfigure(prefix);
-        if(prefix.equals("yarn") && local){
+        if(prefix.equals("yarn") && onyarn){
             conf.addResource(MyConfigure.class.getResource(prefix+"/mapred-site.xml"));
             conf.addResource(MyConfigure.class.getResource(prefix+"/yarn-site.xml"));
         }

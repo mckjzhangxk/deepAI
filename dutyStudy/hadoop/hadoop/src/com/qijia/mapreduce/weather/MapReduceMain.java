@@ -23,7 +23,7 @@ public class MapReduceMain {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf= MyConfigure.getConfigure("ha");
         Job job=Job.getInstance(conf);
-        job.setJar("/home/zxk/PycharmProjects/deepAI/dutyStudy/hadoop/hadoop/out/artifacts/zxk/zxk.jar");
+//        job.setJar("/home/zxk/PycharmProjects/deepAI/dutyStudy/hadoop/hadoop/out/artifacts/zxk/zxk.jar");
         job.setJarByClass(MapReduceMain.class);
 
         //准备输入,输出

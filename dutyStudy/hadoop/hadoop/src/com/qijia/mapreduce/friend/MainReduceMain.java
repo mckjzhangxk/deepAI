@@ -23,10 +23,10 @@ public class MainReduceMain {
      *
     */
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        Configuration conf= MyConfigure.getConfigure("ha");
+        Configuration conf= MyConfigure.getConfigure("yarn",true);
         Job job=Job.getInstance(conf);
         job.setJarByClass(MainReduceMain.class);
-//        job.setJar("/home/zxk/PycharmProjects/deepAI/dutyStudy/hadoop/hadoop/out/artifacts/zxk/zxk.jar");
+        job.setJar("/home/zxk/PycharmProjects/deepAI/dutyStudy/hadoop/hadoop/out/artifacts/zxk/zxk.jar");
         //map,输出2类数据
         //直接关系,也就是原样输出,但区分类型1
         //间接关系,类型0
