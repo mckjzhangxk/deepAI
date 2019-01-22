@@ -1,9 +1,73 @@
-from Configure import WIDER_ANNOTION,WIDER_TRAINSET
+from Configure import WIDER_ANNOTION,WIDER_TRAINSET,LWF_ANNOTION,LWF_TRAINSET
 import os
 import numpy as np
 import cv2
+from utils.roi_utils import  GetLandMarkPoint
 
 
+'''
+把LFW数据集关于五官的标注进行数据加强后:
+图片缩放到SIZE,输出到output_dir/landmark下面
+标注输出到输出到output_dir/landmark.txt
+
+'''
+
+def getLFW(SIZE=12,output_dir=None):
+    '''
+    I表示一张LFW图片,
+    gtbox:标注的face box (4,)
+    gtlandmark:标注的五官(10,)
+    
+    图像加强算法
+        1.镜像
+        2.旋转
+        3.平移
+        
+    :param SIZE: 缩放尺寸
+    :return: images:(N,SIZE,SIZE,3) landmarks:(N,10)
+    '''
+    fs_anno=open(os.path.join(output_dir,'landmark.txt'),'w')
+    outpud_image_dir=os.path.join(output_dir,'landmark')
+
+    def f(I,gtbox,gtlandmark):
+        if isinstance(gtbox,list):
+            gtbox=np.array(gtbox)
+        if isinstance(gtlandmark,list):
+            gtlandmark=np.array(gtlandmark)
+
+        I=np.expand_dims(I,0)
+        gtlandmark = np.expand_dims(gtlandmark, 0)
+        return I,gtlandmark
+
+    fs=open(LWF_ANNOTION,'r')
+    lines=fs.readlines()
+    n_id=0
+    for l in lines:
+        spits=l.strip('\n').split( )
+        filepath=os.path.join(LWF_TRAINSET,spits[0].replace('\\','/'))
+        assert os.path.exists(filepath),'Image does not exist'
+
+        I=cv2.imread(filepath)
+        face_box=np.array([int(x) for x in spits[1:5]])
+        face_box=face_box[[0,2,1,3]]
+        landmark=np.array([float(x) for x in spits[5:]])
+
+        imgs,aug_landmarks=f(I,face_box,landmark)
+        for img,x in zip(imgs,aug_landmarks):
+            out_file=os.path.join(outpud_image_dir+'%d.jpg'%n_id)
+
+            fs_anno.write('%s %d %d %d %d %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n'%
+                     (out_file,-2,0,0,0,0,
+                      x[0],x[1],
+                      x[2], x[3],
+                      x[4], x[5],
+                      x[6], x[7],
+                      x[8], x[9])
+                     )
+            n_id+=1
+    fs.close()
+if __name__ == '__main__':
+    getLFW(SIZE=12,output_dir='/home/zhangxk/AIProject/MTCNN_TRAIN/rnet/dataset')
 '''
 返回一个dict
     key:图片名:

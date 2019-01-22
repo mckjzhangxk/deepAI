@@ -49,3 +49,22 @@ def GetRegressBox(faceCoord,imageCoord):
         (x2-nx2)/w,
         (y2-ny2)/h
     ]
+'''
+
+facebox:人脸的绝对坐标(4,)x1,y1,x2,y2
+landmark:五官坐标,要有10个元素
+返回:[5,2]的np array
+'''
+def GetLandMarkPoint(facebox,landmark):
+    if isinstance(landmark,list):
+        landmark=np.array(landmark)
+    landmark=landmark.copy()
+    if landmark.shape!=(5,2):
+        landmark=np.reshape(landmark,(5,2))
+    w=facebox[2]-facebox[0]
+    h=facebox[3]-facebox[1]
+    x1,y1=facebox[0],facebox[1]
+
+    landmark[:,0]=(landmark[:,0]-x1)/w
+    landmark[:,1]=(landmark[:,1]-y1)/h
+    return landmark

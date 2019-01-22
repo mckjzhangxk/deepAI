@@ -4,7 +4,7 @@ import os
 import cv2
 import numpy as np
 import numpy.random as npr
-
+from utils.dbutils import get_example_nums
 '''
     filename:原图片的路径
     face_coordnte:[],原图片中人脸的所有坐标,(x1,y1,x2,y2),你要验证一下坐标的有效性
@@ -232,7 +232,6 @@ def gen_pnet_data(posCopys, negCopys, negNum):
     idx=0
 
     faceid=0
-
     f_pos=open(os.path.join(PNET_DATASET_PATH, 'pos.txt'), 'w')
     f_neg = open(os.path.join(PNET_DATASET_PATH, 'neg.txt'), 'w')
     f_part = open(os.path.join(PNET_DATASET_PATH, 'part.txt'), 'w')

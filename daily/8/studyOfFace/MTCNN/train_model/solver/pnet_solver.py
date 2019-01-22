@@ -4,7 +4,7 @@ from Configure import PNET_DATASET_PATH
 model_name='PNet'
 IMG_SIZE=12
 ##############################
-EXAMPLES=1000000
+EXAMPLES=10000
 # EXAMPLES=get_example_nums(PNET_DATASET_PATH,'PNet.txt')
 EPOCH=3000
 BATCH_SIZE=384

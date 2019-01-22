@@ -3,7 +3,7 @@ from Configure import RNET_DATASET_PATH
 model_name='RNet'
 IMG_SIZE=24
 ##############################
-EXAMPLES=10000
+EXAMPLES=100000
 # EXAMPLES=get_example_nums(RNET_DATASET_PATH)
 
 EPOCH=3000
