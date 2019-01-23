@@ -283,7 +283,7 @@ class ONet(Network):
 def createONet(inp,trainable):
     assert inp.get_shape()[3]==3,'Input must have 3 channel'
     with tf.variable_scope('onet'):
-        RNet({'data':inp},trainable)
+        ONet({'data':inp},trainable)
     g = tf.get_default_graph()
     # 'onet/conv6-2/conv6-2:0', 'onet/conv6-3/conv6-3:0', 'onet/prob1:0'
     prob_tensor=g.get_tensor_by_name('onet/prob1:0')

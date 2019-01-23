@@ -27,12 +27,12 @@ def buildTarget(loss):
 def start_train():
     prepare()
     # 第一步,获取输入
-    image_batch, label_batch, roi_batch = getInput()
+    image_batch, label_batch, roi_batch,landmark_batch = getInput()
     # 第二部,搭建网络
     p_prob, p_regbox,p_landmark = buildModel(image_batch)
     # 第三部,获得loss, class_loss,reg_loss,l2_loss,以及accuracy
 
-    dis_total_loss, dis_acc = buildLoss(p_prob, p_regbox,p_landmark, label_batch, roi_batch)
+    dis_total_loss, dis_acc = buildLoss(p_prob, p_regbox,p_landmark, label_batch, roi_batch,landmark_batch)
     # 第四步,定义训练算法,每次训练
     op_optimizer = buildTarget(dis_total_loss)
     op_summary = tf.summary.merge_all()

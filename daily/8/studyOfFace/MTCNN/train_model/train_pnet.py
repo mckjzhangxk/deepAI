@@ -9,15 +9,15 @@ import os
 def getInput():
     tf_filename=os.path.join(PNET_DATASET_PATH,'PNet_shuffle')
     assert os.path.exists(tf_filename) ,'PNet TFRecord does not exist'
-    image_batch,label_batch,roi_batch=readTFRecord(tf_filename, pnet_solver.BATCH_SIZE, pnet_solver.IMG_SIZE)
-    return image_batch,label_batch,roi_batch
+    image_batch,label_batch,roi_batch,landmark_batch=readTFRecord(tf_filename, pnet_solver.BATCH_SIZE, pnet_solver.IMG_SIZE)
+    return image_batch,label_batch,roi_batch,landmark_batch
 
 def buildModel(input_images):
     p_prob, p_regbox,p_landmark = createPNet(input_images, trainable=True)
     return p_prob,p_regbox,p_landmark
 
-def buildLoss(prob,regbox,landmark,label,roi):
-    return mtcnn_loss_acc(prob,regbox,landmark,label,roi,cls_ratio=1.0,reg_ratio=0.5,landmark_ratio=0.5)
+def buildLoss(prob, regbox, landmark, label, gt_roi, gt_landmark):
+    return mtcnn_loss_acc(prob, regbox, landmark, label, gt_roi,gt_landmark, cls_ratio=1.0, reg_ratio=0.5, landmark_ratio=0.5)
 
 if __name__ == '__main__':
     train.svConf=pnet_solver

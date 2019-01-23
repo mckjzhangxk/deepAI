@@ -3,28 +3,24 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-from Configure import RNET_DATASET_PATH, THRESHOLD, NMS_DEFAULT, SCALE, FACE_MIN_SIZE, NEG_NUM_FOR_RNET,DETECT_EPOCHS,ONET_DATASET_PATH
+from Configure import RNET_DATASET_PATH, THRESHOLD, NMS_DEFAULT, SCALE, FACE_MIN_SIZE, NEG_NUM_FOR_RNET,DETECT_EPOCHS,ONET_DATASET_PATH,LWF_SHIFT
 from detect import cutImage
 from detect.Detector import Detector_tf as Detector
 import train_model.solver.pnet_solver as pnet_solver
 import train_model.solver.rnet_solver as rnet_solver
 
-from utils.dbutils import get_WIDER_Set, get_WIDER_Set_ImagePath
+from utils.dbutils import get_WIDER_Set, get_WIDER_Set_ImagePath,getLFW
 from utils.roi_utils import IoU, GetRegressBox
 from utils.common import progess_print
 
 def _prepareOutDir(dataset_path):
-    pos_dir=os.path.join(dataset_path, 'pos')
-    neg_dir=os.path.join(dataset_path, 'neg')
-    part_dir=os.path.join(dataset_path, 'part')
     if not os.path.exists(dataset_path):
         os.mkdir(dataset_path)
-    if not os.path.exists(pos_dir):
-        os.mkdir(pos_dir)
-    if not os.path.exists(neg_dir):
-        os.mkdir(neg_dir)
-    if not os.path.exists(part_dir):
-        os.mkdir(part_dir)
+    sx = ['pos', 'neg', 'part', 'landmark']
+    for x in sx:
+        path=os.path.join(dataset_path, x)
+        if not os.path.exists(path):
+            os.mkdir(path)
 #第一步,使用PNET,对数据集图片生成候选box,map<imagepath,total_box>  predict
 def step1(detector,display_every=2):
 
@@ -101,7 +97,7 @@ def step3(dets, gts, IMG_SIZE, output_dir,display_every=100):
                 if iou_max < 0.3 and neg_num < NEG_NUM_FOR_RNET:
                     # save the examples
                     save_file = os.path.join(neg_dir, "%s.jpg" % n_idx)
-                    neg_file.write(save_file + ' 0 0 0 0 0\n')
+                    neg_file.write(save_file + ' 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n')
                     cv2.imwrite(save_file, resized_im)
                     n_idx += 1
                     neg_num += 1
@@ -112,13 +108,13 @@ def step3(dets, gts, IMG_SIZE, output_dir,display_every=100):
                     #>0.65,保存为正样本
                     if iou_max >= 0.65:
                         save_file = os.path.join(pos_dir, "%s.jpg" % p_idx)
-                        pos_file.write(save_file + ' 1 %.2f %.2f %.2f %.2f\n' % (offset_x1, offset_y1, offset_x2, offset_y2))
+                        pos_file.write(save_file + ' 1 %.2f %.2f %.2f %.2f 0 0 0 0 0 0 0 0 0 0\n' % (offset_x1, offset_y1, offset_x2, offset_y2))
                         cv2.imwrite(save_file, resized_im)
                         p_idx += 1
                     # 0.4,0.65之间,保存为part样本
                     elif iou_max >= 0.4:
                         save_file = os.path.join(part_dir, "%s.jpg" % d_idx)
-                        part_file.write(save_file + ' -1 %.2f %.2f %.2f %.2f\n' % (offset_x1, offset_y1, offset_x2, offset_y2))
+                        part_file.write(save_file + ' -1 %.2f %.2f %.2f %.2f 0 0 0 0 0 0 0 0 0 0\n' % (offset_x1, offset_y1, offset_x2, offset_y2))
                         cv2.imwrite(save_file, resized_im)
                         d_idx += 1
 
@@ -154,3 +150,4 @@ def gen_hard_example(net):
     dets=step1(detector)
     gts=step2()
     step3(dets,gts,IMSIZE,target_dir)
+    getLFW(IMSIZE,target_dir,LWF_SHIFT)

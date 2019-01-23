@@ -42,7 +42,9 @@ def classLosses(prob,label,eps=1e-10):
 
     vaild_loss=valid_label*pse_loss
 
-    select_loss,_=tf.nn.top_k(vaild_loss,valid_num)
+    #这个方法应该重点学习,因为valid_num=0时候,如果选择k_val,会报错,k_val=[]
+    _,k_idx=tf.nn.top_k(vaild_loss,valid_num)
+    select_loss=tf.gather(vaild_loss,k_idx)
 
     return tf.reduce_mean(select_loss)
 '''
@@ -65,16 +67,41 @@ def boxesLoss(regbox,roi,label):
     ones= tf.ones(shape=[N])
     zeros=tf.zeros(shape=[N])
     #label=1,-1的是有效label
-    valid_label=tf.where(tf.equal(label,0),zeros,ones)
+    valid_inditor=tf.logical_or(tf.equal(label,1),tf.equal(label,-1))
+    valid_label=tf.where(valid_inditor,ones,zeros)
     #有效数量
     valid_num=tf.to_int32(tf.reduce_sum(valid_label))
 
     valid_loss=pse_loss*valid_label
-    valid_loss,_=tf.nn.top_k(valid_loss,k=valid_num)
+    _,k_idx=tf.nn.top_k(valid_loss,k=valid_num)
+    valid_loss=tf.gather(valid_loss,k_idx)
 
     return tf.reduce_mean(valid_loss)
+'''
+landmark:网络给出的landmark坐标[N,H,W,10] or [N,10]
+gt_landmark:[N,10]落地标注
+label:(N,) =-2的参与计算
+return landmark_loss mse
 
+'''
+def landmarkLoss(landmark,gt_landmark,label):
+    if len(landmark.shape)==4:
+        landmark=tf.squeeze(landmark,axis=[1,2])
 
+    pse_loss=tf.reduce_sum((landmark-gt_landmark)**2,axis=1)
+    N=tf.shape(landmark)[0]
+    ones=tf.ones(shape=[N])
+    zeros=tf.zeros(shape=[N])
+
+    #label==-2的是有效的landmark
+    valid_idx=tf.where(tf.equal(label,-2),ones,zeros)
+    valid_num=tf.to_int32(tf.reduce_sum(valid_idx))
+    valid_loss=pse_loss*valid_idx #shape[N,]
+
+    _,k_index=tf.math.top_k(valid_loss,valid_num)
+    valid_loss = tf.gather(valid_loss, k_index)
+
+    return tf.reduce_mean(valid_loss)
 '''
 统计 分类的正确性,注意,只统计label=1,0的
 '''
@@ -104,14 +131,24 @@ def calAccuracy(prob,label):
 loss=cl_loss*cls_ratio+reg_loss*reg_ratio
 
 '''
-def mtcnn_loss_acc(prob,regbox,landmark,label,roi,cls_ratio=1.0,reg_ratio=0.5,landmark_ratio=0.5):
+def mtcnn_loss_acc(prob, regbox, landmark, label, gt_roi, gt_landmark, cls_ratio=1.0, reg_ratio=0.5, landmark_ratio=0.5):
     cls_loss=classLosses(prob,label)
-    reg_loss=boxesLoss(regbox,roi,label)
-    total_loss=cls_ratio*cls_loss+reg_ratio*reg_loss
+    reg_loss=boxesLoss(regbox, gt_roi, label)
+    landmark_loss=landmarkLoss(landmark,gt_landmark,label)
+
+    L2_losses=tf.losses.get_regularization_losses()
+    l2_loss=tf.constant(0.0)
+    if len(L2_losses)>0:
+        l2_loss=tf.add_n(L2_losses)
+
+    total_loss=cls_ratio*cls_loss+reg_ratio*reg_loss+landmark_ratio*landmark_loss+l2_loss
     acc=calAccuracy(prob,label)
 
     tf.summary.scalar('cls_loss',cls_loss)
     tf.summary.scalar('reg_loss',reg_loss)
+    tf.summary.scalar('ladmark_loss', landmark_loss)
+    tf.summary.scalar('l2_loss', l2_loss)
+
     tf.summary.scalar('total_loss', total_loss)
     tf.summary.scalar('accuracy', acc)
 

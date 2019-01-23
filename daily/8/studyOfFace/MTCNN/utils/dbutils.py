@@ -1,10 +1,10 @@
 from Configure import WIDER_ANNOTION,WIDER_TRAINSET,LWF_ANNOTION,LWF_TRAINSET
 import os
 import numpy as np
+import numpy.random as npr
 import cv2
-from utils.roi_utils import  GetLandMarkPoint
-
-
+from utils.roi_utils import  validRegion,validLandmark,ImageTransform,IoU
+from utils.common import progess_print
 '''
 把LFW数据集关于五官的标注进行数据加强后:
 图片缩放到SIZE,输出到output_dir/landmark下面
@@ -12,7 +12,7 @@ from utils.roi_utils import  GetLandMarkPoint
 
 '''
 
-def getLFW(SIZE=12,output_dir=None):
+def getLFW(SIZE=12,output_dir=None,numOfShift=1):
     '''
     I表示一张LFW图片,
     gtbox:标注的face box (4,)
@@ -26,8 +26,26 @@ def getLFW(SIZE=12,output_dir=None):
     :param SIZE: 缩放尺寸
     :return: images:(N,SIZE,SIZE,3) landmarks:(N,10)
     '''
+    transutil=ImageTransform()
     fs_anno=open(os.path.join(output_dir,'landmark.txt'),'w')
     outpud_image_dir=os.path.join(output_dir,'landmark')
+
+    def imresample(img, sz):
+        if isinstance(sz,int):
+            sz=(sz,sz)
+        im_data = cv2.resize(img, (sz[1], sz[0]), interpolation=cv2.INTER_AREA)  # @UndefinedVariable
+        return im_data
+
+
+    def choiocebox(box,gtbox):
+        def box_too_small(box):
+            w, h = box[2] - box[0], box[3] - box[1]
+            return max(w, h) < 40
+        nx1, ny1, nx2, ny2=box[0],box[1],box[2],box[3]
+        if box_too_small([nx1, ny1, nx2, ny2]): return False
+        iou = IoU([nx1, ny1, nx2, ny2], gtbox)[0]
+        if iou < 0.65: return False
+        return True
 
     def f(I,gtbox,gtlandmark):
         if isinstance(gtbox,list):
@@ -35,14 +53,69 @@ def getLFW(SIZE=12,output_dir=None):
         if isinstance(gtlandmark,list):
             gtlandmark=np.array(gtlandmark)
 
-        I=np.expand_dims(I,0)
-        gtlandmark = np.expand_dims(gtlandmark, 0)
-        return I,gtlandmark
+        H,W,_=I.shape
+        '''
+        如果标注的区域不合法或者太小的化
+        '''
+        if not validRegion(gtbox,W,H):
+            return np.empty((0,SIZE,SIZE,3)),np.empty((0,10))
+
+        #分别用于保存输出的图片,和输出的landmakk,元素分别是(SIZE,SIZE,3),和(10,)
+        image_list,landmark_list=[],[]
+
+        #保存原图
+        # image_list.append(imresample(I,(SIZE,SIZE)))
+        # landmark_list.append(GetLandMarkPoint(gtbox,gtlandmark))
+        for i in range(numOfShift):
+            '''
+            随机移动,验证切割区域不能太小,不能不能iou过小,不能是非法区域
+            '''
+            nx1,ny1,nx2,ny2=transutil.shift(gtbox,W,H)
+            if not choiocebox([nx1,ny1,nx2,ny2],gtbox):continue
+
+
+            '''
+            转landmark~(0,1)验证有效性
+            '''
+            landmark_shift=transutil.projectAndNorm(gtlandmark,(nx1, ny1, nx2, ny2))
+            if not validLandmark(landmark_shift):continue
+            I_shift=I[ny1:ny2, nx1:nx2]
+            image_list.append(imresample(I_shift,(SIZE,SIZE)))
+            landmark_list.append(landmark_shift)
+
+            '''做镜像处理
+            '''
+            if npr.choice([0,1])>0:
+                I_mirror,landmark_mirror=transutil.flip(
+                    I_shift,
+                    transutil.projectAndNorm(gtlandmark,[nx1,ny1,nx2,ny2])
+                )
+                image_list.append(imresample(I_mirror, (SIZE, SIZE)))
+                landmark_list.append(landmark_mirror)
+            for kk in range(2):
+                if npr.choice([0, 1]) > 0:
+                    angle=5 if kk==0 else -5
+                    I_rotate, landmark_rotate = transutil.rotate(
+                        I_shift,
+                        transutil.project(gtlandmark,[nx1,ny1,nx2,ny2]),
+                        angle
+                    )
+                    landmark_rotate=transutil.project(landmark_rotate,[nx1,ny1,nx2,ny2],to=False)
+                    landmark_rotate=transutil.projectAndNorm(landmark_rotate, (nx1, ny1, nx2, ny2))
+                    if not validLandmark(landmark_rotate):continue
+                    image_list.append(imresample(I_rotate,SIZE))
+                    landmark_list.append(landmark_rotate)
+
+                    I_rotate_mirror, landmark_rotate_mirror=transutil.flip(I_rotate,landmark_rotate)
+                    image_list.append(imresample(I_rotate_mirror,SIZE))
+                    landmark_list.append(landmark_rotate_mirror)
+
+        return image_list,np.array(landmark_list).reshape((-1,10))
 
     fs=open(LWF_ANNOTION,'r')
     lines=fs.readlines()
     n_id=0
-    for l in lines:
+    for idx,l in enumerate(lines):
         spits=l.strip('\n').split( )
         filepath=os.path.join(LWF_TRAINSET,spits[0].replace('\\','/'))
         assert os.path.exists(filepath),'Image does not exist'
@@ -54,8 +127,7 @@ def getLFW(SIZE=12,output_dir=None):
 
         imgs,aug_landmarks=f(I,face_box,landmark)
         for img,x in zip(imgs,aug_landmarks):
-            out_file=os.path.join(outpud_image_dir+'%d.jpg'%n_id)
-
+            out_file=os.path.join(outpud_image_dir,'%d.jpg'%n_id)
             fs_anno.write('%s %d %d %d %d %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n'%
                      (out_file,-2,0,0,0,0,
                       x[0],x[1],
@@ -64,10 +136,12 @@ def getLFW(SIZE=12,output_dir=None):
                       x[6], x[7],
                       x[8], x[9])
                      )
+            cv2.imwrite(out_file,img)
             n_id+=1
+        if idx%20==0:
+            progess_print('finish landmark convert %d/%d'%(idx+1,len(lines)))
+    print('total %d examples'%n_id)
     fs.close()
-if __name__ == '__main__':
-    getLFW(SIZE=12,output_dir='/home/zhangxk/AIProject/MTCNN_TRAIN/rnet/dataset')
 '''
 返回一个dict
     key:图片名:
