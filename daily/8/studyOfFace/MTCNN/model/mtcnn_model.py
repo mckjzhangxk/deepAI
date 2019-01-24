@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from six import string_types, iteritems
+from Configure import L2_FACTOR
 """
 本模块提供的
     createPNet 方法,给定输入图片序列,在tensorflow图里构造
@@ -97,7 +98,11 @@ class Network(object):
     def make_var(self, name, shape):
         """Creates a new TensorFlow variable."""
 
-        v=tf.get_variable(name, shape, trainable=self.trainable)
+        v=tf.get_variable(name, shape,
+                          trainable=self.trainable,
+                          regularizer=tf.contrib.layers.l2_regularizer(L2_FACTOR),
+                          initializer=tf.contrib.layers.xavier_initializer(uniform=True)
+                          )
         tf.add_to_collection(self.netname, v)
         return v
 

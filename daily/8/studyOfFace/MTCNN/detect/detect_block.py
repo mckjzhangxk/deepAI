@@ -274,6 +274,8 @@ def nextInput(orignImage, total_boxes, size):
         # if _w<=0 or _h<=0:continue
         # print(_w,_h)
         tmp=np.zeros((_h,_w,3),dtype=np.uint8)
+        if n==5:
+            print('xx')
         tmp[dy[n] - 1:edy[n], dx[n] - 1:edx[n]]=orignImage[y[n]-1:ey[n],x[n]-1:ex[n]]
         tmp=imresample(tmp,(size,size))
 

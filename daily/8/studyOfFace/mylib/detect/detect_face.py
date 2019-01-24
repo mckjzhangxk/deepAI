@@ -745,22 +745,25 @@ def p_stage(img,minsize,pnet,factor,t,debug=False):
         hs,ws=int(np.ceil(scale*h)),int(np.ceil(scale*w))
 
         im_data=imresample(img,(hs,ws))
+
         if debug:
             imsave('debug/my%d.jpg'%i,im_data)
 
         im_data=normalize(im_data)
         img_x = feedImage(im_data)
+
         out=pnet(img_x)
         #
         regressor=np.transpose(out[0],(0,2,1,3))[0]
         score = np.transpose(out[1], (0, 2, 1, 3))[0][:,:,1]
 
         bbox,_=generateBoundingBox(score.copy(),regressor.copy(),scale,t)
+
         if bbox.size>1:
             pick=nms(bbox.copy(),0.5,'Union')
             bbox=bbox[pick]
             total_boxes = np.append(total_boxes, bbox, axis=0)
-
+    print('sss', total_boxes.shape)
     if len(total_boxes)>1:
         pick=nms(total_boxes.copy(),0.6,'Union')
         total_boxes = total_boxes[pick]
@@ -845,23 +848,23 @@ def o_stage(orignimage, total_boxes, images, onet, t, debug=False):
             imsave('debug/onet.jpg',_I)
     return boxes,landmarks,score
 
-# path,_=os.path.split(os.path.realpath(__file__))
-# sess=tf.Session()
-# pnet,rnet,onet=create_mtcnn(sess,path)
+path,_=os.path.split(os.path.realpath(__file__))
+sess=tf.Session()
+pnet,rnet,onet=create_mtcnn(sess,path)
 # # saver=tf.train.Saver()
 # # saver.restore(sess,'/home/zxk/PycharmProjects/deepAI/daily/8/studyOfFace/logs/models/facedect.ckpt-37')
-# image=cv2.imread('../../images/zly.jpg')
-# image=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+image=cv2.imread('/home/zhangxk/projects/deepAI/daily/8/studyOfFace/MTCNN/detect/0_Parade_marchingband_1_849.jpg')
+image=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
 #
 # print('p_net---->totalbox and next input:')
-# totalbox,out=p_stage(image,minsize=50,pnet=pnet,factor=0.709,t=0.6,debug=True)
-# print(totalbox.shape,out.shape)
+totalbox,out=p_stage(image,minsize=50,pnet=pnet,factor=0.709,t=0.6,debug=True)
+print(totalbox.shape,out.shape)
+
+print('r_net---->totalbox and next input:')
+totalbox,out=r_stage(image,totalbox,out,rnet=rnet,t=0.6,debug=True)
+print(totalbox.shape,out.shape)
 #
-# print('r_net---->totalbox and next input:')
-# totalbox,out=r_stage(image,totalbox,out,rnet=rnet,t=0.6,debug=True)
-# print(totalbox.shape,out.shape)
-#
-# print('o_net---->box,points,score:')
-# totalbox,landmarks,score=o_stage(image,totalbox,out,onet=onet,t=0.7,debug=True)
-# print(totalbox.shape,landmarks.shape,score.shape)
-# print(score)
+print('o_net---->box,points,score:')
+totalbox,landmarks,score=o_stage(image,totalbox,out,onet=onet,t=0.7,debug=True)
+print(totalbox.shape,landmarks.shape,score.shape)
+print(score)

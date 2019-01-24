@@ -135,19 +135,15 @@ def mtcnn_loss_acc(prob, regbox, landmark, label, gt_roi, gt_landmark, cls_ratio
     cls_loss=classLosses(prob,label)
     reg_loss=boxesLoss(regbox, gt_roi, label)
     landmark_loss=landmarkLoss(landmark,gt_landmark,label)
+    l2_losses=tf.losses.get_regularization_loss()
 
-    L2_losses=tf.losses.get_regularization_losses()
-    l2_loss=tf.constant(0.0)
-    if len(L2_losses)>0:
-        l2_loss=tf.add_n(L2_losses)
-
-    total_loss=cls_ratio*cls_loss+reg_ratio*reg_loss+landmark_ratio*landmark_loss+l2_loss
+    total_loss=cls_ratio*cls_loss+reg_ratio*reg_loss+landmark_ratio*landmark_loss+l2_losses
     acc=calAccuracy(prob,label)
 
     tf.summary.scalar('cls_loss',cls_loss)
     tf.summary.scalar('reg_loss',reg_loss)
     tf.summary.scalar('ladmark_loss', landmark_loss)
-    tf.summary.scalar('l2_loss', l2_loss)
+    tf.summary.scalar('l2_loss', l2_losses)
 
     tf.summary.scalar('total_loss', total_loss)
     tf.summary.scalar('accuracy', acc)
