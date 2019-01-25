@@ -23,7 +23,7 @@ def cvtTxt2TF(BASE_DIR, srcname, dscname, shuffle=True,display=100):
         print('Dataset files already exist. Exiting without re-creating them.')
         return
 
-    with tf.io.TFRecordWriter(tf_filename) as writer:
+    with tf.python_io.TFRecordWriter(tf_filename) as writer:
         for idx,x in enumerate(records):
             writeTFRecord(x, writer)
             if (idx+1)%display==0:
