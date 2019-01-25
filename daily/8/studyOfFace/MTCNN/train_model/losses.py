@@ -98,7 +98,7 @@ def landmarkLoss(landmark,gt_landmark,label):
     valid_num=tf.to_int32(tf.reduce_sum(valid_idx))
     valid_loss=pse_loss*valid_idx #shape[N,]
 
-    _,k_index=tf.math.top_k(valid_loss,valid_num)
+    _,k_index=tf.nn.top_k(valid_loss,valid_num)
     valid_loss = tf.gather(valid_loss, k_index)
 
     return tf.reduce_mean(valid_loss)
