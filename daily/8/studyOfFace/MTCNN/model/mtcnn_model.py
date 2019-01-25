@@ -95,13 +95,13 @@ class Network(object):
         ident = sum(t.startswith(prefix) for t, _ in self.layers.items()) + 1
         return '%s_%d' % (prefix, ident)
 
-    def make_var(self, name, shape):
+    def make_var(self, name, shape,initializer=tf.contrib.layers.xavier_initializer(uniform=True)):
         """Creates a new TensorFlow variable."""
 
         v=tf.get_variable(name, shape,
                           trainable=self.trainable,
                           regularizer=tf.contrib.layers.l2_regularizer(L2_FACTOR),
-                          initializer=tf.contrib.layers.xavier_initializer(uniform=True)
+                          initializer=initializer
                           )
         tf.add_to_collection(self.netname, v)
         return v
@@ -148,8 +148,9 @@ class Network(object):
     @layer
     def prelu(self, inp, name):
         with tf.variable_scope(name):
+            initializer = tf.constant_initializer(0.25)
             i = int(inp.get_shape()[-1])
-            alpha = self.make_var('alpha', shape=(i,))
+            alpha = self.make_var('alpha', shape=(i,),initializer=initializer)
             output = tf.nn.relu(inp) + tf.multiply(alpha, -tf.nn.relu(-inp))
         return output
 

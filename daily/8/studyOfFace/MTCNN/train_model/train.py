@@ -55,7 +55,7 @@ def start_train():
                     sess.run([op_optimizer])
                     if i % svConf.DISPLAY_EVERY == 0:
                         _acc, _loss, _summary = sess.run([dis_acc, dis_total_loss, op_summary])
-                        writer.add_summary(op_summary,i)
+                        writer.add_summary(_summary,global_step=i)
                         print('Total Loss is %.3f,Accuracy is %.3f' % (_loss, _acc))
                     if i % svConf.LoopPerEpoch == 0:
                         saver.save(sess, os.path.join(svConf.MODEL_CHECKPOINT_DIR,svConf.model_name),i // svConf.LoopPerEpoch)
