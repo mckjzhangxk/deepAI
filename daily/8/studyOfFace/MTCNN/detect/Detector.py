@@ -115,11 +115,11 @@ class Detector():
             # out[0]是regressor,0表示第一张图片,shape[H',W',4]
 
             # out[1]是prosibility,out[1][0]是第一张图片,shape[H',W',2]
-            regressor = out[0][0]
-            score = out[1][0][:, :, 1]
+            # regressor = out[0][0]
+            # score = out[1][0][:, :, 1]
 
-            # regressor = np.transpose(out[0], (0, 2, 1, 3))[0]
-            # score = np.transpose(out[1], (0, 2, 1, 3))[0][:, :, 1]
+            regressor = np.transpose(out[0], (0, 2, 1, 3))[0]
+            score = np.transpose(out[1], (0, 2, 1, 3))[0][:, :, 1]
             # bbox是原图的坐标,(N',9),N'是概率>t保留下来的人脸数量
             bbox, _ = generateBoundingBox(score.copy(), regressor.copy(), scale, t)
 
@@ -147,15 +147,18 @@ class Detector():
     def r_stage(self,orignImage,total_boxes):
         #先根据total_box的信息,裁剪出来给onet图片,缩放成24,24,3
         images=nextInput(orignImage, total_boxes, 24)
+
         if len(images)==0:return np.empty((0,5))
         #feed  into rnet
         images=self.preprocessing(images)
         out=self._predictBatch(images,self.rnet)
 
+
         regressor,score=out[0] ,out[1][:,1] #(N',4),#(N',)
 
         ipass=score>self.m_threshold[1]
         total_boxes, score, regressor=pickfilter(ipass,[total_boxes,score,regressor])
+
         if len(total_boxes)>0:
             pick=nms(total_boxes,self.m_nms[2],'Union')
             total_boxes, score, regressor = pickfilter(pick, [total_boxes, score, regressor])
@@ -166,20 +169,25 @@ class Detector():
     def o_stage(self,orignImage, total_boxes):
         #先根据total_box的信息,裁剪出来给onet图片,缩放成48,48,3
         images=nextInput(orignImage, total_boxes, 48)
+
         if len(images)==0:return np.empty((0,5))
         #feed  into rnet
         images=self.preprocessing(images)
         out = self._predictBatch(images, self.onet)
 
-        regressor,score,landmark=out[0] ,out[1][:,1],out[2] #(N',4),#(N',)
+        regressor,landmark,score=out[0] ,out[1],out[2][:,1] #(N',4),#(N',)
 
         ipass=score>self.m_threshold[2]
+
         total_boxes, score, regressor,landmark=pickfilter(ipass,[total_boxes,score,regressor,landmark])
+
+
         if len(total_boxes)>0:
-            total_boxes = bbreg(total_boxes, regressor)
-            pick=nms(total_boxes,self.m_nms[2],'Min')
+            total_boxes = bbreg(total_boxes.copy(), regressor)
+            total_boxes[:, 4] = score
+            pick=nms(total_boxes,self.m_nms[3],'Min')
             total_boxes, score,landmark = pickfilter(pick, [total_boxes, score,landmark])
-            total_boxes[:,4]=score
+
             '''
             这里没有使用rect
             '''
@@ -275,7 +283,7 @@ class Detector_tf(Detector):
         if o_path:
             data_o=tf.placeholder(tf.float32, (None, 48, 48, 3))
             prob_tensor_o, regbox_tensor_o, landmark_tensor_o = createONet(data_o, True)
-            self.onet = lambda img: sess.run((regbox_tensor_o, prob_tensor_o,landmark_tensor_o), feed_dict={data_o: img})
+            self.onet = lambda img: sess.run((regbox_tensor_o,landmark_tensor_o, prob_tensor_o), feed_dict={data_o: img})
             varlist=tf.get_collection('ONet')
             saver = tf.train.Saver(var_list=varlist)
             saver.restore(sess, o_path)
@@ -284,28 +292,29 @@ class Detector_tf(Detector):
         img=feedImage(img)
         return img
 
-from scipy.misc import imsave
-if __name__ == '__main__':
-    sess = tf.Session()
-    imagepath='/home/zhangxk/projects/deepAI/daily/8/studyOfFace/MTCNN/detect/0_Parade_marchingband_1_849.jpg'
-    pnet_path='/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
-    rnet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
-    onet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
-
-    # rnet_path=None
-    # onet_path=None
-    print('p_net---->totalbox and next input:')
-
-    df=Detector_Caffe(
-                sess=sess,
-                minsize=50,
-                scaleFactor=0.709,
-                nms=[0.5,0.6,0.5,0.6],
-                threshold=[0.6,0.6,0.7],
-                model_path=[pnet_path,rnet_path,onet_path],
-                save_stage=False
-                )
-    totalbox=df.detect_face(imagepath)
-    print(totalbox.shape)
-    image=drawDectectBox(imagepath, totalbox, scores=None)
-    imsave('ssss.jpg',image)
+# from scipy.misc import imsave
+# if __name__ == '__main__':
+#     sess = tf.Session()
+#     imagepath='/home/zhangxk/AIProject/WIDER_train/images/13--Interview/13_Interview_Interview_2_People_Visible_13_60.jpg'
+#     pnet_path='/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
+#     rnet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
+#     onet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
+#
+#     # rnet_path=None
+#     # onet_path=None
+#     print('p_net---->totalbox and next input:')
+#
+#     df=Detector_Caffe(
+#                 sess=sess,
+#                 minsize=50,
+#                 scaleFactor=0.709,
+#                 nms=[0.5,0.6,0.7,0.7],
+#                 threshold=[0.6,0.6,0.7],
+#                 model_path=[pnet_path,rnet_path,onet_path],
+#                 save_stage=False
+#                 )
+#     totalbox=df.detect_face(imagepath)
+#     # print(totalbox.shape)
+#
+#     image=drawDectectBox(imagepath, totalbox, scores=None)
+#     imsave('ssss.jpg',image)

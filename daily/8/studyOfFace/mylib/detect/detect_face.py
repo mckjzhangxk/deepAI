@@ -829,18 +829,22 @@ def o_stage(orignimage, total_boxes, images, onet, t, debug=False):
     regressor,landmarks,score=out[0],out[1],out[2][:,1]
 
     ipass=score>=t
+    print(score, 'pppppppppp')
+    print(ipass, 'pppppppppp')
     total_boxes, regressor, landmarks, score=filter(ipass,[total_boxes,regressor,landmarks,score])
 
+
     boxes=np.empty((0,4))
+
     if len(total_boxes)>0:
         h,w,_=orignimage.shape
         total_boxes=bbreg(total_boxes.copy(),regressor)
-
         pick=nms(total_boxes,0.7,'Min')
+
         total_boxes, regressor, landmarks, score = filter(pick, [total_boxes, regressor, landmarks, score])
         dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph=pad(total_boxes,w,h)
         boxes=np.stack([x,y,ex,ey],axis=1)
-
+        print(total_boxes.shape)
         landmarks=bb_landmark(boxes,landmarks)
         if debug:
             _I=drawDectectBox(orignimage,boxes)
@@ -859,11 +863,13 @@ image=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
 # print('p_net---->totalbox and next input:')
 totalbox,out=p_stage(image,minsize=50,pnet=pnet,factor=0.709,t=0.6,debug=True)
 print(totalbox.shape,out.shape)
+# print(totalbox[89,0:5])
 
 print('r_net---->totalbox and next input:')
 totalbox,out=r_stage(image,totalbox,out,rnet=rnet,t=0.6,debug=True)
 print(totalbox.shape,out.shape)
-#
+print(totalbox[4,0:5])
+
 print('o_net---->box,points,score:')
 totalbox,landmarks,score=o_stage(image,totalbox,out,onet=onet,t=0.7,debug=True)
 print(totalbox.shape,landmarks.shape,score.shape)
