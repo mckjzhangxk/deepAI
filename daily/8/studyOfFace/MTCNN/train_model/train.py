@@ -11,6 +11,13 @@ def prepare():
     if not os.path.exists(svConf.MODEL_CHECKPOINT_DIR):
         os.mkdir(svConf.MODEL_CHECKPOINT_DIR)
 
+def image_color_distort(inputs):
+    inputs = tf.image.random_contrast(inputs, lower=0.5, upper=1.5)
+    inputs = tf.image.random_brightness(inputs, max_delta=0.2)
+    inputs = tf.image.random_hue(inputs,max_delta= 0.2)
+    inputs = tf.image.random_saturation(inputs,lower = 0.5, upper= 1.5)
+    return inputs
+
 def buildTarget(loss):
     LoopPerEpoch=svConf.EXAMPLES//svConf.BATCH_SIZE+1
 
@@ -28,6 +35,8 @@ def start_train():
     prepare()
     # 第一步,获取输入
     image_batch, label_batch, roi_batch,landmark_batch = getInput()
+    image_batch=image_color_distort(image_batch)
+
     # 第二部,搭建网络
     p_prob, p_regbox,p_landmark = buildModel(image_batch)
     # 第三部,获得loss, class_loss,reg_loss,l2_loss,以及accuracy
