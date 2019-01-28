@@ -126,8 +126,9 @@ def _writeAnnationAndImage(info, fs, faceid, orgin_image_path):
         f=fs[2]
 
     outputline = '%s %d %.2f %.2f %.2f %.2f 0 0 0 0 0 0 0 0 0 0\n' % (face_output_path,info['label'],*info['regbox'])
-
     f.write(outputline)
+
+
 
     #保存图片
     x1,y1,x2,y2=list(map(int,info['coodinate']))
@@ -136,6 +137,19 @@ def _writeAnnationAndImage(info, fs, faceid, orgin_image_path):
     Icrop=I[y1:y2,x1:x2]
     Iresize=cv2.resize(Icrop,(SIZE,SIZE),interpolation=cv2.INTER_LINEAR)
     cv2.imwrite(face_output_path,Iresize)
+
+
+    if info['label'] == 1:
+        imagename = str(faceid+1) + '.jpg'
+        face_output_path = os.path.join(PNET_DATASET_PATH, 'pos', imagename)
+        rx1,ry1,rx2,ry2=info['regbox']
+        outputline = '%s %d %.2f %.2f %.2f %.2f 0 0 0 0 0 0 0 0 0 0\n' % (face_output_path,1,-rx2,ry1,-rx1,ry2)
+        f.write(outputline)
+        cv2.flip(Iresize,1,Iresize)
+        cv2.imwrite(face_output_path, Iresize)
+        return 2
+    else:return 1
+
 def _prepareOutDir():
     if not os.path.exists(PNET_DATASET_PATH):
         os.mkdir(PNET_DATASET_PATH)
@@ -206,8 +220,8 @@ def merge_pnet_dataset(showlog=True):
     else:
         part_num = npr.choice(part_num, BASE_NUM, False)
 
-    if neg_num < 2*BASE_NUM:
-        neg_num = npr.choice(neg_num, 2*BASE_NUM, True)
+    if neg_num < 3*BASE_NUM:
+        neg_num = npr.choice(neg_num, 3*BASE_NUM, True)
     else:
         neg_num = npr.choice(neg_num, 2*BASE_NUM, False)
 
@@ -271,8 +285,10 @@ def gen_pnet_data(posCopys, negCopys, negNum):
         samplelist=_genImage(imagepath, face_coordnate, posCopys=posCopys, negCopy=negCopys, negNum=negNum)
 
         for sm in samplelist:
-            faceid += 1
-            _writeAnnationAndImage(sm, [f_pos, f_neg, f_part], faceid, imagepath)
+
+            cnt=_writeAnnationAndImage(sm, [f_pos, f_neg, f_part], faceid, imagepath)
+            faceid += cnt
+
         #跳到下一张图片
         idx+=1
         numOFImages+=1

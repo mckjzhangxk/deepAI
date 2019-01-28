@@ -4,7 +4,7 @@ from detect.detect_block import generateBoundingBox,imresample,nms,bbreg,rerec,v
 import tensorflow as tf
 from model import createPNet,createRNet,createONet,PNet,RNet,ONet
 import os
-
+import matplotlib.pyplot as plt
 class Detector():
     '''
     
@@ -115,11 +115,12 @@ class Detector():
             # out[0]是regressor,0表示第一张图片,shape[H',W',4]
 
             # out[1]是prosibility,out[1][0]是第一张图片,shape[H',W',2]
-            # regressor = out[0][0]
-            # score = out[1][0][:, :, 1]
+            regressor = out[0][0]
+            score = out[1][0][:, :, 1]
 
-            regressor = np.transpose(out[0], (0, 2, 1, 3))[0]
-            score = np.transpose(out[1], (0, 2, 1, 3))[0][:, :, 1]
+            # regressor = np.transpose(out[0], (0, 2, 1, 3))[0]
+            # score = np.transpose(out[1], (0, 2, 1, 3))[0][:, :, 1]
+
             # bbox是原图的坐标,(N',9),N'是概率>t保留下来的人脸数量
             bbox, _ = generateBoundingBox(score.copy(), regressor.copy(), scale, t)
 
@@ -295,13 +296,18 @@ class Detector_tf(Detector):
 # from scipy.misc import imsave
 # if __name__ == '__main__':
 #     sess = tf.Session()
-#     imagepath='/home/zhangxk/AIProject/WIDER_train/images/13--Interview/13_Interview_Interview_2_People_Visible_13_60.jpg'
+#     imagepath='/home/zhangxk/projects/deepAI/daily/8/studyOfFace/MTCNN/detect/0_Parade_marchingband_1_849.jpg'
+#     # imagepath='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset/part/1262.jpg'
+#
+#
 #     pnet_path='/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
+#     # pnet_path='/home/zhangxk/AIProject/MTCNN_TRAIN/model/PNet-29'
+#
 #     rnet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
 #     onet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
 #
-#     # rnet_path=None
-#     # onet_path=None
+#     rnet_path=None
+#     onet_path=None
 #     print('p_net---->totalbox and next input:')
 #
 #     df=Detector_Caffe(
@@ -313,8 +319,18 @@ class Detector_tf(Detector):
 #                 model_path=[pnet_path,rnet_path,onet_path],
 #                 save_stage=False
 #                 )
+#     # df=Detector_tf(
+#     #             sess=sess,
+#     #             minsize=50,
+#     #             scaleFactor=0.709,
+#     #             nms=[0.5,0.6,0.7,0.7],
+#     #             threshold=[0.6,0.6,0.7],
+#     #             model_path=[pnet_path,rnet_path,onet_path],
+#     #             save_stage=False
+#     #             )
+#
 #     totalbox=df.detect_face(imagepath)
-#     # print(totalbox.shape)
+#     print(totalbox.shape)
 #
 #     image=drawDectectBox(imagepath, totalbox, scores=None)
 #     imsave('ssss.jpg',image)

@@ -11,6 +11,7 @@ label==0,1的参与计算loss
 
 return:classification loss
 '''
+KEEP_RATIO=0.7
 def classLosses(prob,label,eps=1e-10):
     '''
     为了得到稳定的计算结果,计算ls不采用直接公式:
@@ -38,7 +39,7 @@ def classLosses(prob,label,eps=1e-10):
 
     #有效的计算,只有0,1是有效的
     valid_label=tf.cast(tf.where(tf.greater(label,-1),ones,zeros),tf.float32)
-    valid_num=tf.to_int32(tf.reduce_sum(valid_label))
+    valid_num=tf.to_int32(KEEP_RATIO*tf.reduce_sum(valid_label))
 
     vaild_loss=valid_label*pse_loss
 
@@ -119,7 +120,7 @@ def calAccuracy(prob,label):
     zeros=tf.zeros(shape=[N])
 
     #label=part(-1)的不是有效的
-    valid_idx=tf.where(tf.equal(label,-1),zeros,ones)
+    valid_idx=tf.where(tf.greater(label,-1),ones,zeros)
     valid_num=tf.reduce_sum(valid_idx)
 
     acc=right_predict/valid_num
