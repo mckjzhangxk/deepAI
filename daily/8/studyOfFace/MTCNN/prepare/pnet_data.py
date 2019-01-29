@@ -286,8 +286,8 @@ def gen_pnet_data(posCopys, negCopys, negNum):
 
         for sm in samplelist:
 
-            cnt=_writeAnnationAndImage(sm, [f_pos, f_neg, f_part], faceid, imagepath)
-            faceid += cnt
+            _cnt=_writeAnnationAndImage(sm, [f_pos, f_neg, f_part], faceid, imagepath)
+            faceid += _cnt
 
         #跳到下一张图片
         idx+=1
