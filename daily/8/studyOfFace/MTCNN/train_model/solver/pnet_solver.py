@@ -1,14 +1,17 @@
 from utils.dbutils import get_example_nums
-from Configure import PNET_DATASET_PATH
+from Configure import PNET_DATASET_PATH,PNET_DATASET_VALID_PATH
 
 model_name='PNet'
 IMG_SIZE=12
 ##############################
 EXAMPLES=10000
 # EXAMPLES=get_example_nums(PNET_DATASET_PATH,'PNet.txt')
+VALID_EXAMPLES=get_example_nums(PNET_DATASET_VALID_PATH,'PNet.txt')
+
 EPOCH=3000
 BATCH_SIZE=384
 LoopPerEpoch=EXAMPLES//BATCH_SIZE+1
+LoopsForValid=VALID_EXAMPLES//BATCH_SIZE+1
 #在第LR_EPOCH 学习率衰减
 LR=1E-4
 DECAY_FACTOR=0.9

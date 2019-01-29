@@ -223,7 +223,7 @@ class PNet(Network):
 '''
 def createPNet(inp,trainable):
     assert inp.get_shape()[3]==3,'Input must have 3 channel'
-    with tf.variable_scope('pnet'):
+    with tf.variable_scope('pnet',reuse=tf.AUTO_REUSE):
         PNet({'data':inp},trainable)
     g = tf.get_default_graph()
     prob_tensor=g.get_tensor_by_name('pnet/prob1:0')

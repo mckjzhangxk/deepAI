@@ -4,7 +4,11 @@
 '''
 #TRAINSET
 WIDER_TRAINSET='/home/zhangxk/AIProject/WIDER_train/images'
-WIDER_ANNOTION='/home/zhangxk/AIProject/WIDER_train/wider_face_train_bbx_gt_test.txt'
+WIDER_TRAIN_ANNOTION= '/home/zhangxk/AIProject/WIDER_train/wider_face_train_bbx_gt_test.txt'
+
+WIDER_VALSET='/home/zhangxk/AIProject/WIDER_val/images'
+WIDER_VAL_ANNOTION= '/home/zhangxk/AIProject/WIDER_val/wider_face_val_bbx_gt.txt'
+
 #LWF用于landmark
 LWF_TRAINSET='/home/zhangxk/AIProject/lfw'
 LWF_ANNOTION='/home/zhangxk/AIProject/lfw/trainImageList_test.txt'
@@ -29,6 +33,7 @@ BASE_NUM=200
 
 #PNET数据处理参数,
 PNET_DATASET_PATH= '/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset'
+PNET_DATASET_VALID_PATH= '/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset_valid'
 POSITIVE_COPYS=10
 NEGATIVE_COPYS=5
 NEG_NUM_FOR_PNET=50

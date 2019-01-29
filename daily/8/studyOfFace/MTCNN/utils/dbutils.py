@@ -1,10 +1,11 @@
-from Configure import WIDER_ANNOTION,WIDER_TRAINSET,LWF_ANNOTION,LWF_TRAINSET
+from Configure import WIDER_TRAIN_ANNOTION,WIDER_TRAINSET,LWF_ANNOTION,LWF_TRAINSET
 import os
 import numpy as np
 import numpy.random as npr
 import cv2
-from utils.roi_utils import  validRegion,validLandmark,ImageTransform,IoU
+from utils.roi_utils import  validRegion,validLandmark,ImageTransform,IoU,GetRegressBox
 from utils.common import progess_print
+
 '''
 把LFW数据集关于五官的标注进行数据加强后:
 图片缩放到SIZE,输出到output_dir/landmark下面
@@ -154,7 +155,7 @@ def getLFW(SIZE=12,output_dir=None,numOfShift=1):
 def get_WIDER_Set():
     ret=dict()
 
-    fs = open(WIDER_ANNOTION, 'r')
+    fs = open(WIDER_TRAIN_ANNOTION, 'r')
     lines=fs.readlines()
     cnt=len(lines)
     numOFImages=0
@@ -193,7 +194,7 @@ def get_WIDER_Set():
     return ret
 def get_WIDER_Set_ImagePath():
     ret=[]
-    fs = open(WIDER_ANNOTION, 'r')
+    fs = open(WIDER_TRAIN_ANNOTION, 'r')
     lines = fs.readlines()
     cnt = len(lines)
 
@@ -231,3 +232,157 @@ def get_example_nums(basedir,fnames=None):
         cnt+=examples
     print('Total have %d exmaples' % (cnt))
     return cnt
+
+'''
+    filename:原图片的路径
+    face_coordnte:[],原图片中人脸的所有坐标,(x1,y1,x2,y2),你要验证一下坐标的有效性
+    posNum:生成+样本的数量
+    negNum:生成-样本的数量
+
+    返回一个list,list[i] 是一个dict
+        key:label:1->+,-1->part,0->-
+           :regbox:对于+,part例,对左上角和右下角的微调
+           :coodinate:切割图片的坐标
+'''
+
+
+def genImage(filename, face_coordnate, posCopys, negCopy, negNum,SIZE):
+    tsutils = ImageTransform()
+    I = cv2.imread(filename)
+    H, W, _ = I.shape
+
+    face_cood_valid = []
+    for x1, y1, x2, y2 in face_coordnate:
+        if (x1 + SIZE < x2 and x1 >= 0 and x2 <= W and y1 + SIZE < y2 and y1 >= 0 and y2 <= H):
+            face_cood_valid.append((x1, y1, x2, y2))
+    if len(face_cood_valid) == 0: return []
+    ret = []
+
+    # 生成正样本
+    for x1, y1, x2, y2 in face_cood_valid:
+        if not validRegion([x1, y1, x2, y2], W, H): continue
+        # 对于一张人脸,生成posCopys个副本
+        for n_p in range(posCopys):
+            nx1, ny1, nx2, ny2 = tsutils.shift([x1, y1, x2, y2], W, H)
+            if nx1 < 0:
+                continue
+            iou = IoU((nx1, ny1, nx2, ny2), np.array([[x1, y1, x2, y2]]))
+            iou = iou[0]
+            sample = {}
+            if iou > 0.65:
+                sample['label'] = 1
+            elif iou > 0.4:
+                sample['label'] = -1
+            else:
+                continue
+            sample['coodinate'] = [nx1, ny1, nx2, ny2]
+            sample['regbox'] = GetRegressBox(
+                (x1, y1, x2, y2),  # 人脸坐标
+                (nx1, ny1, nx2, ny2)  # 截图坐标
+            )
+            ret.append(sample)
+
+    face_cood_valid = np.array(face_cood_valid)  # (N,4)
+    # 生成负样本
+    for x1, y1, x2, y2 in face_cood_valid:
+        for __ in range(negCopy):
+            sz = npr.randint(SIZE, min(W, H) / 2)
+            nx1, ny1 = max(x1 - sz, 0), max(y1 - sz, 0)
+            nx2, ny2 = nx1 + sz, ny1 + sz
+            if nx2 > W or ny2 > H: continue
+            if nx1 + SIZE >= nx2 or ny1 + SIZE >= ny2: continue
+
+            iou = IoU((nx1, ny1, nx2, ny2), face_cood_valid)
+            iou = np.max(iou)
+            if iou < 0.3:
+                sample = {}
+                sample['label'] = 0
+                sample['regbox'] = [0, 0, 0, 0]
+                sample['coodinate'] = [nx1, ny1, nx2, ny2]
+                ret.append(sample)
+    # 生成负样本
+
+    for _ in range(negNum):
+        sz = npr.randint(SIZE, min(W, H) / 2)
+        nx1, ny1 = npr.randint(0, W - sz), npr.randint(0, H - sz)
+        nx2, ny2 = nx1 + sz, ny1 + sz
+        if nx1 + SIZE >= nx2 or ny1 + SIZE >= ny2: continue
+
+        iou = IoU((nx1, ny1, nx2, ny2), face_cood_valid)
+        iou = np.max(iou)
+
+        if iou < 0.3:
+            sample = {}
+            sample['label'] = 0
+            sample['regbox'] = [0, 0, 0, 0]
+            sample['coodinate'] = [nx1, ny1, nx2, ny2]
+            ret.append(sample)
+    return ret
+
+
+'''
+往文件f中追加记录
+    根据 info的信息
+    info.label =1
+        追加格式:
+        filepath 1 x1 y1 x2 y2
+    info.label= -1
+        filepath -1 x1 y1 x2 y2
+    info.label= 0
+        filepath 0
+    filepath=OUTPATH/{pos|neg|part}/{faceid}.jpg
+    x1,y1,x2,y2=info[regbox][0],info[regbox][1],info[regbox][2],info[regbox][3]
+
+    然后保存图片
+    图片路径:
+        {OUTPATH}/{pos|neg|part}/faceid.jpg
+'''
+
+
+def writeAnnationAndImage(info, fs, faceid, orgin_image_path, OUTPATH, SIZE):
+    face_output_path = ''
+    f = None
+    imagename = str(faceid) + '.jpg'
+
+
+    if info['label'] == 1:
+        face_output_path = os.path.join(OUTPATH, 'pos', imagename)
+        f = fs[0]
+    elif info['label'] == 0:
+        face_output_path = os.path.join(OUTPATH, 'neg', imagename)
+        f = fs[1]
+    elif info['label'] == -1:
+        face_output_path = os.path.join(OUTPATH, 'part', imagename)
+        f = fs[2]
+
+    outputline = '%s %d %.2f %.2f %.2f %.2f 0 0 0 0 0 0 0 0 0 0\n' % (face_output_path, info['label'], *info['regbox'])
+    f.write(outputline)
+
+    # 保存图片
+    x1, y1, x2, y2 = list(map(int, info['coodinate']))
+    I = cv2.imread(orgin_image_path)
+
+    Icrop = I[y1:y2, x1:x2]
+    Iresize = cv2.resize(Icrop, (SIZE, SIZE), interpolation=cv2.INTER_LINEAR)
+    cv2.imwrite(face_output_path, Iresize)
+
+    if info['label'] == 1:
+        imagename = str(faceid + 1) + '.jpg'
+        face_output_path = os.path.join(OUTPATH, 'pos', imagename)
+        rx1, ry1, rx2, ry2 = info['regbox']
+        outputline = '%s %d %.2f %.2f %.2f %.2f 0 0 0 0 0 0 0 0 0 0\n' % (face_output_path, 1, -rx2, ry1, -rx1, ry2)
+        f.write(outputline)
+        cv2.flip(Iresize, 1, Iresize)
+        cv2.imwrite(face_output_path, Iresize)
+        return 2
+    else:
+        return 1
+
+def prepareOutDir(DATASET_PATH):
+    if not os.path.exists(DATASET_PATH):
+        os.mkdir(DATASET_PATH)
+    sx=['pos','neg','part','landmark']
+    for x in sx:
+        path=os.path.join(DATASET_PATH, x)
+        if not os.path.exists(path):
+            os.mkdir(path)

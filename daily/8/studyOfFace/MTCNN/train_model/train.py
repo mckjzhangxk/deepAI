@@ -1,8 +1,14 @@
 import tensorflow as tf
 import os
+import numpy as np
+
 getInput=None
 buildModel=None
 buildLoss=None
+validateInput=None
+validateAccuracy=None
+validate=False
+
 svConf=None
 
 def prepare():
@@ -39,6 +45,13 @@ def start_train():
 
     # 第二部,搭建网络
     p_prob, p_regbox,p_landmark = buildModel(image_batch)
+
+    if validate:
+        image_batch_valid,label_batch_valid,_,_=validateInput()
+        image_batch_valid=image_color_distort(image_batch_valid)
+        v_prob,_,_=buildModel(image_batch_valid)
+        valid_acc=validateAccuracy(v_prob,label_batch_valid)
+
     # 第三部,获得loss, class_loss,reg_loss,l2_loss,以及accuracy
 
     dis_total_loss, dis_acc = buildLoss(p_prob, p_regbox,p_landmark, label_batch, roi_batch,landmark_batch)
@@ -68,6 +81,15 @@ def start_train():
                         print('Total Loss is %.3f,Accuracy is %.3f' % (_loss, _acc))
                     if i % svConf.LoopPerEpoch == 0:
                         saver.save(sess, os.path.join(svConf.MODEL_CHECKPOINT_DIR,svConf.model_name),i // svConf.LoopPerEpoch)
+
+                        #这里要交叉验证
+                        if validate:
+                            arr=[]
+                            for kk in range(svConf.LoopsForValid):
+                                _valid_acc=sess.run(valid_acc)
+                                arr.append(_valid_acc)
+                            _valid_acc=np.mean(arr)
+                            print('Epoch %d,Valid acc is %.2f'%(i//svConf.LoopPerEpoch,_valid_acc))
             finally:
                 coord.request_stop()
 
