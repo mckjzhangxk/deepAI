@@ -104,7 +104,7 @@ def gen_pnet_data(posCopys, negCopys, negNum):
     idx=0
     faceid=0
     f_pos=open(os.path.join(PNET_DATASET_PATH, 'pos.txt'), 'w')
-    f_neg = open(os.path.join(PNET_DATASET_PATH, 'right.txt'), 'w')
+    f_neg = open(os.path.join(PNET_DATASET_PATH, 'neg.txt'), 'w')
     f_part = open(os.path.join(PNET_DATASET_PATH, 'part.txt'), 'w')
 
     while(idx<cnt):
