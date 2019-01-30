@@ -253,7 +253,7 @@ def genImage(filename, face_coordnate, posCopys, negCopy, negNum,SIZE):
 
     face_cood_valid = []
     for x1, y1, x2, y2 in face_coordnate:
-        if (x1 + SIZE < x2 and x1 >= 0 and x2 <= W and y1 + SIZE < y2 and y1 >= 0 and y2 <= H):
+        if (x1 + 40 < x2 and x1 >= 0 and x2 <= W and y1 + 40 < y2 and y1 >= 0 and y2 <= H):
             face_cood_valid.append((x1, y1, x2, y2))
     if len(face_cood_valid) == 0: return []
     ret = []

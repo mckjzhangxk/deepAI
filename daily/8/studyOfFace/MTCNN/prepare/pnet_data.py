@@ -113,7 +113,7 @@ def gen_pnet_data(posCopys, negCopys, negNum):
         name=sps[0]+'.jpg'
         imagepath=os.path.join(WIDER_TRAINSET,name)
 
-        
+
         assert os.path.exists(imagepath) ,'file does not exist'
 
 
