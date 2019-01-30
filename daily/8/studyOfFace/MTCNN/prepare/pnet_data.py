@@ -10,7 +10,7 @@ from utils.common import progess_print
 
 def _summary():
     f_pos=open(os.path.join(PNET_DATASET_PATH, 'pos.txt'), 'r')
-    f_neg = open(os.path.join(PNET_DATASET_PATH, 'right.txt'), 'r')
+    f_neg = open(os.path.join(PNET_DATASET_PATH, 'neg.txt'), 'r')
     f_part = open(os.path.join(PNET_DATASET_PATH, 'part.txt'), 'r')
     f_landmark = open(os.path.join(PNET_DATASET_PATH, 'landmark.txt'), 'r')
 
@@ -32,7 +32,7 @@ def _summary():
 
 def merge_pnet_dataset(showlog=True):
     f_pos=open(os.path.join(PNET_DATASET_PATH, 'pos.txt'), 'r')
-    f_neg = open(os.path.join(PNET_DATASET_PATH, 'right.txt'), 'r')
+    f_neg = open(os.path.join(PNET_DATASET_PATH, 'neg.txt'), 'r')
     f_part = open(os.path.join(PNET_DATASET_PATH, 'part.txt'), 'r')
     f_landmark = open(os.path.join(PNET_DATASET_PATH, 'landmark.txt'), 'r')
 
