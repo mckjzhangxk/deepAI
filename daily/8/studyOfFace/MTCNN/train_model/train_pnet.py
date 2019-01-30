@@ -17,7 +17,8 @@ def validateInput():
     tf_filename=os.path.join(PNET_DATASET_VALID_PATH,'PNet_shuffle')
     assert os.path.exists(tf_filename) ,'PNet validateInput TFRecord does not exist'
     image_batch,label_batch,roi_batch,landmark_batch=readTFRecord(tf_filename, pnet_solver.BATCH_SIZE, pnet_solver.IMG_SIZE)
-    return image_batch,label_batch,roi_batch,landmark_batch
+    return image_batch,label_batch
+
 def validateAccuracy(prob,label):
     acc=calAccuracy(prob, label)
     tf.summary.scalar('validate_accuracy', acc)
@@ -26,6 +27,12 @@ def validateAccuracy(prob,label):
 def buildModel(input_images):
     p_prob, p_regbox,p_landmark = createPNet(input_images, trainable=True)
     return p_prob,p_regbox,p_landmark
+def buildValidModel(input_images):
+    createPNet(input_images, trainable=True)
+    g = tf.get_default_graph()
+    prob_tensor=g.get_tensor_by_name('pnet_1/prob1:0')
+    return prob_tensor
+
 
 def buildLoss(prob, regbox, landmark, label, gt_roi, gt_landmark):
     return mtcnn_loss_acc(prob, regbox, landmark, label, gt_roi,gt_landmark, cls_ratio=1.0, reg_ratio=0.5, landmark_ratio=0.5)
@@ -38,6 +45,7 @@ if __name__ == '__main__':
 
     train.validate=True
     train.validateInput=validateInput
+    train.validModel=buildValidModel
     train.validateAccuracy=validateAccuracy
 
     train.start_train()

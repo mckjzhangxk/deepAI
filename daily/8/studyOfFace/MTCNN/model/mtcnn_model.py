@@ -103,7 +103,10 @@ class Network(object):
                           regularizer=tf.contrib.layers.l2_regularizer(L2_FACTOR),
                           initializer=initializer
                           )
-        tf.add_to_collection(self.netname, v)
+        if self.trainable:
+            collections=tf.get_collection(self.netname)
+            if v not in collections:
+                tf.add_to_collection(self.netname, v)
         return v
 
     def validate_padding(self, padding):
@@ -176,7 +179,7 @@ class Network(object):
             else:
                 feed_in, dim = (inp, input_shape[-1].value)
             weights = self.make_var('weights', shape=[dim, num_out])
-            biases = self.make_var('biases', [num_out])
+            biases = self.make_var('biases', [num_out],initializer=tf.zeros_initializer())
             op = tf.nn.relu_layer if relu else tf.nn.xw_plus_b
             fc = op(feed_in, weights, biases, name=name)
             return fc
@@ -198,7 +201,7 @@ class Network(object):
 class PNet(Network):
     def setup(self):
         self.netname='PNet'
-        (self.feed('data') #pylint: disable=no-value-for-parameter, no-member
+        a=(self.feed('data') #pylint: disable=no-value-for-parameter, no-member
              .conv(3, 3, 10, 1, 1, padding='VALID', relu=False, name='conv1')
              .prelu(name='PReLU1')
              .max_pool(2, 2, 2, 2, name='pool1')
@@ -209,9 +212,9 @@ class PNet(Network):
              .conv(1, 1, 2, 1, 1, relu=False, name='conv4-1')
              .softmax(3,name='prob1'))
 
-        (self.feed('PReLU3') #pylint: disable=no-value-for-parameter
+        b=(self.feed('PReLU3') #pylint: disable=no-value-for-parameter
              .conv(1, 1, 4, 1, 1, relu=False, name='conv4-2'))
-        (self.feed('PReLU3') #pylint: disable=no-value-for-parameter
+        c=(self.feed('PReLU3') #pylint: disable=no-value-for-parameter
              .conv(1, 1, 10, 1, 1, relu=False, name='conv4-3'))
 '''
 输入一批图片,inp,shape[None,12,12,3] for train_model

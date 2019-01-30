@@ -6,6 +6,7 @@ getInput=None
 buildModel=None
 buildLoss=None
 validateInput=None
+validModel=None
 validateAccuracy=None
 validate=False
 
@@ -46,9 +47,8 @@ def start_train():
     p_prob, p_regbox,p_landmark = buildModel(image_batch)
 
     if validate:
-        image_batch_valid,label_batch_valid,_,_=validateInput()
-        # image_batch_valid=image_color_distort(image_batch_valid)
-        v_prob,_,_=buildModel(image_batch_valid)
+        image_batch_valid,label_batch_valid=validateInput()
+        v_prob=validModel(image_batch_valid)
         valid_acc=validateAccuracy(v_prob,label_batch_valid)
 
     # 第三部,获得loss, class_loss,reg_loss,l2_loss,以及accuracy

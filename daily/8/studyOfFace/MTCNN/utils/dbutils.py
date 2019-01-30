@@ -214,11 +214,11 @@ def get_WIDER_Set_ImagePath():
     return ret
 
 '''
-统计pos+neg+part 样本数量
+统计pos+right+part 样本数量
 '''
 def get_example_nums(basedir,fnames=None):
     if fnames is None:
-        fnames=['pos.txt','neg.txt','part.txt']
+        fnames=['pos.txt','right.txt','part.txt']
     if not isinstance(fnames,list):
         fnames=[fnames]
 
@@ -330,12 +330,12 @@ def genImage(filename, face_coordnate, posCopys, negCopy, negNum,SIZE):
         filepath -1 x1 y1 x2 y2
     info.label= 0
         filepath 0
-    filepath=OUTPATH/{pos|neg|part}/{faceid}.jpg
+    filepath=OUTPATH/{pos|right|part}/{faceid}.jpg
     x1,y1,x2,y2=info[regbox][0],info[regbox][1],info[regbox][2],info[regbox][3]
 
     然后保存图片
     图片路径:
-        {OUTPATH}/{pos|neg|part}/faceid.jpg
+        {OUTPATH}/{pos|right|part}/faceid.jpg
 '''
 
 
@@ -349,7 +349,7 @@ def writeAnnationAndImage(info, fs, faceid, orgin_image_path, OUTPATH, SIZE):
         face_output_path = os.path.join(OUTPATH, 'pos', imagename)
         f = fs[0]
     elif info['label'] == 0:
-        face_output_path = os.path.join(OUTPATH, 'neg', imagename)
+        face_output_path = os.path.join(OUTPATH, 'right', imagename)
         f = fs[1]
     elif info['label'] == -1:
         face_output_path = os.path.join(OUTPATH, 'part', imagename)
@@ -381,7 +381,7 @@ def writeAnnationAndImage(info, fs, faceid, orgin_image_path, OUTPATH, SIZE):
 def prepareOutDir(DATASET_PATH):
     if not os.path.exists(DATASET_PATH):
         os.mkdir(DATASET_PATH)
-    sx=['pos','neg','part','landmark']
+    sx=['pos','right','part','landmark']
     for x in sx:
         path=os.path.join(DATASET_PATH, x)
         if not os.path.exists(path):

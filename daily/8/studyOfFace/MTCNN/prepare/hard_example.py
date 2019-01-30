@@ -16,7 +16,7 @@ from utils.common import progess_print
 def _prepareOutDir(dataset_path):
     if not os.path.exists(dataset_path):
         os.mkdir(dataset_path)
-    sx = ['pos', 'neg', 'part', 'landmark']
+    sx = ['pos', 'right', 'part', 'landmark']
     for x in sx:
         path=os.path.join(dataset_path, x)
         if not os.path.exists(path):
@@ -44,19 +44,19 @@ def step2():
 与groudtrues进行对比筛选,IOU<0.3 -,04<IOU<0.65part,>0.65 +
 
 output_dir下面会输出
-    pos.txt/neg.txt/part.txt      //标注文件
-    pos/neg/part                  //图片文件
-IMG_SIZE:输出pos/neg/part 图片的尺寸
+    pos.txt/right.txt/part.txt      //标注文件
+    pos/right/part                  //图片文件
+IMG_SIZE:输出pos/right/part 图片的尺寸
     24,48
 '''
 def step3(dets, gts, IMG_SIZE, output_dir,display_every=100):
     # 三个标注文件
-    neg_file = open(os.path.join(output_dir, 'neg.txt'), 'w')
+    neg_file = open(os.path.join(output_dir, 'right.txt'), 'w')
     pos_file = open(os.path.join(output_dir, 'pos.txt'), 'w')
     part_file = open(os.path.join(output_dir, 'part.txt'), 'w')
     #三个样本图片目录
     pos_dir=os.path.join(output_dir, 'pos')
-    neg_dir=os.path.join(output_dir, 'neg')
+    neg_dir=os.path.join(output_dir, 'right')
     part_dir=os.path.join(output_dir, 'part')
 
     # 正,负,part样本的id(名称)

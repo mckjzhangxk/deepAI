@@ -2,6 +2,10 @@ import numpy as np
 import numpy.random as npr
 import tensorflow as tf
 from train_model.losses import classLosses,boxesLoss,landmarkLoss,calAccuracy
+import os
+from Configure import PNET_DATASET_VALID_PATH
+from utils.tf_utils import readTFRecord
+from model.mtcnn_model import createPNet
 
 def tst_landmarkLoss():
     print('Test landmark loss!!')
@@ -112,8 +116,47 @@ def tst_accuracy():
     with tf.Session() as sess:
         _cls = sess.run(ACC, feed_dict={LABEL: label, PROB: score})
         print(_cls)
+from scipy.misc import imsave
+def tst_batch():
+
+    tf_filename = os.path.join(PNET_DATASET_VALID_PATH, 'PNet_shuffle')
+    assert os.path.exists(tf_filename), 'PNet validateInput TFRecord does not exist'
+    image_batch, label_batch, roi_batch, landmark_batch = readTFRecord(tf_filename,1,12)
+    p_prob, p_regbox, p_landmark = createPNet(image_batch, trainable=True)
+
+
+
+    sess=tf.Session()
+    varlist = tf.get_collection('PNet')
+    saver = tf.train.Saver(var_list=varlist)
+    pnet_path = '/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model1/PNet-11'
+    saver.restore(sess, pnet_path)
+
+
+    coord = tf.train.Coordinator()
+
+    # begin enqueue thread
+    threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+    try:
+        for i in range(5):
+            # a,b,c,d=sess.run([image_batch, label_batch, roi_batch, landmark_batch])
+            # print(b)
+            # print(c)
+            # print(d)
+            pp=sess.run(p_prob)
+            print(pp)
+            # a=(a+127.5)*128
+            # a=a.astype(np.uint8)
+            # for k in range(len(a)):
+            #     print(np.mean(a[k]),np.std(a[k]))
+                # imsave(str(k)+'.jpg',a[k])
+    finally:
+        coord.request_stop()
+
+    coord.join(threads)
+    sess.close()
 if __name__ == '__main__':
     # tst_ClassLoss()
     # tst_boxLoss()
     # tst_landmarkLoss()
-    tst_accuracy()
+    tst_batch()

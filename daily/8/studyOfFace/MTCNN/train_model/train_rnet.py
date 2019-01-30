@@ -8,8 +8,8 @@ import tensorflow as tf
 import os
 
 '''
-从3个tf_file读取一次训练的batch,pos:part:neg=1:1:2
-因为pos:part:neg数据存在不平衡现象,neg>>part>pos
+从3个tf_file读取一次训练的batch,pos:part:right=1:1:2
+因为pos:part:neg数据存在不平衡现象,right>>part>pos
 所有读取分成了三个
 '''
 def getInput():

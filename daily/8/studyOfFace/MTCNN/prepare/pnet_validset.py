@@ -16,7 +16,7 @@ def gen_pnet_valid_data(posCopys, negCopys, negNum):
 
     faceid=0
     f_pos=open(os.path.join(PNET_DATASET_VALID_PATH, 'pos.txt'), 'w')
-    f_neg = open(os.path.join(PNET_DATASET_VALID_PATH, 'neg.txt'), 'w')
+    f_neg = open(os.path.join(PNET_DATASET_VALID_PATH, 'right.txt'), 'w')
 
     while(idx<cnt):
         name=lines[idx].strip('\n')
@@ -60,7 +60,7 @@ def gen_pnet_valid_data(posCopys, negCopys, negNum):
 
 def merge_pnet_dataset(showlog=True):
     f_pos=open(os.path.join(PNET_DATASET_VALID_PATH, 'pos.txt'), 'r')
-    f_neg = open(os.path.join(PNET_DATASET_VALID_PATH, 'neg.txt'), 'r')
+    f_neg = open(os.path.join(PNET_DATASET_VALID_PATH, 'right.txt'), 'r')
 
 
     c_pos=  f_pos.readlines()
@@ -104,4 +104,4 @@ if __name__ == '__main__':
     SIZE=12
     gen_pnet_valid_data(posCopys=1,negCopys=1,negNum=0)
     merge_pnet_dataset()
-    cvtTxt2TF(PNET_DATASET_VALID_PATH, 'PNet.txt', 'PNet_shuffle', True)
+    cvtTxt2TF(PNET_DATASET_VALID_PATH, 'PNet.txt', 'PNet_shuffle', False)
