@@ -47,7 +47,7 @@ def start_train():
 
     if validate:
         image_batch_valid,label_batch_valid,_,_=validateInput()
-        image_batch_valid=image_color_distort(image_batch_valid)
+        # image_batch_valid=image_color_distort(image_batch_valid)
         v_prob,_,_=buildModel(image_batch_valid)
         valid_acc=validateAccuracy(v_prob,label_batch_valid)
 
