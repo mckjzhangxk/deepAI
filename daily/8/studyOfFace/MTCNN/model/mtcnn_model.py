@@ -138,7 +138,7 @@ class Network(object):
             output = convolve(inp, kernel)
             # Add the biases
             if biased:
-                biases = self.make_var('biases', [c_o])
+                biases = self.make_var('biases', [c_o],initializer=tf.zeros_initializer())
                 output = tf.nn.bias_add(output, biases)
             if relu:
                 # ReLU non-linearity

@@ -28,13 +28,12 @@ def buildTarget(loss):
     LoopPerEpoch=svConf.EXAMPLES//svConf.BATCH_SIZE+1
 
     global_step=tf.Variable(0,trainable=False)
-    lr=tf.train.exponential_decay(svConf.LR,
-                                  global_step,
-                                  decay_steps=LoopPerEpoch,
-                                  decay_rate=svConf.DECAY_FACTOR,
-                                  staircase=True)
+
+    boundary=[epoch*LoopPerEpoch for epoch in svConf.LR_EPOCH]
+    lr_rate=[svConf.LR*(svConf.DECAY_FACTOR**x) for x in range(len(boundary)+1)]
+    lr=tf.train.piecewise_constant(global_step,boundary,lr_rate)
     tf.summary.scalar('learn rate',lr)
-    optimizer=tf.train.AdamOptimizer(lr).minimize(loss,global_step)
+    optimizer=tf.train.MomentumOptimizer(lr,0.9).minimize(loss,global_step)
     return optimizer
 
 def start_train():

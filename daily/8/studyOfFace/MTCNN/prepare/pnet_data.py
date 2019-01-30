@@ -2,6 +2,7 @@ from Configure import WIDER_TRAINSET,WIDER_TRAIN_ANNOTION,PNET_DATASET_PATH,BASE
 from utils.dbutils import getLFW,genImage,writeAnnationAndImage,prepareOutDir
 import os
 import numpy.random as npr
+import numpy as np
 from utils.common import progess_print
 
 
@@ -100,31 +101,25 @@ def gen_pnet_data(posCopys, negCopys, negNum):
     fs=open(WIDER_TRAIN_ANNOTION, 'r')
     lines=fs.readlines()
     cnt=len(lines)
-    numOFImages=0
     idx=0
-
     faceid=0
     f_pos=open(os.path.join(PNET_DATASET_PATH, 'pos.txt'), 'w')
     f_neg = open(os.path.join(PNET_DATASET_PATH, 'neg.txt'), 'w')
     f_part = open(os.path.join(PNET_DATASET_PATH, 'part.txt'), 'w')
 
     while(idx<cnt):
-        name=lines[idx].strip('\n')
+        line=lines[idx].strip('\n').strip(' ')
+        sps=line.split(' ')
+        name=sps[0]+'.jpg'
         imagepath=os.path.join(WIDER_TRAINSET,name)
 
+        print(imagepath)
         assert os.path.exists(imagepath) ,'file does not exist'
-        #获得人脸数目
-        idx+=1
-        facenum=int(lines[idx].strip('\n'))
+
 
         #获得人脸坐标
-        face_coordnate=[]
-        for n in range(facenum):
-            idx+=1
-            splits = lines[idx].split(' ')
-            x1, y1, w, h = float(splits[0]), float(splits[1]), float(splits[2]), float(splits[3])
-            x2, y2 = x1 + w, y1 + h
-            face_coordnate.append((x1,y1,x2,y2))
+        face_coordnate=np.array([float(x) for x in sps[1:]]).reshape(-1, 4)
+
         '''
         给一张原图,图上所有人脸的坐标,返回negNum个非人脸,对于每个人脸,
         生成 posCopys张人脸副本,这些副本就会有了regbox,也就是人脸坐标的修正!
@@ -135,12 +130,11 @@ def gen_pnet_data(posCopys, negCopys, negNum):
         for sm in samplelist:
             _cnt=writeAnnationAndImage(sm, [f_pos, f_neg, f_part], faceid, imagepath,PNET_DATASET_PATH,SIZE)
             faceid += _cnt
-
         #跳到下一张图片
         idx+=1
-        numOFImages+=1
-        if numOFImages%2==0:
-            progess_print("finish %d/%d"%(numOFImages,12880))
+
+        if idx%2==0:
+            progess_print("finish %d/%d"%(idx,cnt))
     f_pos.close()
     f_neg.close()
     f_part.close()

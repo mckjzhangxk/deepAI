@@ -1,4 +1,4 @@
-from prepare.pnet_data import genImage,writeAnnationAndImage,prepareOutDir
+from utils.dbutils import genImage,writeAnnationAndImage,prepareOutDir
 from Configure import PNET_DATASET_VALID_PATH,WIDER_VALSET,WIDER_VAL_ANNOTION
 import numpy.random as npr
 import os
