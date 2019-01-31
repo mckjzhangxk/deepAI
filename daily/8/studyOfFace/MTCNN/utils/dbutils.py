@@ -158,38 +158,35 @@ def get_WIDER_Set():
     fs = open(WIDER_TRAIN_ANNOTION, 'r')
     lines=fs.readlines()
     cnt=len(lines)
-    numOFImages=0
     numOFFace=0
-    SIZE=12
     idx=0
 
 
     while (idx < cnt):
-        name = lines[idx].strip('\n')
+        line= lines[idx].strip('\n').strip(' ')
+        sps=line.split(' ')
+        name=sps[0]+'.jpg'
         imagepath = os.path.join(WIDER_TRAINSET, name)
+
         I = cv2.imread(imagepath)
         H, W, _ = I.shape
 
-        # 获得人脸数目
-        idx += 1
-        facenum = int(lines[idx].strip('\n'))
+        face_coordnate=[float(x) for x in sps[1:]]
+        face_coordnate=np.array(face_coordnate).reshape((-1,4))
 
-        face_coordnate=[]
-        for n in range(facenum):
-            idx+=1
-            splits = lines[idx].split(' ')
-            x1, y1, w, h = float(splits[0]), float(splits[1]), float(splits[2]), float(splits[3])
-            x2, y2 = x1 + w, y1 + h
-            if (x1 + SIZE < x2 and x1 >= 0 and x2 <= W and y1 + SIZE < y2 and y1 >= 0 and y2 <= H):
-                face_coordnate.append((x1,y1,x2,y2))
-        numOFImages += 1
-        numOFFace+=len(face_coordnate)
+        face_coordnate_valid=[]
+        for x1,y1,x2,y2 in face_coordnate:
+            if x1+40<x2 and y1+40<y2 and x1>=0 and x2<=W and y1>=0 and y2<=H:
+                face_coordnate_valid.append([x1,y1,x2,y2])
+
+        numOFFace+=len(face_coordnate_valid)
         #跳到下一张图片
         idx+=1
-        ret[imagepath]=np.array(face_coordnate)
+        if len(face_coordnate_valid)>0:
+            ret[imagepath]=np.array(face_coordnate_valid)
     fs.close()
 
-    print('total num of images %d' % numOFImages)
+    print('total num of images %d' % cnt)
     print('total num of faces %d' % numOFFace)
     return ret
 def get_WIDER_Set_ImagePath():
@@ -201,20 +198,21 @@ def get_WIDER_Set_ImagePath():
     idx = 0
 
     while (idx < cnt):
-        name = lines[idx].strip('\n')
-        imagepath = os.path.join(WIDER_TRAINSET, name)
+        line=lines[idx].strip('\n').strip(' ')
+        sps=line.split(' ')
+        name=sps[0]+'.jpg'
 
+        imagepath = os.path.join(WIDER_TRAINSET, name)
         # 获得人脸数目
         idx += 1
-        facenum = int(lines[idx].strip('\n'))
-        idx =idx+ facenum+1
         if os.path.exists(imagepath):
             ret.append(imagepath)
     fs.close()
     return ret
 
+
 '''
-统计pos+right+part 样本数量
+统计basedir/fnames下文件行数,默认fnames=[pos+right+part] 样本数量
 '''
 def get_example_nums(basedir,fnames=None):
     if fnames is None:

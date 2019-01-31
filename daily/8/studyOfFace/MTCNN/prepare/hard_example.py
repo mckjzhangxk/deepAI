@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 import tensorflow as tf
-
+import pickle
 from Configure import RNET_DATASET_PATH, THRESHOLD, NMS_DEFAULT, SCALE, FACE_MIN_SIZE, NEG_NUM_FOR_RNET,DETECT_EPOCHS,ONET_DATASET_PATH,LWF_SHIFT
 from detect import cutImage
 from detect.Detector import Detector_tf as Detector
@@ -33,6 +33,9 @@ def step1(detector,display_every=2):
             tmp_db[filename]=total_box[:,0:4] #返回的是9维的,只要前4
         if idx%display_every==0:
             progess_print('step1,detection task,finish %d/%d'%(idx+1,len(imlist)))
+    save_path=os.path.join(RNET_DATASET_PATH,'detections.pkl')
+    with open(save_path,'wb') as f:
+        pickle.dump(tmp_db,f,1)
     return tmp_db
 #第二部,调用get_WIDER_Set,获得标注集合,map<imagepath,total_box> groudtrue
 def step2():
@@ -51,8 +54,8 @@ IMG_SIZE:输出pos/neg/part 图片的尺寸
 '''
 def step3(dets, gts, IMG_SIZE, output_dir,display_every=100):
     # 三个标注文件
-    neg_file = open(os.path.join(output_dir, 'neg.txt'), 'w')
     pos_file = open(os.path.join(output_dir, 'pos.txt'), 'w')
+    neg_file = open(os.path.join(output_dir, 'neg.txt'), 'w')
     part_file = open(os.path.join(output_dir, 'part.txt'), 'w')
     #三个样本图片目录
     pos_dir=os.path.join(output_dir, 'pos')
