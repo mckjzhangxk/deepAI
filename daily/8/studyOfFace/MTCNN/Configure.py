@@ -46,6 +46,7 @@ RNET 网络区
 '''
 #RNET数据处理
 RNET_DATASET_PATH=join(BASE_DIR,'MTCNN_TRAIN/rnet/dataset')
+RNET_DATASET_VALID_PATH=join(BASE_DIR,'MTCNN_TRAIN/rnet/dataset_valid')
 #一张图片生成最多NEG_NUM_FOR_RNET张人脸
 NEG_NUM_FOR_RNET=60
 '''
@@ -53,5 +54,6 @@ NEG_NUM_FOR_RNET=60
 '''
 #RNET数据处理
 ONET_DATASET_PATH=join(BASE_DIR,'MTCNN_TRAIN/onet/dataset')
+ONET_DATASET_VALID_PATH=join(BASE_DIR,'MTCNN_TRAIN/onet/dataset_valid')
 #一张图片生成最多NEG_NUM_FOR_RNET张人脸
 NEG_NUM_FOR_ONET=60
