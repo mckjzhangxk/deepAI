@@ -6,8 +6,6 @@ import pickle
 from Configure import RNET_DATASET_PATH, THRESHOLD, NMS_DEFAULT, SCALE, FACE_MIN_SIZE, NEG_NUM_FOR_RNET,DETECT_EPOCHS,ONET_DATASET_PATH,LWF_SHIFT
 from detect import cutImage
 from detect.Detector import Detector_tf as Detector
-import train_model.solver.pnet_solver as pnet_solver
-import train_model.solver.rnet_solver as rnet_solver
 
 from utils.dbutils import get_WIDER_Set, get_WIDER_Set_ImagePath,getLFW
 from utils.roi_utils import IoU, GetRegressBox
@@ -133,15 +131,19 @@ def step3(dets, gts, IMG_SIZE, output_dir,display_every=100):
 detector=None
 def gen_hard_example(net):
     sess = tf.Session()
-    model_path = [os.path.join(pnet_solver.MODEL_CHECKPOINT_DIR, 'PNet-%d' % DETECT_EPOCHS[0])]
+    model_path = []
     if net=='RNet':
         target_dir=RNET_DATASET_PATH
         IMSIZE=24
-
+        from train_model.solver.pnet_solver import MODEL_CHECKPOINT_DIR as PNET_MODEL_PATH
+        model_path.append(os.path.join(PNET_MODEL_PATH, 'PNet-%d' % DETECT_EPOCHS[0]))
     if net=='ONet':
         target_dir=ONET_DATASET_PATH
         IMSIZE=48
-        model_path.append(os.path.join(rnet_solver.MODEL_CHECKPOINT_DIR, 'RNet-%d' % DETECT_EPOCHS[1]))
+        from train_model.solver.pnet_solver import MODEL_CHECKPOINT_DIR as PNET_MODEL_PATH
+        model_path.append(os.path.join(PNET_MODEL_PATH, 'PNet-%d' % DETECT_EPOCHS[0]))
+        from train_model.solver.rnet_solver import MODEL_CHECKPOINT_DIR as RNET_MODEL_PATH
+        model_path.append(os.path.join(RNET_MODEL_PATH, 'RNet-%d' % DETECT_EPOCHS[1]))
     detector = Detector(sess,
                         minsize=FACE_MIN_SIZE,
                         scaleFactor=SCALE,
