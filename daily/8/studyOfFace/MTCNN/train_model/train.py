@@ -35,8 +35,26 @@ def buildTarget(loss):
     lr=tf.train.piecewise_constant(global_step,boundary,lr_rate)
     tf.summary.scalar('learn rate',lr)
     optimizer=tf.train.MomentumOptimizer(lr,0.9).minimize(loss,global_step)
+
     return optimizer
 
+
+def recoverModel(sess):
+    varlist=tf.get_collection(svConf.model_name)
+    saver=tf.train.Saver(var_list=varlist)
+    saver.restore(sess,svConf.MODEL_RECOLVER_PATH)
+
+def checkGradients(loss):
+    varlist = tf.get_collection(svConf.model_name)
+    gradlist=[]
+
+    for v in varlist:
+        gradlist.append(tf.gradients(loss,v,
+                                     name='gradient_'+v.name.replace('/','_').replace(':','-')
+                                     )[0])
+
+    for v in gradlist:
+        tf.summary.histogram(v.name,v)
 def start_train():
     prepare()
     # 第一步,获取输入
@@ -56,6 +74,8 @@ def start_train():
     dis_total_loss, dis_acc = buildLoss(p_prob, p_regbox,p_landmark, label_batch, roi_batch,landmark_batch)
     # 第四步,定义训练算法,每次训练
     op_optimizer = buildTarget(dis_total_loss)
+    if svConf.CHECK_GRADIENT:
+        checkGradients(dis_total_loss)
     op_summary = tf.summary.merge_all()
 
     # 开始训练
@@ -72,12 +92,20 @@ def start_train():
         with tf.summary.FileWriter(svConf.MODEL_LOG_DIR, sess.graph) as writer:
             try:
                 sess.run(tf.global_variables_initializer())
+                '''
+                    恢复模型
+                '''
+
+                if svConf.MODEL_RECOLVER_PATH:
+                    recoverModel(sess)
                 for i in range(MAX_STEPS):
-                    sess.run([op_optimizer])
                     if i % svConf.DISPLAY_EVERY == 0:
-                        _acc, _loss, _summary = sess.run([dis_acc, dis_total_loss, op_summary])
+                        _,_acc, _loss, _summary = sess.run([op_optimizer,dis_acc, dis_total_loss, op_summary])
                         writer.add_summary(_summary,global_step=i)
                         print('Total Loss is %.3f,Accuracy is %.3f' % (_loss, _acc))
+                    else:
+                        sess.run([op_optimizer])
+
                     if i % svConf.LoopPerEpoch == 0:
                         saver.save(sess, os.path.join(svConf.MODEL_CHECKPOINT_DIR,svConf.model_name),i // svConf.LoopPerEpoch)
 
