@@ -4,7 +4,7 @@ import numpy.random as npr
 import os
 from utils.common import progess_print
 
-def gen_valid_data(DATASET_VALID_PATH, posCopys, negCopys, negNum):
+def gen_valid_data(DATASET_VALID_PATH, posCopys, negCopys, negNum,SIZE=12):
     prepareOutDir(DATASET_VALID_PATH)
 
     fs=open(WIDER_VAL_ANNOTION, 'r')

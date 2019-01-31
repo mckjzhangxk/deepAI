@@ -8,6 +8,6 @@ if __name__ == '__main__':
     fname='PNet.txt'
     outputPath=PNET_DATASET_VALID_PATH
 
-    gen_valid_data(outputPath,posCopys=1,negCopys=1,negNum=0)
+    gen_valid_data(outputPath,posCopys=1,negCopys=1,negNum=0,SIZE=24)
     merge_dataset(outputPath,fname)
     cvtTxt2TF(outputPath, fname, 'PNet_shuffle', False)
