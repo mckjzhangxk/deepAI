@@ -216,7 +216,7 @@ def get_WIDER_Set_ImagePath():
 '''
 def get_example_nums(basedir,fnames=None):
     if fnames is None:
-        fnames=['pos.txt','right.txt','part.txt']
+        fnames=['pos.txt','neg.txt','part.txt']
     if not isinstance(fnames,list):
         fnames=[fnames]
 
