@@ -1,6 +1,6 @@
 import train_model.train as train
 from train_model.solver import rnet_solver
-from Configure import RNET_DATASET_PATH
+from Configure import RNET_DATASET_PATH,RNET_DATASET_VALID_PATH
 from  utils.tf_utils import readTFRecord
 from model.mtcnn_model import createRNet
 from train_model.losses import mtcnn_loss_acc,calAccuracy
@@ -42,7 +42,7 @@ def buildLoss(prob, regbox, landmark, label, gt_roi, gt_landmark):
 
 
 def validateInput():
-    tf_filename=os.path.join(RNET_DATASET_PATH,'RNet_shuffle')
+    tf_filename=os.path.join(RNET_DATASET_VALID_PATH,'RNet_shuffle')
     assert os.path.exists(tf_filename) ,'RNet validateInput TFRecord does not exist'
     image_batch,label_batch,roi_batch,landmark_batch=readTFRecord(tf_filename, rnet_solver.BATCH_SIZE, rnet_solver.IMG_SIZE)
     return image_batch,label_batch

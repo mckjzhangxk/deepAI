@@ -1,5 +1,5 @@
 from utils.dbutils import get_example_nums
-from Configure import RNET_DATASET_PATH,BASE_DIR
+from Configure import RNET_DATASET_PATH,RNET_DATASET_VALID_PATH,BASE_DIR
 from os.path import join
 
 
@@ -7,10 +7,10 @@ model_name='RNet'
 IMG_SIZE=24
 ##############################
 # EXAMPLES=100000
-EXAMPLES=get_example_nums(RNET_DATASET_PATH)
-VALID_EXAMPLES=get_example_nums(RNET_DATASET_PATH,'RNet.txt')
+EXAMPLES=get_example_nums(RNET_DATASET_PATH,'pos.txt')*6
+VALID_EXAMPLES=get_example_nums(RNET_DATASET_VALID_PATH,'RNet.txt')
 
-EPOCH=30
+EPOCH=100
 BATCH_SIZE=384
 LoopPerEpoch=EXAMPLES//BATCH_SIZE+1
 LoopsForValid=VALID_EXAMPLES//BATCH_SIZE+1
@@ -26,4 +26,4 @@ CHECK_GRADIENT=False
 #日志信息
 MODEL_LOG_DIR=join(BASE_DIR,'MTCNN_TRAIN/rnet/log')
 MODEL_CHECKPOINT_DIR=join(BASE_DIR,'MTCNN_TRAIN/rnet/model')
-MODEL_RECOLVER_PATH=None
+MODEL_RECOLVER_PATH=join(BASE_DIR,'MTCNN_TRAIN/rnet/model-19-1-31/RNet-29')

@@ -257,7 +257,7 @@ class RNet(Network):
              .fc(10, relu=False, name='conv5-3'))
 def createRNet(inp,trainable):
     assert inp.get_shape()[3]==3,'Input must have 3 channel'
-    with tf.variable_scope('rnet'):
+    with tf.variable_scope('rnet',reuse=tf.AUTO_REUSE):
         RNet({'data':inp},trainable)
     g = tf.get_default_graph()
     prob_tensor=g.get_tensor_by_name('rnet/prob1:0')
@@ -291,7 +291,7 @@ class ONet(Network):
              .fc(10, relu=False, name='conv6-3'))
 def createONet(inp,trainable):
     assert inp.get_shape()[3]==3,'Input must have 3 channel'
-    with tf.variable_scope('onet'):
+    with tf.variable_scope('onet',reuse=tf.AUTO_REUSE):
         ONet({'data':inp},trainable)
     g = tf.get_default_graph()
     # 'onet/conv6-2/conv6-2:0', 'onet/conv6-3/conv6-3:0', 'onet/prob1:0'

@@ -37,7 +37,7 @@ def step1(detector,display_every=2):
     return tmp_db
 #第二部,调用get_WIDER_Set,获得标注集合,map<imagepath,total_box> groudtrue
 def step2():
-    return get_WIDER_Set()
+    return get_WIDER_Set(MINFACE=20)
 
 
 '''

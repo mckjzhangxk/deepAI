@@ -4,7 +4,7 @@
 '''
 #TRAINSET
 from os.path import join
-BASE_DIR='/home/zhangxk/AIProject'
+BASE_DIR='/home/zxk/AI'
 WIDER_TRAINSET=join(BASE_DIR,'WIDER_train/images')
 WIDER_TRAIN_ANNOTION=join(BASE_DIR,'WIDER_train/wider_face_train.txt')
 
@@ -18,7 +18,7 @@ LWF_SHIFT=10
 
 
 
-FACE_MIN_SIZE=50 #最小人脸尺寸
+FACE_MIN_SIZE=20 #最小人脸尺寸
 SCALE=0.79    #人脸金字塔,每次缩放比例
 # DETECT_EPOCHS=[3,4,5]  #生成hardexample时候,P,R,O分别使用第EPOCH?个训练的模型
 DETECT_EPOCHS=[22,4,2]

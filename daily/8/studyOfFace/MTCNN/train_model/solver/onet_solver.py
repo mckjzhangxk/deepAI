@@ -6,7 +6,7 @@ model_name='ONet'
 IMG_SIZE=48
 ##############################
 # EXAMPLES=10000
-EXAMPLES=get_example_nums(ONET_DATASET_PATH,'ONet.txt')
+EXAMPLES=get_example_nums(ONET_DATASET_PATH)
 VALID_EXAMPLES=get_example_nums(ONET_DATASET_VALID_PATH,'ONet.txt')
 
 EPOCH=30

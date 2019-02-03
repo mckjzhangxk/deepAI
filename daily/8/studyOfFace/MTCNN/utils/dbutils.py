@@ -38,10 +38,10 @@ def getLFW(SIZE=12,output_dir=None,numOfShift=1):
         return im_data
 
 
-    def choiocebox(box,gtbox):
+    def choiocebox(box,gtbox,MINFACE=40):
         def box_too_small(box):
             w, h = box[2] - box[0], box[3] - box[1]
-            return max(w, h) < 40
+            return max(w, h) < MINFACE
         nx1, ny1, nx2, ny2=box[0],box[1],box[2],box[3]
         if box_too_small([nx1, ny1, nx2, ny2]): return False
         iou = IoU([nx1, ny1, nx2, ny2], gtbox)[0]
@@ -152,7 +152,7 @@ def getLFW(SIZE=12,output_dir=None,numOfShift=1):
     total num of images 12880
     total num of faces 94484
 '''
-def get_WIDER_Set():
+def get_WIDER_Set(MINFACE=40):
     ret=dict()
 
     fs = open(WIDER_TRAIN_ANNOTION, 'r')
@@ -176,7 +176,7 @@ def get_WIDER_Set():
 
         face_coordnate_valid=[]
         for x1,y1,x2,y2 in face_coordnate:
-            if x1+40<x2 and y1+40<y2 and x1>=0 and x2<=W and y1>=0 and y2<=H:
+            if x1+MINFACE<x2 and y1+MINFACE<y2 and x1>=0 and x2<=W and y1>=0 and y2<=H:
                 face_coordnate_valid.append([x1,y1,x2,y2])
 
         numOFFace+=len(face_coordnate_valid)
@@ -244,14 +244,14 @@ def get_example_nums(basedir,fnames=None):
 '''
 
 
-def genImage(filename, face_coordnate, posCopys, negCopy, negNum,SIZE):
+def genImage(filename, face_coordnate, posCopys, negCopy, negNum,SIZE,MINFACE=40):
     tsutils = ImageTransform()
     I = cv2.imread(filename)
     H, W, _ = I.shape
 
     face_cood_valid = []
     for x1, y1, x2, y2 in face_coordnate:
-        if (x1 + 40 < x2 and x1 >= 0 and x2 <= W and y1 + 40 < y2 and y1 >= 0 and y2 <= H):
+        if (x1 + MINFACE < x2 and x1 >= 0 and x2 <= W and y1 + MINFACE < y2 and y1 >= 0 and y2 <= H):
             face_cood_valid.append((x1, y1, x2, y2))
     if len(face_cood_valid) == 0: return []
     ret = []
