@@ -50,6 +50,7 @@ class Detector():
     '''
     def detect_face(self,filename):
         image = cv2.imread(filename)
+
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         assert image is not None, '%s not exist' % filename
@@ -295,69 +296,77 @@ class Detector_tf(Detector):
         img=feedImage(img)
         return img
 
-# from scipy.misc import imsave
-# if __name__ == '__main__':
-#     sess = tf.Session()
-#     imagepath='/home/zhangxk/projects/deepAI/daily/8/studyOfFace/MTCNN/detect/0_Parade_marchingband_1_849.jpg'
-#     # imagepath='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset_valid/right/0.jpg'
-#
-#
-#     # pnet_path='/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
-#     pnet_path='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model-2019-1-30/PNet-22'
-#     # pnet_path = '/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model-2019-1-29/PNet-11'
-#
-#     rnet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
-#     onet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
-#
-#     rnet_path=None
-#     onet_path=None
-#     print('p_net---->totalbox and next input:')
-#
-#     # df=Detector_Caffe(
-#     #             sess=sess,
-#     #             minsize=50,
-#     #             scaleFactor=0.709,
-#     #             nms=[0.5,0.6,0.7,0.7],
-#     #             threshold=[0.6,0.6,0.7],
-#     #             model_path=[pnet_path,rnet_path,onet_path],
-#     #             save_stage=False
-#     #             )
-#     df=Detector_tf(
-#                 sess=sess,
-#                 minsize=40,
-#                 scaleFactor=0.79,
-#                 nms=[0.5,0.6,0.7,0.7],
-#                 threshold=[0.6,0.6,0.7],
-#                 model_path=[pnet_path,rnet_path,onet_path],
-#                 save_stage=False
-#                 )
-#
-#     totalbox=df.detect_face(imagepath)
-#     print(totalbox.shape)
-#
-#
-#     # mydir='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset_valid'
-#     # annofile='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset_valid/PNet.txt'
-#     # lines=open(annofile).readlines()
-#
-#     # cnt=0
-#     # right=0
-#     # for l in lines:
-#     #     sps=l.split(' ')
-#     #     imagepath=sps[0]
-#     #     # print(imagepath)
-#     #     image = cv2.imread(imagepath)
-#     #     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-#     #     image=df.preprocessing(image)
-#     #     ss=df.pnet(image)[1][0,0,0,1]
-#     #     # print(ss)
-#     #     if ss<=0.5:ll=0
-#     #     else:ll=1
-#     #     label=int(sps[1])
-#     #     cnt+=1
-#     #     right+=(label==ll)
-#     # print(right / cnt)
-#     # print(right)
-#     # print(cnt)
-#     image=drawDectectBox(imagepath, totalbox, scores=None)
-#     imsave('ssss.jpg',image)
+from scipy.misc import imsave
+import time
+if __name__ == '__main__':
+    sess = tf.Session()
+    imagepath='/home/zxk/PycharmProjects/deepAI/daily/8/studyOfFace/images/timg.jpg'
+    # imagepath='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset_valid/right/0.jpg'
+
+
+    # pnet_path='/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
+    pnet_path='/home/zxk/AI/MTCNN_TRAIN/pnet/model/PNet-29'
+    rnet_path='/home/zxk/AI/MTCNN_TRAIN/rnet/model/RNet-23'
+    onet_path='/home/zxk/AI/MTCNN_TRAIN/onet/model/ONet-29'
+    # pnet_path = '/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model-2019-1-29/PNet-11'
+
+    # rnet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
+    # onet_path = '/home/zhangxk/projects/deepAI/daily/8/studyOfFace/mylib/detect'
+
+    # rnet_path=None
+    # onet_path=None
+    print('p_net---->totalbox and next input:')
+
+    # df=Detector_Caffe(
+    #             sess=sess,
+    #             minsize=50,
+    #             scaleFactor=0.709,
+    #             nms=[0.5,0.6,0.7,0.7],
+    #             threshold=[0.6,0.6,0.7],
+    #             model_path=[pnet_path,rnet_path,onet_path],
+    #             save_stage=False
+    #             )
+    df=Detector_tf(
+                sess=sess,
+                minsize=50,
+                scaleFactor=0.79,
+                nms=[0.5,0.6,0.7,0.7],
+                threshold=[0.6,0.6,0.7],
+                model_path=[pnet_path,rnet_path,onet_path],
+                save_stage=False
+                )
+
+    s=time.time()
+    N=10
+    for n in range(N):
+        totalbox=df.detect_face(imagepath)
+    e=time.time()
+    print('average time %.3f'%((e-s)/N))
+    print(totalbox.shape)
+
+
+    # mydir='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset_valid'
+    # annofile='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset_valid/PNet.txt'
+    # lines=open(annofile).readlines()
+
+    # cnt=0
+    # right=0
+    # for l in lines:
+    #     sps=l.split(' ')
+    #     imagepath=sps[0]
+    #     # print(imagepath)
+    #     image = cv2.imread(imagepath)
+    #     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    #     image=df.preprocessing(image)
+    #     ss=df.pnet(image)[1][0,0,0,1]
+    #     # print(ss)
+    #     if ss<=0.5:ll=0
+    #     else:ll=1
+    #     label=int(sps[1])
+    #     cnt+=1
+    #     right+=(label==ll)
+    # print(right / cnt)
+    # print(right)
+    # print(cnt)
+    image=drawDectectBox(imagepath, totalbox, scores=None)
+    imsave('ssss.jpg',image)
