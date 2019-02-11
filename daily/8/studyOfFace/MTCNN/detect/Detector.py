@@ -49,10 +49,11 @@ class Detector():
             返回:[total_box]*3....
     '''
     def detect_face(self,filename):
-        image = cv2.imread(filename)
-
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
+        if isinstance(filename,str):
+            image = cv2.imread(filename)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        else:
+            image=filename
         assert image is not None, '%s not exist' % filename
         total_box=np.empty((0,9),dtype=np.float32)
         stage_box=[]
@@ -336,37 +337,6 @@ if __name__ == '__main__':
                 save_stage=False
                 )
 
-    s=time.time()
-    N=10
-    for n in range(N):
-        totalbox=df.detect_face(imagepath)
-    e=time.time()
-    print('average time %.3f'%((e-s)/N))
-    print(totalbox.shape)
-
-
-    # mydir='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset_valid'
-    # annofile='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/dataset_valid/PNet.txt'
-    # lines=open(annofile).readlines()
-
-    # cnt=0
-    # right=0
-    # for l in lines:
-    #     sps=l.split(' ')
-    #     imagepath=sps[0]
-    #     # print(imagepath)
-    #     image = cv2.imread(imagepath)
-    #     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    #     image=df.preprocessing(image)
-    #     ss=df.pnet(image)[1][0,0,0,1]
-    #     # print(ss)
-    #     if ss<=0.5:ll=0
-    #     else:ll=1
-    #     label=int(sps[1])
-    #     cnt+=1
-    #     right+=(label==ll)
-    # print(right / cnt)
-    # print(right)
-    # print(cnt)
+    totalbox=df.detect_face(imagepath)
     image=drawDectectBox(imagepath, totalbox, scores=None)
     imsave('ssss.jpg',image)
