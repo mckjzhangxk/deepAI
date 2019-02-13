@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import cv2
-from detect import Detector_tf,drawDectectBox
+from detect import Detector_tf,drawDectectBox,drawLandMarks
 
 def bigPicture(a,b,c,d,h=None,w=None):
     if h:
@@ -19,11 +19,11 @@ def bigPicture(a,b,c,d,h=None,w=None):
     return out
 
 
-pnet_path='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model-2019-1-30/PNet-29'
-rnet_path='/home/zxk/AI/MTCNN_TRAIN/rnet/model/RNet-23'
-onet_path='/home/zxk/AI/MTCNN_TRAIN/onet/model/ONet-29'
-rnet_path=None
-onet_path=None
+pnet_path='/home/zhangxk/AIProject/MTCNN_TRAIN/pnet/model/PNet-29'
+rnet_path='/home/zhangxk/AIProject/MTCNN_TRAIN/rnet/model/RNet-23'
+onet_path='/home/zhangxk/AIProject/MTCNN_TRAIN/onet/model/ONet-29'
+# rnet_path=None
+# onet_path=None
 
 sess=tf.Session()
 df=Detector_tf(sess,
@@ -51,10 +51,11 @@ while True:
         else:
             rImage=pImage.copy()
         if len(stage_box)>2:
-            oImage=drawDectectBox(frame, stage_box[2], scores=stage_box[2][:, 4])
+            oImage=drawDectectBox(frame, stage_box[2][:,:4], scores=stage_box[2][:, 4])
+            oImage=drawLandMarks(oImage,stage_box[2][:,5:])
         else:
             oImage=pImage.copy()
-            
+
         I= bigPicture(frame, pImage, rImage, oImage,320,426)[:, :, ::-1]
         cv2.imshow('myvideo',I)
 

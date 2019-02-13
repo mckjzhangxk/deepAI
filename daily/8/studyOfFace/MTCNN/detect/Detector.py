@@ -67,6 +67,7 @@ class Detector():
                 stage_box.append(total_box.copy())
         if self.onet and len(total_box) > 0:
             total_box,landmark = self.o_stage(image,total_box)
+            total_box=np.concatenate((total_box,landmark),axis=1)
             if self.m_save_stage:
                 stage_box.append(total_box.copy())
         if self.m_save_stage:

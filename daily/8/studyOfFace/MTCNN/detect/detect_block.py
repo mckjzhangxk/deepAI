@@ -170,9 +170,8 @@ def bb_landmark(box,landmarks):
     w=box[:,2]-box[:,0]+1
     h=box[:,3]-box[:,1]+1
 
-    landmarks[:,0:5]=landmarks[:,0:5]*w+box[:,0]
-    landmarks[:, 5:10] = landmarks[:, 5:10] * h + box[:, 1]
-
+    landmarks[:,0:9:2] = landmarks[:,0:9:2]  * w +box[:,0]
+    landmarks[:,1:10:2]= landmarks[:,1:10:2] * h +box[:, 1]
     return landmarks
 # function pick = nms(boxes,threshold,type)
 def nms(boxes, threshold, method):
@@ -303,9 +302,9 @@ def drawLandMarks(orignImage,landmarks):
     _I = orignImage.copy()
     numBox = len(landmarks)
     for n in range(numBox):
-        for k in range(5):
-            pt=landmarks[n][k],landmarks[n][k+5]
-            cv2.circle(_I,pt,1,(0,255,0),2)
+        for k in range(0,10,2):
+            pt=int(landmarks[n][k]),int(landmarks[n][k+1])
+            cv2.circle(_I,pt,5,(0,255,0),5)
     return _I
 
 
