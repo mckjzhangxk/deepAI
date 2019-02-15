@@ -108,7 +108,9 @@ def maybe_parse_standard_hparams(hparams, hparams_path):
       hparams.parse_json(f.read())
   return hparams
 
-
+'''
+把hparams转成json输出到out_dir/hparams
+'''
 def save_hparams(out_dir, hparams):
   """Save hparams."""
   hparams_file = os.path.join(out_dir, "hparams")
@@ -123,7 +125,10 @@ def debug_tensor(s, msg=None, summarize=10):
     msg = s.name
   return tf.Print(s, [tf.shape(s), s], msg + " ", summarize=summarize)
 
-
+'''
+创建一个Summary(name=tag,value=value)
+把这个Summary添加到summary_writer日志中
+'''
 def add_summary(summary_writer, global_step, tag, value):
   """Add a new summary to the current summary_writer.
   Useful to log things that are not part of the training graph, e.g., tag=BLEU.
@@ -131,7 +136,13 @@ def add_summary(summary_writer, global_step, tag, value):
   summary = tf.Summary(value=[tf.Summary.Value(tag=tag, simple_value=value)])
   summary_writer.add_summary(summary, global_step)
 
-
+'''
+  获得GPU配置:
+    打印tensor的分布情况
+    允许把不存在的设备数据选择一个可以的移动
+    允许显存自增长,
+    返回:tf.Config_Proto
+'''
 def get_config_proto(log_device_placement=False, allow_soft_placement=True,
                      num_intra_threads=0, num_inter_threads=0):
   # GPU options:
@@ -149,7 +160,10 @@ def get_config_proto(log_device_placement=False, allow_soft_placement=True,
 
   return config_proto
 
-
+'''
+  words:[w1 w2,w3....],
+  return:a string,'w1 w2 w3'
+'''
 def format_text(words):
   """Convert a sequence words into sentence."""
   if (not hasattr(words, "__len__") and  # for numpy array

@@ -25,7 +25,16 @@ from ..utils import evaluation_utils
 from ..utils import misc_utils as utils
 
 __all__ = ["decode_and_evaluate", "get_translation"]
+'''
+使用sess,运行model(InferModel),获得翻译的结果,把结果输出到trans_file中,
+每一句话翻译num_translations_per_input遍(对infer_mode有用,greed没有,beam还会参考beam_width).
 
+最后把trans_file和ref_file做比较,得出结果
+返回:
+evaluation_scores:dict
+  key:(bleu,rouge,accuracy)
+  value:score
+'''
 
 def decode_and_evaluate(name,
                         model,
@@ -54,16 +63,20 @@ def decode_and_evaluate(name,
         num_translations_per_input = 1
       elif infer_mode == "beam_search":
         num_translations_per_input = min(num_translations_per_input, beam_width)
-
+      #把翻译的结果全部输出到了trans_file文件里面,num_sentences是多少个翻译的源句子,
+      # 每个源句子有bw个备份
       while True:
         try:
+          #nmt_outputs:(N,T) or(bw,N,T),得到了
           nmt_outputs, _ = model.decode(sess)
           if infer_mode != "beam_search":
             nmt_outputs = np.expand_dims(nmt_outputs, 0)
-
+          # nmt_outputs:(1,N,T) or(bw,N,T)
           batch_size = nmt_outputs.shape[1]
           num_sentences += batch_size
 
+          #nmt_outputs是(bw,N,T)的数组,也就是说要把数组转成string bw*n次
+          # 每一句话有bw个翻译版本
           for sent_id in range(batch_size):
             for beam_id in range(num_translations_per_input):
               translation = get_translation(
@@ -92,7 +105,13 @@ def decode_and_evaluate(name,
 
   return evaluation_scores
 
+'''
+nmt_outputs:(N,?) nmt的输出
+sent_id:选择输出的句子索引
 
+nmt_outputs[sent_id]--->str(nmt_outputs[sent_id])
+输出翻译完成的字符串!!
+'''
 def get_translation(nmt_outputs, sent_id, tgt_eos, subword_option):
   """Given batch decoding outputs, select a sentence and turn to text."""
   if tgt_eos: tgt_eos = tgt_eos.encode("utf-8")
@@ -102,7 +121,7 @@ def get_translation(nmt_outputs, sent_id, tgt_eos, subword_option):
   # If there is an eos symbol in outputs, cut them at that point.
   if tgt_eos and tgt_eos in output:
     output = output[:output.index(tgt_eos)]
-
+  #output.shape[T]
   if subword_option == "bpe":  # BPE
     translation = utils.format_bpe_text(output)
   elif subword_option == "spm":  # SPM

@@ -93,6 +93,9 @@ class BaseModel(object):
 
     # Train graph
     res = self.build_graph(hparams, scope=scope)
+    '''
+    res=(logit,loss,sampleids,final_state)
+    '''
     if not self.extract_encoder_layers:
       self._set_train_or_infer(res, reverse_target_vocab_table, hparams)
 
@@ -168,10 +171,32 @@ class BaseModel(object):
     else:
       self.encoder_emb_lookup_fn = tf.nn.embedding_lookup
     self.init_embeddings(hparams, scope)
-
+  '''
+        res=(logit,loss,sampleids,final_state)
+        
+        设在与训练和infer有关的参数
+        
+        train:
+            self.train_loss
+            self.learning_rate
+            self.update:优化参数
+            self.global_norm
+            self.global_norm_summary:
+            self.train_summary:对train_loss,lr汇总
+        eval:
+            self.eval_loss
+            self.predict_count:计算perplexity需要知道有多少单词
+        infer:
+            self.infer_logits:(batch,T,D)or None(beam search)
+            self.final_context_state:((c0,h0)....(cn,hn))
+            self.sample_id/self.sample_words:(batch,T,[BeamWidth]),翻译出的目标语言序列
+            
+  '''
   def _set_train_or_infer(self, res, reverse_target_vocab_table, hparams):
+
     """Set up training and inference."""
     if self.mode == tf.contrib.learn.ModeKeys.TRAIN:
+        #对一条训练序列的loss均值
       self.train_loss = res[1]
       self.word_count = tf.reduce_sum(
           self.iterator.source_sequence_length) + tf.reduce_sum(
@@ -232,7 +257,10 @@ class BaseModel(object):
     for param in params:
       utils.print_out("  %s, %s, %s" % (param.name, str(param.get_shape()),
                                         param.op.device))
-
+  '''
+  返回学习率,warnup的,开始筱,后来大...
+  
+  '''
   def _get_learning_rate_warmup(self, hparams):
     """Get learning rate warmup."""
     warmup_steps = hparams.warmup_steps
@@ -280,7 +308,20 @@ class BaseModel(object):
     elif hparams.decay_scheme:
       raise ValueError("Unknown decay scheme %s" % hparams.decay_scheme)
     return start_decay_step, decay_steps, decay_factor
-
+  '''
+  返回decay学习率
+   global_steps<start_decay_step:
+    lr 不变
+   start_decay_step>global_steps
+    lr=lr*decay_factor**(global_steps-start_decay_step//decay_steps)
+    
+  从start_decay_steps后,每隔decay_steps步,lr=lr*decay_factor,
+  decay_factor=0.5,默认不衰减
+  
+  luong234:训练过2/3后,减半4次
+  luong5:训练过1/2后,减半5次
+  luong10:训练过1/2后,减半10次
+  '''
   def _get_learning_rate_decay(self, hparams):
     """Get learning rate decay."""
     start_decay_step, decay_steps, decay_factor = self._get_decay_info(hparams)
@@ -317,7 +358,9 @@ class BaseModel(object):
             tgt_embed_file=hparams.tgt_embed_file,
             use_char_encode=hparams.use_char_encode,
             scope=scope,))
-
+    '''
+    summary_op:[lr,train_loss,global_norm_with_param,clip_global_norm_with_param]
+    '''
   def _get_train_summary(self):
     """Get train summary."""
     train_summary = tf.summary.merge(
@@ -342,11 +385,73 @@ class BaseModel(object):
   def eval(self, sess):
     """Execute eval graph."""
     assert self.mode == tf.contrib.learn.ModeKeys.EVAL
+    '''
+    eval_loss:表示批处理平均一个example(一句话)的loss
+    predict_count表示批处理了多少个单词
+    '''
     output_tuple = EvalOutputTuple(eval_loss=self.eval_loss,
                                    predict_count=self.predict_count,
                                    batch_size=self.batch_size)
     return sess.run(output_tuple)
-
+    '''
+    为train,eval,inter过程创建了完整的计算图谱
+    返回:
+    Train:
+    _________      __________
+    |       |      |        |            _____________
+    |encoder| ---->|decoder |-->logit-->|    softmax  |-->loss
+    |_______|      |________|           |cross entropy|
+                                        |_____________|       
+        ^               ^                   ^
+        |               |                   | 
+       source       target_in     (target_out,target_len)
+    
+    logits:(batch,T,Vtarget)
+    loss:average(sum_i L{i}),L{i}=lstm_1_loss*valid_1+......lstm_Tmax_loss*valid_Tmax,
+    final_context_state:((c0,h0),(c1,h1)...(cn,cn)),n==num_decoder_layers,ci,hi表示第i层的状态
+    sample_id:
+    
+    Eval:
+                                sample_ids
+                                   ^
+                                ___|____
+                                |argmax|
+    _________      __________     ^
+    |       |      |        |     |       _____________
+    |encoder| ---->|decoder |-->logit-->|    softmax  |-->loss
+    |_______|      |________|           |cross entropy|
+                                        |_____________|       
+        ^               ^                   ^
+        |               |                   | 
+       source       target_in     (target_out,target_len)
+       
+    logits:(batch,T,Vtarget)
+    loss:average(sum_i L{i}),L{i}=lstm_1_loss*valid_1+......lstm_Tmax_loss*valid_Tmax,
+    final_context_state:((c0,h0),(c1,h1)...(cn,cn)),n==num_decoder_layers,ci,hi表示第i层的状态
+    sample_id:argmax(logit)
+    
+    infer:
+                                 
+                                 
+                                
+    _________      __________     
+    |       |      |        |            ____________
+    |encoder| ---->|decoder |-->logit-->|greedy,sample|-->sample_ids
+    |_______|      |________|           |_____________|
+                                              
+        ^               ^                   
+        |               |                   
+       source       <tgt_sos>     
+       
+    logits:(batch,T,Vtarget)
+    loss:constant(0.0)
+    final_context_state:
+        ((c0,h0),(c1,h1)...(cn,cn)),n==num_decoder_layers,ci,hi表示第i层的状态
+        根据encoder_type的不同不同,ci.shape=(Batch,Di) or (Batch,BeamWidth,Di)
+    sample_id:根据encoder_type的不同不同,sample,greed,(Batch,?)
+             beam search:(Batch,BeamWidth,?)
+    
+    '''
   def build_graph(self, hparams, scope=None):
     """Subclass must implement this method.
 
@@ -446,12 +551,12 @@ class BaseModel(object):
         base_gpu=base_gpu,
         single_cell_fn=self.single_cell_fn)
 
-'''
-    输入:source_sequence_length,(N,)
-    返回:
-        解析的最大长度,hparams.tgt_max_len_infer或者2*max(source_sequence_length)
-        返回类型可能是tensor或者int32
-'''
+    '''
+        输入:source_sequence_length,(N,)
+        返回:
+            解析的最大长度,hparams.tgt_max_len_infer或者2*max(source_sequence_length)
+            返回类型可能是tensor或者int32
+    '''
   def _get_infer_maximum_iterations(self, hparams, source_sequence_length):
     """Maximum decoding steps at inference time."""
     if hparams.tgt_max_len_infer:
@@ -464,7 +569,48 @@ class BaseModel(object):
       maximum_iterations = tf.to_int32(tf.round(
           tf.to_float(max_encoder_length) * decoding_length_factor))
     return maximum_iterations
+    '''
+    encoder_outputs:(N,T,embed_size)
+    encoder_state:((c0,h0)...(cn,hn))
+    '''
 
+    '''
+        给定输入:
+        encoder_outputs:(N,T,Dlast)
+        encoder_state:((c0,h0)....(cn,hn))
+        把输入encoder_state传入decoder的rnn中,构造训练和infer的神经网络
+        
+        返回:
+        train:
+            logit:(N,Tmax,Dlast) if using full softmax,else no_op
+            decoder_cell_output:None if using full softmax,else [rnn.output]
+            sample_id:(N,)应该是针对eval的samples_id,换句话说,
+                                                  _________
+                source->[encoder]-->init_state--->|       |
+                                    target_in---->|Decoder|-->argmax(logit)
+                                                  |_______|
+            final_state:decoder的((c0,h0)....(cn,hn))
+        infer:
+            (sample,greedy):
+                logit:(N,T,Dlast)
+                    把tg{0}输入decoder得到logit{0},-->tg{1}=argmax|sample(logit{0})
+                    把tg{1}输入decoder得到logit{1},-->tg{2}=argmax|sample(logit{1})
+                decoder_cell_output:None
+                sample_id:(Batch,T?)
+                final_state:((c0,h0)....(cn,hn))
+                ci,hi:shape[Batch,dim_i]
+            beam search:
+                logit:no_op
+                decoder_cell_output:None
+                sample_id:BeamSearchDecoderOutput.predict_ids属性:(Batch,?,BeamWidth)
+                final_state:BeamSearchDecoderState对象:((c0,h0)....(cn,hn))
+                ci,hi:shape[Batch,beam_width,dim_i]
+                
+        备注:train的时候tgt_embed_inp.shape=[N,Tmax,embedSize]
+            infer的时候tgt_embed_inp.shape=[N,embedSize]
+            
+        beam search还要理解!!!!!!!
+    '''
   def _build_decoder(self, encoder_outputs, encoder_state, hparams):
     """Build and run a RNN decoder with a final projection layer.
 
@@ -506,7 +652,14 @@ class BaseModel(object):
           target_input = tf.transpose(target_input)
         decoder_emb_inp = tf.nn.embedding_lookup(
             self.embedding_decoder, target_input)
-
+        '''
+        TrainingHelper,BasicDecoder,dynamic_decode这三个类屏蔽掉了训练和infer
+        之间的区别
+        train:输入,输出tgt_in,tgt_out是预定义好的init_decoder_state=encoder_states,
+        构造decoder_cell,然后循环Tmax,就可以了
+        
+        
+        '''
         # Helper
         helper = tf.contrib.seq2seq.TrainingHelper(
             decoder_emb_inp, iterator.target_sequence_length,
@@ -517,14 +670,19 @@ class BaseModel(object):
             cell,
             helper,
             decoder_initial_state,)
-
+        '''
+        final_context_state:((c0,h0),(c1,h1)....(cn,hn))
+        outputs:BasicDecoderOutput对象
+            rnn_output:网络的输出,(batch,T,dim_last_layer),针对train
+            sample_id:(batch,)针对infer,
+        '''
         # Dynamic decoding
         outputs, final_context_state, _ = tf.contrib.seq2seq.dynamic_decode(
             my_decoder,
             output_time_major=self.time_major,
             swap_memory=True,
             scope=decoder_scope)
-
+        #
         sample_id = outputs.sample_id
 
         if self.num_sampled_softmax > 0:
@@ -551,6 +709,7 @@ class BaseModel(object):
       ## Inference
       else:
         infer_mode = hparams.infer_mode
+        #定义好了batch_size个输入
         start_tokens = tf.fill([self.batch_size], tgt_sos_id)
         end_token = tgt_eos_id
         utils.print_out(
@@ -610,6 +769,9 @@ class BaseModel(object):
 
     return logits, decoder_cell_outputs, sample_id, final_context_state
 
+    '''
+    获得时间轴最大长度
+    '''
   def get_max_time(self, tensor):
     time_axis = 0 if self.time_major else 1
     return tensor.shape[time_axis].value or tf.shape(tensor)[time_axis]
@@ -663,7 +825,25 @@ class BaseModel(object):
           labels=labels, logits=logits)
 
     return crossent
+    '''
+    logits:decoder输出的logit,shape:[batch,Tmax,Dlast]
+    decoder_cell_outputs:None或者[rnn.output],注意这里没有经过self.output_layer投影
+    '''
 
+  '''
+  L{i}:
+          _________________________________
+          |                               |
+          | LSTM1 | LSTM2 | LSTM3 | LSTM4 |
+          |       |       |       |       |
+          |_______|_______|_______|_______|
+              |       |       |       |
+            loss1    loss2   loss3   loss4
+    mask:   True      True    True    False
+    
+    计算loss=average(L{0}+L{2}+.....L{Batch-1})
+    L{i}=Loss1+Loss2+Loss3
+  '''
   def _compute_loss(self, logits, decoder_cell_outputs):
     """Compute optimization loss."""
     target_output = self.iterator.target_output
@@ -673,7 +853,8 @@ class BaseModel(object):
 
     crossent = self._softmax_cross_entropy_loss(
         logits, decoder_cell_outputs, target_output)
-
+    #shape:[batch,Tmax],例如seq[5]=10,Tmax=15
+    #target_weights[5]=[1,1,1,1,1,1,1,1,1,1,0,0,0,0,0]
     target_weights = tf.sequence_mask(
         self.iterator.target_sequence_length, max_time, dtype=self.dtype)
     if self.time_major:
@@ -686,15 +867,41 @@ class BaseModel(object):
   def _get_infer_summary(self, hparams):
     del hparams
     return tf.no_op()
-
+    '''
+        运行这个方法的时候,输入源已经运行完成了(feed_dict)
+        返回:
+            logit:decoder的输出,shape=[N,?,Dlast]
+            sample_id:decoer的输出序列(int) ,shape=[N,?] or[N,?,bw],
+            sample_words:decoer的输出序列(char),shape=[N,?] or[N,?,bw]
+            infer_summary
+    '''
   def infer(self, sess):
     assert self.mode == tf.contrib.learn.ModeKeys.INFER
+    '''
+    self.infer_logits:decoder输出的logit,根据logit绝对输出的序列是什么样的
+            greed,sample: tensor(N,T,D)
+            beamsearch:tf.no_op
+        sample_id:输出的序列,备注:beamsearch对一个输如源语言有beam_width个输出序列
+            greed,sample: tensor(N,T?)
+            beamsearch:tensor(N,T?,beam_width)
+        self.sample_words:把sample_id转化成为sample_words,与sample_id同shape,string 类型
+            sample_words=vtable.loopup(sample_id)
+        self.infer_summary:tf.no_op
+        
+    '''
     output_tuple = InferOutputTuple(infer_logits=self.infer_logits,
                                     infer_summary=self.infer_summary,
                                     sample_id=self.sample_id,
                                     sample_words=self.sample_words)
     return sess.run(output_tuple)
-
+    '''
+        执行这个方法之前,应该已经把输入准备好了feed_dict
+        返回:
+            sample_words:翻译好的目标语言,shape,char类型
+                [N,?]:sample,greed method
+                [bw,N,?]:beam search
+            infer_summary:None
+    '''
   def decode(self, sess):
     """Decode a batch.
 
@@ -844,13 +1051,13 @@ class Model(BaseModel):
 
     return encoder_outputs, encoder_state
 
-'''
-把self.iterator.source, self.iterator.source_sequence_length
-通过embed,然后通过LSTM,
-返回
-    outputs:(N,Tmax,last_dims)
-    states:((c0,h0)....(cn,hn))
-'''
+    '''
+    把self.iterator.source, self.iterator.source_sequence_length
+    通过embed,然后通过LSTM,
+    返回
+        outputs:(N,Tmax,last_dims)
+        states:((c0,h0)....(cn,hn))
+    '''
   def _build_encoder(self, hparams):
     """Build encoder from source."""
     utils.print_out("# Build a basic encoder")
@@ -914,19 +1121,19 @@ class Model(BaseModel):
 
     return tf.concat(bi_outputs, -1), bi_state
 
-'''
-    输入:encoder_output,encoder_states
-        (N,T,embed_size),((c0,h0),...(cn,hn))
-    输出:
-        decoder_cell:一个tf.contrib.rnn.MultiRnnCell对象,默认层数和encoder_cell一样
-        decoder_initial_state:
-            train:encoder_state
-            infer:encoder_state的batch变成batch*beam_width
-            例如:beam_width==3
-            encoder_state.c0:(128,32)
-            decoder_initial_state.c0:(128*3,32)
-
-'''
+    '''
+        输入:encoder_output,encoder_states
+            (N,T,embed_size),((c0,h0),...(cn,hn))
+        输出:
+            decoder_cell:一个tf.contrib.rnn.MultiRnnCell对象,默认层数和encoder_cell一样
+            decoder_initial_state:
+                train:encoder_state
+                infer:encoder_state的batch变成batch*beam_width
+                例如:beam_width==3
+                encoder_state.c0:(128,32)
+                decoder_initial_state.c0:(128*3,32)
+    
+    '''
   def _build_decoder_cell(self, hparams, encoder_outputs, encoder_state,
                           source_sequence_length, base_gpu=0):
     """Build an RNN cell that can be used by decoder."""

@@ -39,20 +39,56 @@ __all__ = [
     "add_info_summaries", "get_best_results"
 ]
 
+'''
+model_dir:模型参数保存的路径
+infer_model:
+infer_sess:用于运行infer的session
+src_data:list,每个元素是一句,char类型
+tgt_data:list,每个元素是一句,char类型
+summary_writer:用于记录train的writer
+
+使用src_data,执行一次infer(把src_data翻译成目标语言),
+与tgt_data对比
+
+打印出
+    src_data[chioceid]
+    tgt_data[chioceid]
+    nmt(src_data[chioceid])
+'''
 
 def run_sample_decode(infer_model, infer_sess, model_dir, hparams,
                       summary_writer, src_data, tgt_data):
   """Sample decode a random sentence from src_data."""
   with infer_model.graph.as_default():
+    '''
+    这一步实际上是从model_dir恢复网络的参数,网络在创建infer_model已经创建好啦,
+    如果model_dir没有参数,那么就run(global_initializer)
+    '''
     loaded_infer_model, global_step = model_helper.create_or_load_model(
         infer_model.model, model_dir, infer_sess, "infer")
-
+  '''
+    loaded_infer_model:model.Model,tensorflow中定义的infer计算图,已经'初始化'完成
+    infer_sess:
+    infer_model.iterator
+    infer_model.src_placeholder--------->|                  |
+                                         |get_infer_iterator|-->infer_model.iterator
+    infer_model.batch_size_placeholder-->|                  |
+    上3个参数定义了infer计算图的输入
+    src_data, tgt_data:是实际输入的数据
+    
+  '''
   _sample_decode(loaded_infer_model, global_step, infer_sess, hparams,
                  infer_model.iterator, src_data, tgt_data,
                  infer_model.src_placeholder,
                  infer_model.batch_size_placeholder, summary_writer)
 
+'''
 
+对dev集,test集,计算perplexity,dev,并且保存到日志文件里面,test集都是hparams给出
+返回
+(dev_ppl,test_ppl)
+
+'''
 def run_internal_eval(eval_model,
                       eval_sess,
                       model_dir,
@@ -94,9 +130,23 @@ def run_internal_eval(eval_model,
 
   dev_src_file = "%s.%s" % (hparams.dev_prefix, hparams.src)
   dev_tgt_file = "%s.%s" % (hparams.dev_prefix, hparams.tgt)
+  '''
+    EvaluateInterator(graph,model,interator,src_file_place,tgt_file_placeholder)
+    
+   src_file_place--------->|                           |
+                           |iterator_utils.get_iterator|-->interator
+   tgt_file_placeholder--->|                           |
+   
+  '''
   dev_eval_iterator_feed_dict[eval_model.src_file_placeholder] = dev_src_file
   dev_eval_iterator_feed_dict[eval_model.tgt_file_placeholder] = dev_tgt_file
-
+  '''
+  loaded_eval_model:eval 模型的抽象计算图
+  eval_sess:
+  eval_model.iterator:eval 模型计算图的抽象输入
+  dev_eval_iterator_feed_dict:计算图的实际输入
+  global_step
+  '''
   dev_ppl = _internal_eval(loaded_eval_model, global_step, eval_sess,
                            eval_model.iterator, dev_eval_iterator_feed_dict,
                            summary_writer, "dev")
@@ -113,6 +163,14 @@ def run_internal_eval(eval_model,
                               summary_writer, "test")
   return dev_ppl, test_ppl
 
+'''
+使用infer_model,对dev,test数据集得出hparams.metrics指标,
+当模型参数指标最好(save_best_dev)的时候保存ckpt,到best_+{best_metric_label}+_dir下面translate.ckpt
+
+返回:dev_scores, test_scores, global_step
+dev_scores,test_scores:{metrics_name:metrics_score}
+global_step:是当前运行次数(int)
+'''
 
 def run_external_eval(infer_model,
                       infer_sess,
@@ -158,7 +216,12 @@ def run_external_eval(infer_model,
 
   dev_src_file = "%s.%s" % (hparams.dev_prefix, hparams.src)
   dev_tgt_file = "%s.%s" % (hparams.dev_prefix, hparams.tgt)
+  '''
+  设在好了输入,注意不同于eval_internal,这里值设在了源翻译文件,和infer_batch_size=32(default)
+  '''
   dev_infer_iterator_feed_dict[
+      #src_placeholder是一个字符串数组的占位符,所有这里把dev文件全部加载了过来(一个字符串数组)
+      # ,feed into src_placeholder
       infer_model.src_placeholder] = inference.load_data(dev_src_file)
   dev_infer_iterator_feed_dict[
       infer_model.batch_size_placeholder] = hparams.infer_batch_size
@@ -218,7 +281,26 @@ def run_avg_external_eval(infer_model, infer_sess, model_dir, hparams,
           avg_ckpts=True)
 
   return avg_dev_scores, avg_test_scores
+'''
+使用eval_model计算dev,test数据集的ppl
+使用infer_model计算dev,test数据集的metrics[blue,rough,accuray]
+并且会把结果计入日志(summary_writer,global_step)
 
+并且会把每个best_metrics模型的参数保存在:best_metricsname_dir/translate.cpkt文件下面
+返回:
+result_summary:string:
+    dev ppl 22,dev blue 33,dev accuracy 0.1,
+    test ppl.....
+    
+global_step:当前次数
+metrics:分数结果
+  {
+      "dev_ppl": dev_ppl,
+      "test_ppl": test_ppl,
+      "dev_scores": dev_scores,
+      "test_scores": test_scores,
+  }
+'''
 
 def run_internal_and_external_eval(model_dir,
                                    infer_model,
@@ -261,6 +343,8 @@ def run_internal_and_external_eval(model_dir,
     Triple containing results summary, global step Tensorflow Variable and
     metrics in this order.
   """
+
+  #使用EVAL_model,计算dev,test的perplexity
   dev_ppl, test_ppl = run_internal_eval(
       eval_model,
       eval_sess,
@@ -269,6 +353,7 @@ def run_internal_and_external_eval(model_dir,
       summary_writer,
       dev_eval_iterator_feed_dict=dev_eval_iterator_feed_dict,
       test_eval_iterator_feed_dict=test_eval_iterator_feed_dict)
+  # 使用Infer_model,计算dev,test的metrics_scores
   dev_scores, test_scores, global_step = run_external_eval(
       infer_model,
       infer_sess,
@@ -306,7 +391,36 @@ def run_internal_and_external_eval(model_dir,
 
   return result_summary, global_step, metrics
 
+'''
+model_dir:模型参数保存的路径
+infer_model:
+infer_sess:用于运行infer的session
+eval_model:
+eval_sess:用于运行eval的session
+sample_src_data:list,每个元素是一句,char类型
+sample_tgt_data:list,每个元素是一句,char类型
+summary_writer:用于记录train的writer
 
+1.随机翻译sample_src_data的句子,打印到控制台
+2.计算dev,test数据集的ppl
+3.计算dev,test数据集的metrics[blue,rough,accuray]
+4.并且会把结果计入日志(summary_writer,global_step)
+
+
+返回:
+result_summary:string:
+    dev ppl 22,dev blue 33,dev accuracy 0.1,
+    test ppl.....
+    
+global_step:当前次数
+metrics:分数结果
+  {
+      "dev_ppl": dev_ppl,
+      "test_ppl": test_ppl,
+      "dev_scores": dev_scores,
+      "test_scores": test_scores,
+  }
+'''
 def run_full_eval(model_dir,
                   infer_model,
                   infer_sess,
@@ -348,7 +462,17 @@ def init_stats():
           "word_count": 0.0,  # word counts for both source and target
           "sequence_count": 0.0,  # number of training examples processed
           "grad_norm": 0.0}
-
+'''
+更新states:
+    step_time:目前运行用时(s)
+    train_loss:累计loss
+    grad_norm:累计global_norm
+    predict_count:累计目标单词数量
+    word_count:累计目标单词数量+源单词数量
+    sequence_count:累计遍历的句子
+返回:
+    (global_step,learning_rate,train_summary)
+'''
 
 def update_stats(stats, start_time, step_result):
   """Update stats: write summary and accumulate statistics."""
@@ -384,7 +508,20 @@ def add_info_summaries(summary_writer, global_step, info):
     if key not in excluded_list:
       utils.add_summary(summary_writer, global_step, key, info[key])
 
+'''
+使用stats更新
 
+info:
+  avg_step_time:每一步训练花费的时间
+  avg_grad_norm:平均global_grad_norm是多大
+  avg_sequence_count:平均一次处理多少个单词
+  speed:平均一秒处理多少个单词(源+目标)
+  train_ppl:训练的perplexity
+  
+steps_per_stats:更新stats经过的次数
+返回:
+    info["train_ppl"]是否溢出is_overflow
+'''
 def process_stats(stats, info, global_step, steps_per_stats, log_f):
   """Update info and check for overflow."""
   # Per-step info
@@ -406,7 +543,14 @@ def process_stats(stats, info, global_step, steps_per_stats, log_f):
     is_overflow = True
 
   return is_overflow
+'''
 
+初始化tensor输入的initializer
+返回:
+stats:
+info: 
+start_train_time:时间戳
+'''
 
 def before_train(loaded_train_model, train_model, train_sess, global_step,
                  hparams, log_f):
@@ -446,7 +590,15 @@ def get_model_creator(hparams):
                      hparams.attention_architecture)
   return model_creator
 
+'''
 
+返回
+
+final_eval_metrics:训练结束后各种
+    metrics分数
+    {metrics_name:metrics_score}
+global_step:int,Train运行的步数
+'''
 def train(hparams, scope=None, target_session=""):
   """Train a translation model."""
   log_device_placement = hparams.log_device_placement
@@ -466,7 +618,7 @@ def train(hparams, scope=None, target_session=""):
   eval_model = model_helper.create_eval_model(model_creator, hparams, scope)
   infer_model = model_helper.create_infer_model(model_creator, hparams, scope)
 
-  # Preload data for sample decoding.
+  # Preload data for sample decoding.,测试文件源,目标文件
   dev_src_file = "%s.%s" % (hparams.dev_prefix, hparams.src)
   dev_tgt_file = "%s.%s" % (hparams.dev_prefix, hparams.tgt)
   sample_src_data = inference.load_data(dev_src_file)
@@ -491,7 +643,7 @@ def train(hparams, scope=None, target_session=""):
       target=target_session, config=config_proto, graph=eval_model.graph)
   infer_sess = tf.Session(
       target=target_session, config=config_proto, graph=infer_model.graph)
-
+  #初始化(恢复参数)训练图
   with train_model.graph.as_default():
     loaded_train_model, global_step = model_helper.create_or_load_model(
         train_model.model, model_dir, train_sess, "train")
@@ -501,6 +653,13 @@ def train(hparams, scope=None, target_session=""):
       os.path.join(out_dir, summary_name), train_model.graph)
 
   # First evaluation
+  '''
+  真实输入数据:sample_src_data,sample_tgt_data
+  dev:使用eval_sess运行eval_model,模型参数在model_dir,
+    需要的数据sample_src_data,和sample_tgt_data,计算eval_loss
+  infer:使用infer_sess运行infer_model,模型参数在model_dir,
+    只用数据和sample_tgt_data,
+  '''
   run_full_eval(
       model_dir, infer_model, infer_sess,
       eval_model, eval_sess, hparams,
@@ -514,6 +673,33 @@ def train(hparams, scope=None, target_session=""):
   # This is the training loop.
   stats, info, start_train_time = before_train(
       loaded_train_model, train_model, train_sess, global_step, hparams, log_f)
+  '''
+  训练概述:
+    [t,t+steps_per_stats]区间做一次统计,记录在stat里面
+    stat:记录了区间内产生的
+        step_time:运行时长
+        trainloss总计
+        grad_global_norm总计
+        predict_count:翻译的目标单词总计
+        word_cout:预览的所有单词(源+目标)
+    每steps_per_stats步后,汇总统计结果到info
+        avg_step_time:step_time/steps_per_stats
+        avg_grad_norm:平均global_grad_norm是多大
+        avg_sequence_count:平均一次处理多少个单词
+        speed:平均一秒处理多少个单词(源+目标)
+        train_ppl:训练的perplexity
+        lr:
+        如果train_ppl产生溢出,训练结束
+        
+        然后做
+            1.保存模型参数到output_dir/translate.ckpt
+            2.sample of src_data
+            3.run_internal_eval
+    每steps_per_external_eval:后
+            1.保存模型参数到output_dir/translate.ckpt
+            2.sample of src_data
+            3.run_external_eval
+  '''
   while global_step < num_train_steps:
     ### Run a step ###
     start_time = time.time()
@@ -539,7 +725,16 @@ def train(hparams, scope=None, target_session=""):
           train_model.iterator.initializer,
           feed_dict={train_model.skip_count_placeholder: 0})
       continue
-
+    '''
+    step_result 本批次:
+        train_loss:batch_size条记录的平均loss
+        grad_norm:
+        global_step
+        word_count:当前batch个数据 源单词数+目标单词数
+        batch_size:输入的batchsize
+        learning_rate
+        predict_count:当前batch中,目标单词数
+    '''
     # Process step_result, accumulate stats, and write summary
     global_step, info["learning_rate"], step_summary = update_stats(
         stats, start_time, step_result)
@@ -635,7 +830,9 @@ def train(hparams, scope=None, target_session=""):
 
   return final_eval_metrics, global_step
 
-
+'''
+输出类似:dev ppl 22,dev blue 33,dev accuracy 0.1的string
+'''
 def _format_results(name, ppl, scores, metrics):
   """Format results."""
   result_str = ""
@@ -649,7 +846,11 @@ def _format_results(name, ppl, scores, metrics):
         result_str = "%s %s %.1f" % (name, metric, scores[metric])
   return result_str
 
-
+'''
+输出最好的metrics成绩,返回blue 2,accuracy .1
+备注:在run_external_eval的时候,已经把最好的
+分数保存在了hparams的best_..属性里面了
+'''
 def get_best_results(hparams):
   """Summary of the current best results."""
   tokens = []
@@ -657,7 +858,23 @@ def get_best_results(hparams):
     tokens.append("%s %.2f" % (metric, getattr(hparams, "best_" + metric)))
   return ", ".join(tokens)
 
-
+  '''
+  model:Evaluation 模型的抽象计算图
+  sess:
+  iterator:Evaluation 模型计算图的抽象输入
+  iterator_feed_dict:计算图的实际输入
+  global_step
+  label:'dev'
+  summary_writer:日志文件
+  
+  这里使用的数据源是超参数给出的dev_prefix
+  
+  本方法用构建好的网络(model,iterator)
+    计算(sess)给定数据源(iterator_feed_dict)的perplexity,并写入日志(summary_writer,label,global_step)
+  
+  返回对dev_prefix开发集的perplexity,并在日志中
+    记录dev_ppl:ppl_value
+  '''
 def _internal_eval(model, global_step, sess, iterator, iterator_feed_dict,
                    summary_writer, label):
   """Computing perplexity."""
@@ -666,7 +883,24 @@ def _internal_eval(model, global_step, sess, iterator, iterator_feed_dict,
   utils.add_summary(summary_writer, global_step, "%s_ppl" % label, ppl)
   return ppl
 
+'''
+model:
+    model_helper.InferModel.model属性,抽象的一个计算图谱
+iterator:
+    model_helper.InferModel.iterator,计算图片的抽象输入
+iterator_src_placeholder:tensor(string[]),用于驱动iterator,告诉iterator输入源是哪些文件
+iterator_batch_size_placeholder:tensor(int32),用于驱动iterator,告诉iterator batch多大
 
+eval数据部分:
+src_data:list(),char类型,用于eval|infer的真实源语言数据
+tgt_data:list(),char类型,用于eval的真实目标语言数据
+global_step:
+
+执行一次翻译过程:
+    打印:src_sentence
+        :target_sentenct
+        :nmt(src_sentence)
+'''
 def _sample_decode(model, global_step, sess, hparams, iterator, src_data,
                    tgt_data, iterator_src_placeholder,
                    iterator_batch_size_placeholder, summary_writer):
@@ -674,12 +908,15 @@ def _sample_decode(model, global_step, sess, hparams, iterator, src_data,
   decode_id = random.randint(0, len(src_data) - 1)
   utils.print_out("  # %d" % decode_id)
 
+ #准备好输入
+    #[My name is zhangxk]--->tensor(string[])
   iterator_feed_dict = {
       iterator_src_placeholder: [src_data[decode_id]],
       iterator_batch_size_placeholder: 1,
   }
+  #问题?为什么运行iterator.initializer要feed iterator_feed_dict
   sess.run(iterator.initializer, feed_dict=iterator_feed_dict)
-
+  #翻译:nmt_output:[bw,N,?] or[N,?]
   nmt_outputs, attention_summary = model.decode(sess)
 
   if hparams.infer_mode == "beam_search":
@@ -699,7 +936,34 @@ def _sample_decode(model, global_step, sess, hparams, iterator, src_data,
   if attention_summary is not None:
     summary_writer.add_summary(attention_summary, global_step)
 
+'''
+model:infer_model
 
+infer_sess,
+hparams
+iterator:
+iterator_feed_dict:feed_dict,已经feed好了src_placeholder,batch_placeholder
+global_step(int),summary_writer:保存日志使用
+
+tgt_file:翻译目标文件,计算blue的参考文件
+label:'dev'
+
+表述:
+    使用sess,运行model,把输入iterator_feed_dict翻译结果输出
+    到hparams.outdir/output_+label/transfile下面.
+    根据hparams.metrics,与tgt_file对比得出scores,
+    总结每一global_step的scores,输出到summary_writer日志中.
+    
+    
+save_on_best:True的时候,到某个metrics在测试集合结果最好的时候,
+    保存到best_+{best_metric_label}+_dir下面translate.ckpt
+avg_ckpts:True:best_metric_label=avg_best_+metric
+        False:best_metric_label=best_+metric
+        
+返回:scores:
+    keys:metric_name
+    value:metrics_score
+'''
 def _external_eval(model, global_step, sess, hparams, iterator,
                    iterator_feed_dict, tgt_file, label, summary_writer,
                    save_on_best, avg_ckpts=False):
@@ -712,10 +976,11 @@ def _external_eval(model, global_step, sess, hparams, iterator,
 
   if decode:
     utils.print_out("# External evaluation, global step %d" % global_step)
-
+    #输入数据准备完毕
   sess.run(iterator.initializer, feed_dict=iterator_feed_dict)
 
   output = os.path.join(out_dir, "output_%s" % label)
+  #output:outputdir/output_dev
   scores = nmt_utils.decode_and_evaluate(
       label,
       model,

@@ -34,6 +34,24 @@ class BatchedInput(
   pass
 
 
+'''
+src_dataset:tensor Dataset对象,想象成一行行将要被翻译的句子的集合
+src_vocab_table:tensorflow:HashTable,tf.contrib.lookup.index_from_file
+batch_size:place_holder,一次infer多少个句子
+eos:
+src_max_len:源语言一句最大长度
+
+返回:
+BatchedInput(
+      initializer=batched_iter.initializer,初始化batch的initizer
+      source=src_ids,想象成一个placeholder([batch,T?],int32)
+      target_input=None,
+      target_output=None,
+      source_sequence_length=src_seq_len,想象成一个placeholder([batch,],int32)
+      target_sequence_length=None)
+备注:返回的对象是一个BatchedInput对象(计算图的抽象输入),这个对象是没有target_in,target_out的
+      
+'''
 def get_infer_iterator(src_dataset,
                        src_vocab_table,
                        batch_size,
@@ -66,7 +84,7 @@ def get_infer_iterator(src_dataset,
                          tf.size(src) / vocab_utils.DEFAULT_CHAR_MAXLEN)))
   else:
     src_dataset = src_dataset.map(lambda src: (src, tf.size(src)))
-
+  #src_dataset:[w1_idx,w2_idx....w_t_idx] ,t
   def batching_func(x):
     return x.padded_batch(
         batch_size,
@@ -84,7 +102,9 @@ def get_infer_iterator(src_dataset,
             0))  # src_len -- unused
 
   batched_dataset = batching_func(src_dataset)
+
   batched_iter = batched_dataset.make_initializable_iterator()
+  # batched_dataset:(batched_iter,?)
   (src_ids, src_seq_len) = batched_iter.get_next()
   return BatchedInput(
       initializer=batched_iter.initializer,
@@ -114,11 +134,11 @@ shard_index=worker的所有,
 
 返回一个 输入的包装对象,具有如下属性
 initializer:用于初始化批量迭代对象
-source:(batch,Tx_max) 
+source:(batch,Tx_max) :想象成place_holder([batch,Tx],int32)
 target_input:(batch,Ty_max)
 target_output(batch,Ty_max) 
-source_sequence_length:Tx,一条源数据序列真实长度
-target_sequence_length:Ty,一条目标数据序列真实长度
+source_sequence_length:(batch,),一条源数据序列真实长度
+target_sequence_length:(batch,),一条目标数据序列真实长度
 注意:这里的Tx,Ty并不是确定的,而是根据实际数据确定的
 Tx_max,Ty_max也是运行是确定的,                            
 '''

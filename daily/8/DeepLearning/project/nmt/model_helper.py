@@ -84,8 +84,8 @@ model_creator:
 hparams:
 return:
     graph:tensorflow graph
-    model:model_creator创建的NMT模型
-    iterator:输入的迭代器,有如下属性:
+    model:model_creator创建的NMT模型,已经构造好的计算图抽象对象
+    iterator:输入的迭代器,就算图的抽象输入,有如下属性:
         initializer:用于初始化批量迭代对象
         source:(batch,Tx_max) 
         target_input:(batch,Ty_max)
@@ -159,7 +159,28 @@ class EvalModel(
                             "tgt_file_placeholder", "iterator"))):
   pass
 
-
+'''
+EvalModel(
+      graph=graph,
+      model=model,
+      src_file_placeholder=src_file_placeholder,
+      tgt_file_placeholder=tgt_file_placeholder,
+      iterator=iterator)
+      
+      src_file_placeholder:输入的源文件,string tensor
+      tgt_file_placeholder:输入的目标文件,string tensor
+      graph:tensorflow graph
+      model:model_creator创建的NMT模型,构造好的计算图的抽象对象
+        iterator:输入的迭代器,计算图的抽象输入,有如下属性:
+            initializer:用于初始化批量迭代对象
+            source:(batch,Tx_max) 
+            target_input:(batch,Ty_max)
+            target_output(batch,Ty_max) 
+            source_sequence_length:Tx,一条源数据序列长度
+            target_sequence_length:Ty,一条目标数据序列长度
+            注意:这里的Tx,Ty并不是确定的,而是根据实际数据确定的
+            Tx_max,Ty_max也是运行是确定的 
+'''
 def create_eval_model(model_creator, hparams, scope=None, extra_args=None):
   """Create train graph, model, src/tgt file holders, and iterator."""
   src_vocab_file = hparams.src_vocab_file
@@ -212,7 +233,26 @@ class InferModel(
                             "batch_size_placeholder", "iterator"))):
   pass
 
+'''
+    InferModel(
+      graph=graph,
+      model=model,
+      src_placeholder=src_placeholder,
+      batch_size_placeholder=batch_size_placeholder,
+      iterator=iterator)
+      
+        src_placeholder:placeholder([],string)表示输入的一个或者多个要翻译的文件
+        batch_size_placeholder:一次批处理的行数
+        iterator:
+            source:想象tf.placeHolder(shape=(N,Tx),int32)
+            initializer:batch的初始化
+            target_in,target_out=None,None
+            source_len:想象tf.placeHolder(shape=(N,),int32)
+    备注:相对于TrainModel,EvalModel,多出了src_placeholder,batch_size_placeholder
+    对象,原因是infer过程的输入'数据'是用户给定的,
+    而trai,dev数据(数据文件路径,batchsize)已经在hparams已经给出
 
+'''
 def create_infer_model(model_creator, hparams, scope=None, extra_args=None):
   """Create inference model."""
   graph = tf.Graph()
@@ -230,6 +270,13 @@ def create_infer_model(model_creator, hparams, scope=None, extra_args=None):
 
     src_dataset = tf.data.Dataset.from_tensor_slices(
         src_placeholder)
+    '''
+    src_dataset:tensor Dataset对象,想象成一行行将要被翻译的句子的集合
+    src_vocab_table:tensorflow:HashTable,tf.contrib.lookup.index_from_file
+    batch_size:place_holder,一次infer多少个句子
+    eos:
+    src_max_len:源语言一句最大长度
+    '''
     iterator = iterator_utils.get_infer_iterator(
         src_dataset,
         src_vocab_table,
@@ -529,7 +576,7 @@ def _cell_list(unit_type, num_units, num_layers, num_residual_layers,
   return cell_list
 '''
 返回一个MultiRNNCell对象,表示一个LSTM/GRU单元,可以理解为一个完整的
-RNN单元,调用者循环输出T个序列!!
+RNN单元!!
 '''
 
 def create_rnn_cell(unit_type, num_units, num_layers, num_residual_layers,
@@ -574,7 +621,18 @@ def create_rnn_cell(unit_type, num_units, num_layers, num_residual_layers,
   else:  # Multi layers
     return tf.contrib.rnn.MultiRNNCell(cell_list)
 
-
+'''
+输入:gradients[dWf,dWo,dW....]
+    max_gradient_norm:所有梯度的模最大值
+    
+    如果global_norm(gradients)>max_gradient_norm
+    把gradients缩放到global_norm(gradients)==max_gradient_norm的程度
+    clipped_gradients经过模过滤的梯度
+    gradient_norm:源梯度的global_normal
+    gradient_norm_summary:
+        grad_norm:源梯度的global_normal总结
+        clipped_gradient:clipped梯度的global_normal总结
+'''
 def gradient_clip(gradients, max_gradient_norm):
   """Clipping gradients of a model."""
   clipped_gradients, gradient_norm = tf.clip_by_global_norm(
@@ -594,7 +652,9 @@ def print_variables_in_ckpt(ckpt_path):
   for key in sorted(variable_map.keys()):
     utils.print_out("  %s: %s" % (key, variable_map[key]))
 
-
+'''
+从ckpt_path下恢复GRAPH的weights,原样返回model
+'''
 def load_model(model, ckpt_path, session, name):
   """Load model from a checkpoint."""
   start_time = time.time()
@@ -684,7 +744,15 @@ def avg_checkpoints(model_dir, num_last_checkpoints, global_step,
 
   return avg_model_dir
 
+'''
+model:模型对象,例如model.Model(),有了这个对象说明已经创建好了某个Graph了,model
+    里面保存了创建好的图里面,感兴趣的计算结果(global_step,lr,loss,train_op...)
+model_dir:从model_dir可恢复weights
+name:train
 
+初始化global_step
+return:model,global_step(int)
+'''
 def create_or_load_model(model, model_dir, session, name):
   """Create translation model and initialize or load parameters in session."""
   latest_ckpt = tf.train.latest_checkpoint(model_dir)
@@ -700,7 +768,18 @@ def create_or_load_model(model, model_dir, session, name):
   global_step = model.global_step.eval(session=session)
   return model, global_step
 
+'''
 
+计算perplexity:exp(average(loss))
+average(loss)表示total_loss/toal_words,换句话说,每个单词分摊的loss
+
+这里计算过程:
+    for batch_k
+        total_loss+=batch_k_size*eval(batch_k)
+        total_predict_cnt+=predict_words_k
+    perplexity=exp(total_loss/total_predict_cnt)
+返回一个数组,表示对训练集合的perplexity,运行本方法之前
+'''
 def compute_perplexity(model, sess, name):
   """Compute perplexity of the output of the model.
 
