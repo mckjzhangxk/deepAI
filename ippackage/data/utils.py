@@ -60,6 +60,19 @@ class Package():
     upload_count,update_data_size-->upload_rate
     download_count,downdate_data_size-->download_rate
 '''
+
+def connectId2tuple(connectid):
+    sps=connectid.split('->')
+    src=sps[0]
+    sps=sps[1].split('_')
+    dest=sps[0]
+    ptype=sps[1]
+
+    if src<dest:
+        return (src,dest,ptype)
+    else:
+        return (dest,src,ptype)
+
 def _read_single_file(filename):
     '''
     arr:a list of Package object
@@ -144,7 +157,6 @@ def _get_package_info(basepath):
 
     return ret
 
-
 def _extract_features(info, feature_names=[]):
     '''
     
@@ -187,9 +199,10 @@ class DB():
         :param data: 
         :param feature_names: 
         '''
-        self._db = np.array([v for k, v in data.items()])
-        db_index = [k for k, v in data.items()]
-        self._db_index = {v: i for i, v in enumerate(db_index)}
+        keys=sorted(data.keys())
+
+        self._db = np.array([data[k] for k in keys])
+        self._db_index = {v: i for i, v in enumerate(keys)}
         self._db_inv_index={v:k for k, v in self._db_index.items()}
         self._feature_names = feature_names
     def __len__(self):
@@ -198,7 +211,8 @@ class DB():
     def db(self):return self._db
     @property
     def db_index(self):return self._db_index
-
+    @property
+    def db_inv_index(self):return self._db_inv_index
     def _getConnectId(self,connectId):
         return self._db_index.get(connectId, -1)
     def search(self,connectId,precise=False):
@@ -229,6 +243,8 @@ class DB():
         return ret
 
     def get_connect_ID(self,indexes):
+        if isinstance(indexes,np.ndarray):
+            indexes=list(indexes)
         if not isinstance(indexes,list):
             indexes=[indexes]
         return [self._db_inv_index[i] for i in indexes]
@@ -244,24 +260,3 @@ def printutils(kk,filter_func=None):
         if filter_func is None or filter_func(k):
             print(k)
             print(v)
-
-# filter_fn=lambda x:x.startswith('192.168.060.158')
-# path='/home/zhangxk/AIProject/ippack/ip_capture/out1/'
-# ret=get_package_info(path)
-# printutils(ret,filter_fn)
-
-
-# ret=get_features(ret,['upcount','upsize','up_rate','downcount','downsize','down_rate'])
-# db=DB(ret)
-# searchids,search_connent=db.search('192.168.060.158:52007->',False)
-# # 427194154.26530445
-# search_connent=np.array(search_connent)
-# print(search_connent.shape)
-# # print(np.sum(search_connent[0,28,3:]))
-# print(search_connent[0,27,3:])
-# searchConnectName=db.get_connect_ID(searchids)
-# print(searchConnectName)
-#
-# for idx,idxname,cxt in zip(searchids,searchConnectName,search_connent):
-#     print(idxname)
-#     print(cxt)

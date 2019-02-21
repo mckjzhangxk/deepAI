@@ -167,6 +167,10 @@ def run_internal_eval(eval_model,
 使用infer_model,对dev,test数据集得出hparams.metrics指标,
 当模型参数指标最好(save_best_dev)的时候保存ckpt,到best_+{best_metric_label}+_dir下面translate.ckpt
 
+#运行一次run_external_eval,保存最好的指标模型到hparams.best_metric_dir下面,
+各个指标的计算结果保存到summary_writer.Summary($(dev/test)_metric,metric_score,global_step中)下面,
+使用tensorboard可以进行查看,对dev/test翻译的结果保存到hparams.outdir/output_dev或output_test下
+
 返回:dev_scores, test_scores, global_step
 dev_scores,test_scores:{metrics_name:metrics_score}
 global_step:是当前运行次数(int)
@@ -682,7 +686,7 @@ def train(hparams, scope=None, target_session=""):
         grad_global_norm总计
         predict_count:翻译的目标单词总计
         word_cout:预览的所有单词(源+目标)
-    每steps_per_stats步后,汇总统计结果到info
+    每steps_per_stats步后,汇总统计结果到info,结果输出到控制台
         avg_step_time:step_time/steps_per_stats
         avg_grad_norm:平均global_grad_norm是多大
         avg_sequence_count:平均一次处理多少个单词
@@ -695,6 +699,10 @@ def train(hparams, scope=None, target_session=""):
             1.保存模型参数到output_dir/translate.ckpt
             2.sample of src_data
             3.run_internal_eval
+    每steps_per_eval后:
+        1,保存模型到output_dir/translate.ckpt
+        2.随机从sample_src翻译,并和sample_tgt对比
+        3.run_internal_eval
     每steps_per_external_eval:后
             1.保存模型参数到output_dir/translate.ckpt
             2.sample of src_data

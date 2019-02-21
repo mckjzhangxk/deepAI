@@ -80,7 +80,7 @@ class TrainModel(
   pass
 
 '''
-model_creator:
+model_creator:model.Model...
 hparams:
 return:
     graph:tensorflow graph
