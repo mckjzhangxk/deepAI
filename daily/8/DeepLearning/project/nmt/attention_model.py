@@ -89,6 +89,22 @@ class AttentionModel(model.Model):
     decoder_initial_state:
         cell.zero_state(batch_size, dtype),输入给decoder的初始状态,
         对于beam search,batch_size=batch_size*bw
+    新注解:
+    根据hparams(unit_type,num_layers,num_dims)定义了num_layers层的rnn_cell,最上层
+    包裹了attention layer,attention layer是由hparams(num_dims,output_attention)配置的
+    
+    默认decoder的初始状态设在为encoder_state
+    返回:
+    cell:表示一个rnn_cell计算单元,
+    decoder_initial_state:
+        AttentionWrapperState
+            cell_state:每个rnn_cell的状态
+            attention:(batch,atten_depth)最后一个atten的输出
+            attention_state:(batch,memory_T),最后一步对memory的关注(score)
+            alignment::(batch,memory_T),attention_state的softmax版本
+            time:shape()步数
+            alignment_history:对齐历史,截至目前步数来,alignment 的'快照'
+            
     
     '''
   def _build_decoder_cell(self, hparams, encoder_outputs, encoder_state,
@@ -146,8 +162,13 @@ class AttentionModel(model.Model):
     #可以理解成在最高层插入了attention层
     '''
     attention_layer_size:attention输出的维度,None的话输出context_value(也就是是memory的维度一样),
-    设置后,把cell.output和context_value联合起来,转化成attention_layer_size的向量
-    at=tanh(W[ct,ht])
+        设置后,把cell.output和context_value联合起来,转化成attention_layer_size的向量
+        at=tanh(W[ct,ht])
+    output_attention:经过attention 层相上输出的是cell的outout还是attention的输出 
+    alignment_history:是否保存alignment对齐历史
+    cell_input_fn:配置输入到本cell是什么样子的,默认是把attention.output联合X.input,这也是为什么
+    把layer分布到各个GPU还是不能加速训练速度的原因,因为最高层的attention必须继续完成,下一步最底层的
+    rnncell才能开始计算,无法并行计算!
     '''
     cell = tf.contrib.seq2seq.AttentionWrapper(
         cell,
@@ -157,7 +178,7 @@ class AttentionModel(model.Model):
         output_attention=hparams.output_attention,
         name="attention")
 
-    # TODO(thangluong): do we need num_layers, num_gpus?
+    # TODO(thangluong): do we need num_layers, num_gpus?,attention放到了最后一个GPU上面
     cell = tf.contrib.rnn.DeviceWrapper(cell,
                                         model_helper.get_device_str(
                                             num_layers - 1, self.num_gpus))

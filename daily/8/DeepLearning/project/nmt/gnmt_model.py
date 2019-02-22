@@ -287,7 +287,7 @@ class GNMTAttentionMultiCell(tf.nn.rnn_cell.MultiRNNCell):
     """Creates a GNMTAttentionMultiCell.
 
     Args:
-      attention_cell: An instance of AttentionWrapper.
+      attention_cell: An instance of AttentionWrapper,最下层被attention的那个rnn_cell
       cells: A list of RNNCell wrapped with AttentionInputWrapper.
       use_new_attention: Whether to use the attention generated from current
         step bottom layer's output. Default is False.
@@ -328,7 +328,11 @@ class GNMTAttentionMultiCell(tf.nn.rnn_cell.MultiRNNCell):
 
     return cur_inp, tuple(new_states)
 
-
+'''
+input(N,D1),output(N,D2)
+返回:
+    map(input,(N,D2))+output(N,D2)
+'''
 def gnmt_residual_fn(inputs, outputs):
   """Residual function that handles different inputs and outputs inner dims.
 
@@ -340,6 +344,10 @@ def gnmt_residual_fn(inputs, outputs):
   Returns:
     outputs + actual inputs
   """
+  '''
+  默认认为:inp.ndims>=out.ndims
+  把inp(N,D)分成inp1(N,D1),inp2(N,D2),D1+D2=D,out.shape=(N,D1)
+  '''
   def split_input(inp, out):
     out_dim = out.get_shape().as_list()[-1]
     inp_dim = inp.get_shape().as_list()[-1]

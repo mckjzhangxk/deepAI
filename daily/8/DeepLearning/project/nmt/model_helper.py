@@ -671,7 +671,15 @@ def load_model(model, ckpt_path, session, name):
       (name, ckpt_path, time.time() - start_time))
   return model
 
+'''
+model_dir:
+global_step:tensor()
+global_step_name:
+num_last_checkpoints:全局变量里面设在的checkpoints数量
 
+在对model_dir下面的所有checkpoint的变量求平均值,
+然后保存到model_dir/avg_checkpoints/translate.ckpt,
+'''
 def avg_checkpoints(model_dir, num_last_checkpoints, global_step,
                     global_step_name):
   """Average the last N checkpoints in the model_dir."""
@@ -680,7 +688,7 @@ def avg_checkpoints(model_dir, num_last_checkpoints, global_step,
     utils.print_out("# No checkpoint file found in directory: %s" % model_dir)
     return None
 
-  # Checkpoints are ordered from oldest to newest.
+  # Checkpoints are ordered from oldest to newest.checkpoints应该是文件
   checkpoints = (
       checkpoint_state.all_model_checkpoint_paths[-num_last_checkpoints:])
 
@@ -704,7 +712,7 @@ def avg_checkpoints(model_dir, num_last_checkpoints, global_step,
   for (name, shape) in var_list:
     if name != global_step_name:
       var_values[name] = np.zeros(shape)
-
+  #var_values[name]保存全部变量的和
   for checkpoint in checkpoints:
     utils.print_out("    %s" % checkpoint)
     reader = tf.contrib.framework.load_checkpoint(checkpoint)

@@ -263,8 +263,10 @@ def run_external_eval(infer_model,
         save_on_best=False,
         avg_ckpts=avg_ckpts)
   return dev_scores, test_scores, global_step
-
-
+'''
+global_step:int,当前已经运行的步数
+把过去checkpoint保存的变量做平均,然后使用平均值做external_eval
+'''
 def run_avg_external_eval(infer_model, infer_sess, model_dir, hparams,
                           summary_writer, global_step):
   """Creates an averaged checkpoint and run external eval with it."""
