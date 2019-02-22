@@ -67,6 +67,7 @@ def slice(data,db,perodic=300):
     '''
     N,T,D=data.shape
     stats=[]
+    steps=0
     for t in range(0,T,perodic):
         data_t=data[:,t:t+perodic,:]
         feed_data=np.reshape(data_t,(N,-1))
@@ -75,7 +76,9 @@ def slice(data,db,perodic=300):
         connectids=db.get_connect_ID(_index)
         for connectid in connectids:
             stats.append(connectId2tuple(connectid))
+        steps+=1
     stats=Counter(stats)
+    print('steps:',steps)
     print(stats.most_common(10))
 '''
 out-2-18_1-->(normalize,fft)=(T,T),(T,F)
