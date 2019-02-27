@@ -9,9 +9,9 @@ def  move(fro,to,threshold):
         filepath=os.path.join(fro,fname)
         cn=int(fname.replace('.out','').split('_')[1])
 
-        if cn>threshold:
+        if cn<threshold:
             cnt.append(cn)
             shutil.move(filepath,os.path.join(to,fname))
     print(sorted(cnt))
 move('/home/zhangxk/AIProject/ippack/ip_capture/out',
-     '/home/zhangxk/AIProject/ippack/ip_capture/out-2-15_2',2500)
+     '/home/zhangxk/AIProject/ippack/ip_capture/out-2-26_18',30000)

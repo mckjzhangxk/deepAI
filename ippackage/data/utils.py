@@ -1,51 +1,7 @@
 import  os
 from data.common import progess_print
 import numpy as np
-import collections
-
-class Package():
-    def __init__(self, srcip, srcport, destip, destport, type, upcount, upsize, ts):
-        self.srcip=srcip
-        self.srcport=srcport
-        self.destip=destip
-        self.destport=destport
-        self.type=type
-
-        self.upcount=int(upcount)
-        self.upsize=int(upsize)
-
-        self.downcount=0
-        self.downsize=0
-
-        self.ts=ts
-    @property
-    def up_rate(self):
-        return 1.0*self.upsize/self.upcount if self.upcount>0 else 0.0
-    @property
-    def down_rate(self):
-        return 1.0*self.downsize / self.downcount if self.downcount > 0 else 0.0
-    @property
-    def signature(self):
-        return self.srcip+':'+self.srcport+'->'+self.destip+':'+self.destport+'_'+self.type
-    @property
-    def signature_connection(self):
-        if (self.srcip+':'+self.srcport)<(self.destip+':'+self.destport):
-            return self.srcip+':'+self.srcport+'<->'+self.destip+':'+self.destport+'_'+self.type
-        else:
-            return self.destip+':'+self.destport+'<->'+self.srcip+':'+self.srcport+'_'+self.type
-    def __str__(self):
-        _ret='****************************************************************\n'
-        _ret+=self.srcip+':'+self.srcport+':'+self.destip+':'+self.destport+',type:'+self.type+'\n'
-        _ret+='upcount:'+str(self.upcount)+',upsize:'+str(self.upsize)+',uprate:'+str(self.up_rate)+'\n'
-        _ret+='downcount:' + str(self.downcount) + ',downsize:' + str(self.downsize) + ',downrate:' + str(self.down_rate)+'\n'
-        return _ret
-    def set_downloadinfo(self, other):
-        assert isinstance(other,Package),'other must be Package object'
-        assert self.signature_connection == other.signature_connection, 'not same connect'
-        self.downcount=other.upcount
-        self.downsize=other.upsize
-
-
+from data.Beans import Package
 
 
 '''
@@ -73,7 +29,7 @@ def connectId2tuple(connectid):
     else:
         return (dest,src,ptype)
 
-def _read_single_file(filename):
+def _read_single_file(filename,bean):
     '''
     arr:a list of Package object
     arr里面的数据都没有统计下载信息,这里会更新下载信息
@@ -88,7 +44,7 @@ def _read_single_file(filename):
             else:
                 tmp_signature[sig] = [p]
         for pair in tmp_signature.values():
-            assert len(pair) <= 2, 'error,connect pair at least length 2'
+            assert len(pair) <= 2, 'error,connect pair at most length 2'
             if len(pair) == 1: continue
             a = pair[0]
             b = pair[1]
@@ -100,21 +56,21 @@ def _read_single_file(filename):
     ret={}
     records=map(lambda s:s.split(),lines)
     for r in records:
-        _signature=r[1]+':'+r[3]+'->'+r[2]+':'+r[4]+'_'+r[5]
         _size=int(r[6])
         _ts=r[0]
+        p = bean(r[1], r[3], r[2], r[4], r[5], 1, _size, _ts)
+        _signature=p.signature
         if _signature in ret:
-            p=ret[_signature]
-            p.upcount+=1
-            p.upsize+=_size
+            _p=ret[_signature]
+            _p.upcount+=1
+            _p.upsize+=_size
         else:
-            p=Package(r[1],r[3],r[2],r[4],r[5],1,_size,_ts)
             ret[_signature]=p
     __update_downloadinfo__(ret.values())
     return ret
 
 
-def _get_package_info(basepath):
+def _get_package_info(basepath,bean):
     '''
     basepath如果有T个文件,说明在[start_time,start_time+T)时间段内的
     通信信息全部记录在本文件夹下面,对通信按照时序进行统计
@@ -127,6 +83,8 @@ def _get_package_info(basepath):
     '''
     def __updatedict__(base_dict,new_dict,t,T):
         '''
+        在t时刻的一条链接信息new_dict,new_dict.key是链接标识
+        new_dict.value是具体信息
         
         :param base_dict: 
             key:src->dest的签名
@@ -149,7 +107,7 @@ def _get_package_info(basepath):
 
     for t,fname in enumerate(flist):
         filepath=os.path.join(basepath,fname)
-        info_t=_read_single_file(filepath)
+        info_t=_read_single_file(filepath,bean)
         __updatedict__(ret,info_t,t,T)
         if t%10==5:
             progess_print('finish %d/%d'%(t,T))
@@ -164,7 +122,7 @@ def _extract_features(info, feature_names=[]):
     :param feature_names: list of feature_name
     :return: dict
         key:connectId
-        value:list of selected feature
+        value:list of selected feature,每个元素是(T,D)的array
     '''
     ret={}
     T=len(info)
@@ -229,10 +187,10 @@ class DB():
         '''
         if precise:
             index=self._getConnectId(connectId)
-            return self._db[index] if index >= 0 else None
+            return index if index >= 0 else None
         else:
             indexs=self._search(connectId)
-            return indexs,np.array([self._db[index] for index in indexs])
+            return indexs
 
     def _search(self,connectinfo):
         ret=[]
@@ -240,6 +198,7 @@ class DB():
         for connectid,index in self._db_index.items():
             if connectinfo in connectid:
                 ret.append(index)
+        ret=sorted(ret)
         return ret
 
     def get_connect_ID(self,indexes):
@@ -250,8 +209,8 @@ class DB():
         return [self._db_inv_index[i] for i in indexes]
 
 
-def load_data(path,feature_names=[]):
-    pack_infos=_get_package_info(path)
+def load_data(path,feature_names=[],bean=Package):
+    pack_infos=_get_package_info(path,bean)
     pack_infos=_extract_features(pack_infos,feature_names=feature_names)
     return DB(pack_infos,feature_names)
 

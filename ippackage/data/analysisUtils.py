@@ -93,7 +93,7 @@ def fourierAnalysis(X,windowSize):
     对X 进行stft分析,返回的Y:shape(N,T',D)
     D表示特征数量
     N是批处理数量
-    T':steps=(x.len)//windows,S=(windows//2)+1,
+    T':steps=(T)//windows,S=(windows//2)+1,
         T'=S*s,对一段序列分析的特征长度是S,序列长度是steps
     
     Y[i,t,j]表示第i个example的j特征

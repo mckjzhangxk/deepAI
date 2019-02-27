@@ -1,0 +1,1 @@
+from data.rnnInput import get_input,trainInput
