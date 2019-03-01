@@ -1,1 +1,1 @@
-from data.rnnInput import get_input,trainInput
+from data.rnnInput import get_input,TrainInput

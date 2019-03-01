@@ -1,8 +1,7 @@
-import numpy as np
 import tensorflow as tf
 import collections
 
-class TrainInput(collections.namedtuple('TrainInput',['X','Y','X_len','Cursor','Iterator','Update_Source'])):pass
+class TrainInput(collections.namedtuple('TrainInput',['X','Y','X_len','batch_size','Cursor','Iterator','Update_Source'])):pass
 
 def _dataSource(datafile, BATCH_SIZE, D):
     '''
@@ -164,29 +163,30 @@ def get_input(datafile,BATCH_SIZE,Tmax,D,perodic):
     Y=R_tgt[:R_batchsize]
     X_len=R_source_len[:R_batchsize]
 
-    return TrainInput(X,Y,X_len,cursor,iterator,update_source_op)
-filename='/home/zhangxk/projects/deepAI/ippackage/data/data'
-BATCH,T,D=3,6,2
-perodic=3
-
-
-trainInput=get_input(filename,BATCH,T,D,perodic)
-
-sess=tf.Session()
-sess.run(tf.global_variables_initializer())
-sess.run(trainInput.Iterator.initializer)
-
-steps=T//perodic
-for i in range(2):
-    sess.run(trainInput.Update_Source)
-
-    for s in range(steps):
-        _x,_y,_xl,_cursor=sess.run([trainInput.X,trainInput.Y,trainInput.X_len,trainInput.Cursor])
-        print('x:',_x)
-        print('y:', _y)
-        print('len:', _xl)
-        print('_cursor:', _cursor)
-        print('-------------------')
-    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-
-sess.close()
+    return TrainInput(X,Y,X_len,R_batchsize,cursor,iterator,update_source_op)
+# filename='/home/zhangxk/projects/deepAI/ippackage/data/data'
+# BATCH,T,D=3,6,2
+# perodic=3
+#
+#
+# trainInput=get_input(filename,BATCH,T,D,perodic)
+#
+# sess=tf.Session()
+# sess.run(tf.global_variables_initializer())
+# sess.run(trainInput.Iterator.initializer)
+#
+# steps=T//perodic
+# for i in range(2):
+#     sess.run(trainInput.Update_Source)
+#
+#     for s in range(steps):
+#         _bs,_x,_y,_xl,_cursor=sess.run([trainInput.batch_size,trainInput.X,trainInput.Y,trainInput.X_len,trainInput.Cursor])
+#         print('batchsize',_bs)
+#         print('x:',_x)
+#         print('y:', _y)
+#         print('len:', _xl)
+#         print('_cursor:', _cursor)
+#         print('-------------------')
+#     print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+#
+# sess.close()

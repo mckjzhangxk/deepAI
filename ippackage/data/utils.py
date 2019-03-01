@@ -1,8 +1,9 @@
-import  os
-from data.common import progess_print
-import numpy as np
-from data.Beans import Package
+import os
 
+import numpy as np
+
+from data.Beans import Package
+from utils.common import progess_print
 
 '''
 从单个文件里面读取一秒内的流量情况,输出一个dict,
