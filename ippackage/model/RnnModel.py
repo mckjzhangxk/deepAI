@@ -1,23 +1,26 @@
 import tensorflow as tf
 import model.modelHelper as helper
-
+from metrics import accuracy,accuracyPerClass
 
 class BaseModel():
-    def __init__(self,input,hparam):
+    def __init__(self,input,hparam,mode):
         self._input=input
+        self._mode=mode
         self._setParameter(hparam)
         self._buildNetWork(hparam)
         if self._mode=='train':
             self._set_train(hparam)
             self._summary()
+        elif self._mode=='eval':
+            self._set_eval(hparam)
 
+        self._setSaver(hparam)
     def _setParameter(self, hparam):
         '''
         把hparam中的参数转化成对象的属性
         :param hparam: 
         :return: 
         '''
-        self._mode=hparam.mode
         self._dropout=hparam.dropout if self._mode == 'train' else  0.0
     def _setSaver(self,hparam):
         varlist=[]
@@ -96,6 +99,7 @@ class BaseModel():
             i2=_logit_idx
             ii=tf.stack([i1,i2],axis=1)
             self._logit=tf.gather_nd(params=_logit,indices=ii)
+
     def _buildCellBlock(self,hparam):
         cell = helper.buildRNNCell(
             type=hparam.rnn_type,
@@ -226,8 +230,14 @@ class BaseModel():
             logits=self._logit
         )*self._valid_idx
         self._loss=tf.reduce_mean(_loss)
-        self._accuracy=helper.accuracy(logit=self._logit,label=self._input.Y,valid_idx=self._valid_idx)
-
+        self._accuracy=accuracy(logit=self._logit,
+                                label=self._input.Y,
+                                valid_idx=self._valid_idx)
+        self._clsAccuracy=accuracyPerClass(logit=self._logit,
+                                           label=self._input.Y,
+                                           valid_idx=self._valid_idx,
+                                           C=hparam.num_output
+                                           )
         #2.学习率与学习策略
         self.global_step=tf.Variable(0,trainable=False,name='global_step')
         self._learning_rate=tf.constant(hparam.lr)
@@ -247,6 +257,24 @@ class BaseModel():
         #5.优化操作
         self._train_op=optimizer.apply_gradients(zip(self._clip_grad,varlist),self.global_step)
 
+    def _set_eval(self,hparam):
+        '''
+        
+        :param hparam: 
+        :return: 
+        '''
+        self._accuracy=accuracy(logit=self._logit,
+                                label=self._input.Y,
+                                valid_idx=self._valid_idx)
+        self._clsAccuracy=accuracyPerClass(logit=self._logit,
+                                           label=self._input.Y,
+                                           valid_idx=self._valid_idx,
+                                           C=hparam.num_output
+                                           )
+        tf.summary.scalar('eval_accuracy', self._accuracy)
+        for c,v in enumerate(self._clsAccuracy):
+            tf.summary.scalar('eval_c%d_acc'%c,v)
+
     def _summary(self):
         '''
         对learning_rate,loss,global_norm,clip_norm做总结
@@ -256,8 +284,9 @@ class BaseModel():
         tf.summary.scalar('learn_rate',self._learning_rate)
         tf.summary.scalar('loss',self._loss)
         tf.summary.scalar('global_grad_norm', self._global_gradient_norm)
-        for v in self._clip_grad:
-            tf.summary.histogram(v.name,v)
+        tf.summary.scalar('accuracy', self._accuracy)
+        for v in self._clsAccuracy:tf.summary.scalar(v.name,v)
+        for v in self._clip_grad:tf.summary.histogram(v.name,v)
         tf.summary.scalar('clip_grad_norm',tf.global_norm(self._clip_grad))
 
         self._summary_op=tf.summary.merge_all()
@@ -286,4 +315,7 @@ class BaseModel():
     @property
     def accuracy(self):
         return self._accuracy
+    @property
+    def learning_rate(self):
+        return self._learning_rate
 

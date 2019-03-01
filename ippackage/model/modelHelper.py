@@ -1,7 +1,7 @@
 import tensorflow as tf
 from data import get_input
 import collections
-
+import os
 class RNNState():
     def __cloneState__(self, state, name):
         '''
@@ -128,84 +128,59 @@ def buildRNNCell(type, ndims, number_layers, dropout, forget_bias, residual):
     return tf.contrib.rnn.MultiRNNCell(cells, state_is_tuple=True)
 
 
-def accuracy(logit,label,valid_idx=None):
-    '''
-    logit:是一个(batch,C)的tensor
-    label:(batch,)标注
-    valid:(batch,)如果是None,默认都是有效的
-    
-    返回准确率
-    :param logit: 
-    :param label: 
-    :param valid_idx: 
-    :return: 
-    '''
-
-    if valid_idx is None:
-        valid_idx=tf.to_float(tf.ones_like(logit))
-    else:
-        valid_idx=tf.to_float(valid_idx)
-
-    predict=tf.arg_max(logit,1,output_type=tf.int32)
-    true_predict=tf.to_float(tf.equal(predict,label))
-    true_predict_cnt=tf.reduce_sum(true_predict)
-    cnt=tf.reduce_sum(valid_idx)+1e-13
-    return tf.divide(true_predict_cnt,cnt)
-
-def _get_config_proto():
+def _get_config_proto(hparam):
     conf=tf.ConfigProto(
-        allow_soft_placement=True,
-        log_device_placement=True
+        allow_soft_placement=hparam.soft_placement,
+        log_device_placement=hparam.log_device
     )
     return conf
-class TrainModel(collections.namedtuple('TrainModel',['model','graph','session'])):pass
-def createTrainModel(hparam,Model):
+class VPNModel(collections.namedtuple('VPNModel', ['model', 'graph', 'session'])):pass
+
+def createTrainModel(hparam,ModelFunc):
+    return _createModel(hparam,ModelFunc,'train')
+def createEvalModel(hparam,ModelFunc):
+    return _createModel(hparam, ModelFunc, 'eval')
+def _createModel(hparam,ModelFunc,mode):
     '''
     根据hparam定义
         输入,模型,sess,graph
     返回:
-        TrainModel(model,sess,graph)
+        VPNModel(model,sess,graph)
     :param hparam: 
     :return: 
     '''
-    assert hparam.mode=='train','You must in train Model'
-    train_input=get_input(datafile=hparam.src_path,
-              BATCH_SIZE=hparam.batch_size,
-              Tmax=hparam.Tmax,
-              D=hparam.features,
-              perodic=hparam.perodic)
+    if mode=='train':
+        datafile=hparam.train_datafile
+    elif mode=='eval':
+        datafile=hparam.eval_datafile
+    graph = tf.Graph()
+    with graph.as_default():
+        train_input=get_input(
+                  datafile=datafile,
+                  BATCH_SIZE=hparam.batch_size,
+                  Tmax=hparam.Tmax,
+                  D=hparam.features,
+                  perodic=hparam.perodic)
 
-    model=Model(train_input,hparam)
-
-    graph=tf.Graph()
-
-    sess=tf.Session(graph=graph,config=_get_config_proto())
-
-    return TrainModel(model,graph,sess)
+        model=ModelFunc(train_input,hparam,mode)
+    sess=tf.Session(graph=graph,config=_get_config_proto(hparam))
+    return VPNModel(model, graph, sess)
 
 
-def createOrLoadModel(anymodel,model,hparam):
+def createOrLoadModel(anymodel,hparam):
+    '''
+    默认初始化所有variable,如果hparam存在checkpoint,加载参数
+    到构造的Graph中.
+    
+    :param anymodel:这里表示TrainModel,EvalModel,
+     包含model,graph,sess 3个属性
+    :param hparam: 
+    :return: 
+    '''
     sess=anymodel.session
     sess.run(tf.global_variables_initializer())
 
-hparam = tf.contrib.training.HParams(
-    mode='train',
-    rnn_type='lstm',
-    ndims=128,
-    num_layers=2,
-    num_output=2,
-    batch_size=256,
-    dropout=0.2,
-    forget_bias=1.0,
-    residual=False,
-    perodic=3,
-    Tmax=6,  # 序列的最大长度,是文件的宽度/特征数量
-    lr=1e-4,
-    solver='sgd',
-    num_train_steps=12000,
-    decay_scheme=None,  # "luong5", "luong10", "luong234"
-    max_gradient_norm=5,
-    features=2,
-
-    src_path='/home/zhangxk/projects/deepAI/ippackage/data/data'
-)
+    modeldir=os.path.dirname(hparam.model_dir)
+    if tf.train.get_checkpoint_state(modeldir):
+        model_path=tf.train.latest_checkpoint(modeldir)
+        anymodel.model.saver.restore(sess,model_path)
