@@ -4,7 +4,7 @@ from model import BaseModel
 import time
 from utils import print_state_info
 import os
-import numpy as np
+import numpy  as np
 
 
 def _initStatsInfo(hparam):
@@ -40,6 +40,8 @@ def run_eval(eval_model,hparam,globalstep,writer):
     :return: 
     '''
 
+    counter=0
+    avg_acc=0
     graph=eval_model.graph
     sess=eval_model.session
     model=eval_model.model
@@ -75,9 +77,6 @@ def run_eval(eval_model,hparam,globalstep,writer):
 
 def train(hparam):
     '''
-    创建 train,eval两个计算图,读取数据集进行训练,数据集结束的
-    时候eval,统计准确性.
-    每steps_per_state打印在这个区间内计算的平均loss,accuarcy
     
     :param hparam: 
     :return: 
@@ -93,7 +92,7 @@ def train(hparam):
     common_op=[model.train_op,model.loss,model.accuracy,model.transfer_initState_op]
     stats_op =common_op+ [model.learning_rate,model.summary_op]
     #刷新输入数据, 并且初始化网络初始状态
-    refresh_input_op=[model.feed_source_op,model.reset_initState_op]
+    refresh_input_op=[model.reset_initState_op,model.feed_source_op]
 
 
     with trainModel.session as sess:
@@ -101,14 +100,13 @@ def train(hparam):
 
             # 这里应该有模型恢复操作,现在
             helper.createOrLoadModel(trainModel, hparam)
-
+            sess.run(model.reset_source_op)
             #num_train_steps是sess.run的总步数,inner_steps是内部步数,
             #浏览一个batch要循环inner_steps次,outter_step:表示要浏览多少次batch
             #num_train_steps=outter_steps*inner_steps
             inner_steps=hparam.Tmax // hparam.perodic
             outter_steps=hparam.num_train_steps//inner_steps
 
-            sess.run(model.reset_source_op)
             for step in range(outter_steps):
                 try:
                     #刷新输入数据,并且初始化网络初始状态
@@ -130,17 +128,21 @@ def train(hparam):
                 except tf.errors.OutOfRangeError:
                     _save_model(trainModel,hparam.model_dir,global_steps)
                     sess.run(model.reset_source_op)
-
                     print('eval.................')
                     run_eval(evalModel,hparam,global_steps,logfs)
 
+
+            print('finish')
+
+            for k in range(3):
+                run_eval(evalModel, hparam, global_steps, logfs)
 hparam = tf.contrib.training.HParams(
     mode='train',
     rnn_type='lstm',
     ndims=128,
     num_layers=2,
     num_output=2,
-    batch_size=4,
+    batch_size=128,
     dropout=0.0,
     forget_bias=1.0,
     residual=False,
@@ -158,9 +160,9 @@ hparam = tf.contrib.training.HParams(
     log_dir='/home/zhangxk/projects/deepAI/ippackage/train/log',
     model_dir='/home/zhangxk/projects/deepAI/ippackage/train/models/MyNet',
     steps_per_state=10,
-    max_keeps=5,
+    max_keeps=None,
     scope='VPNNetWork',
-    best_model_path='/home/zhangxk/projects/deepAI/ippackage/train/best',
+    best_model_path=None,
 
     soft_placement=True,
     log_device=False

@@ -12,6 +12,7 @@ class Package():
         self.downcount=0
         self.downsize=0
 
+        self.label=-1
         self.ts=ts
     @property
     def up_rate(self):

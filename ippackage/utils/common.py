@@ -1,5 +1,6 @@
 import sys
 import time
+import numpy as np
 
 def progess_print(info):
     sys.stdout.write('\r>>'+info)
@@ -8,8 +9,8 @@ def progess_print(info):
 def print_state_info(stat_info):
     endtime=time.time()
     step=stat_info['steps']
-    avg_loss=stat_info['total_loss']/stat_info['stat_steps']
-    avg_acc=stat_info['accuracy']/stat_info['stat_steps']
+    avg_loss=np.average(stat_info['total_loss'])
+    avg_acc=np.average(stat_info['accuracy'])
     speed=stat_info['stat_steps']/(endtime-stat_info['start_time'])
     lr=stat_info['learn_rate']
 

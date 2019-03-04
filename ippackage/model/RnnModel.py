@@ -87,18 +87,20 @@ class BaseModel():
             #B)如果输入恰好在本段RNN结束,那么seqlen-cursor-1的状态应该取为logit
             #C)如果本段RNN没有的输入已经结束,那么不应该有logit,但是为了满足计算,默认取0
                 # 设置valid标志,计算loss的时候过滤掉这一loss
-            _logit_idx=tf.minimum(self._input.X_len-_cursor-1,self.T-1)
-            self.xxx=_logit_idx
-            _valid_idx=tf.cast(tf.greater_equal(_logit_idx,0),tf.float32)
-            _logit_idx=tf.maximum(_logit_idx,0)
-            self._valid_idx=_valid_idx
+            #D)计算有效的idx一定要依赖_logit,因为计算_logit才会刷新输入数据的指针
+            with tf.control_dependencies([_logit]):
+                _logit_idx=tf.minimum(self._input.X_len-_cursor-1,self.T-1)
+                self.xxx=_logit_idx
+                _valid_idx=tf.cast(tf.greater_equal(_logit_idx,0),tf.float32)
+                _logit_idx=tf.maximum(_logit_idx,0)
+                self._valid_idx=_valid_idx
 
 
-            #logit(self.input.batch_size,self.T,num_output,float32)
-            i1=tf.range(self._input.batch_size)
-            i2=_logit_idx
-            ii=tf.stack([i1,i2],axis=1)
-            self._logit=tf.gather_nd(params=_logit,indices=ii)
+                #logit(self.input.batch_size,self.T,num_output,float32)
+                i1=tf.range(self._input.batch_size)
+                i2=_logit_idx
+                ii=tf.stack([i1,i2],axis=1)
+                self._logit=tf.gather_nd(params=_logit,indices=ii)
 
     def _buildCellBlock(self,hparam):
         cell = helper.buildRNNCell(

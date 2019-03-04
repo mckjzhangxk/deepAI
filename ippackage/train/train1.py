@@ -4,22 +4,20 @@ from model import BaseModel
 import time
 from utils import print_state_info
 import os
-import numpy as np
-
 
 def _initStatsInfo(hparam):
     start_time=time.time()
 
     return {
         'start_time':start_time,
-        'total_loss':[],
-        'accuracy':[],
+        'total_loss':0.0,
+        'accuracy':0.0,
         'learn_rate':0.0,
         'stat_steps':hparam.steps_per_state
     }
 def _update_stat_info(stat_info,loss,accuracy,lr=None,globalstep=None):
-    stat_info['total_loss'].append(loss)
-    stat_info['accuracy'].append(accuracy)
+    stat_info['total_loss']+=loss
+    stat_info['accuracy'] += accuracy
 
     if globalstep is not None:
         stat_info['steps']=globalstep
@@ -30,7 +28,7 @@ def _save_model(anymodel,path,steps=None):
 
     anymodel.model.saver.save(anymodel.session,path,global_step=steps)
 
-def run_eval(eval_model,hparam,globalstep,writer):
+def run_eval1(eval_model,hparam,globalstep,writer):
     '''
     使用eval_model,对测试集的数据运行一边计算accuracy,
     打印到控制台,并用writer记录到日志中.如果模型accuracy达到最好的时候,保存模型
@@ -40,6 +38,8 @@ def run_eval(eval_model,hparam,globalstep,writer):
     :return: 
     '''
 
+    counter=0
+    avg_acc=0
     graph=eval_model.graph
     sess=eval_model.session
     model=eval_model.model
@@ -52,16 +52,55 @@ def run_eval(eval_model,hparam,globalstep,writer):
         sess.run(model.reset_source_op)
         while True:
             try:
+                _acc=0
                 sess.run(reflesh_input_op)
                 for s in range(innerstep):
                     __acc,_=sess.run([model.accuracy,model.transfer_initState_op])
+                    _acc+=__acc
                     acc.append(__acc)
+                #有很多方法,这里统计RNN对一批预测的平均准确率
+                avg_acc+=_acc/innerstep
+                counter+=1
+            except tf.errors.OutOfRangeError:
+                break
+        print(acc)
+        return acc
+
+def run_eval(eval_model,hparam,globalstep,writer):
+    '''
+    使用eval_model,对测试集的数据运行一边计算accuracy,
+    打印到控制台,并用writer记录到日志中.如果模型accuracy达到最好的时候,保存模型
+    到hparam.best_path下面的best_acc文件
+    :param eval_model: 
+    :param hparam: 
+    :return: 
+    '''
+
+    counter=0
+    avg_acc=0
+    graph=eval_model.graph
+    sess=eval_model.session
+    model=eval_model.model
+
+    reflesh_input_op=[model.reset_initState_op,model.feed_source_op]
+    with graph.as_default():
+        helper.createOrLoadModel(eval_model,hparam)
+        innerstep=hparam.Tmax//hparam.perodic
+        sess.run(model.reset_source_op)
+        while True:
+            try:
+                _acc=0
+                sess.run(reflesh_input_op)
+                for s in range(innerstep):
+                    __acc,_=sess.run([model.accuracy,model.transfer_initState_op])
+                    _acc+=__acc
+                #有很多方法,这里统计RNN对一批预测的平均准确率
+                avg_acc+=_acc/innerstep
+                counter+=1
             except tf.errors.OutOfRangeError:
                 break
     #对所有batch的统计结果
-    avg_acc=np.average(acc)
-
-
+    avg_acc/=counter
     if getattr(hparam,'best_accuracy',0.0)<avg_acc:
         setattr(hparam,'best_accuracy',avg_acc)
         best_model_path=getattr(hparam,'best_model_path',None)
@@ -75,9 +114,6 @@ def run_eval(eval_model,hparam,globalstep,writer):
 
 def train(hparam):
     '''
-    创建 train,eval两个计算图,读取数据集进行训练,数据集结束的
-    时候eval,统计准确性.
-    每steps_per_state打印在这个区间内计算的平均loss,accuarcy
     
     :param hparam: 
     :return: 
@@ -93,7 +129,7 @@ def train(hparam):
     common_op=[model.train_op,model.loss,model.accuracy,model.transfer_initState_op]
     stats_op =common_op+ [model.learning_rate,model.summary_op]
     #刷新输入数据, 并且初始化网络初始状态
-    refresh_input_op=[model.feed_source_op,model.reset_initState_op]
+    refresh_input_op=[model.reset_initState_op,model.feed_source_op]
 
 
     with trainModel.session as sess:
@@ -101,15 +137,14 @@ def train(hparam):
 
             # 这里应该有模型恢复操作,现在
             helper.createOrLoadModel(trainModel, hparam)
-
+            sess.run(model.reset_source_op)
             #num_train_steps是sess.run的总步数,inner_steps是内部步数,
             #浏览一个batch要循环inner_steps次,outter_step:表示要浏览多少次batch
             #num_train_steps=outter_steps*inner_steps
             inner_steps=hparam.Tmax // hparam.perodic
             outter_steps=hparam.num_train_steps//inner_steps
 
-            sess.run(model.reset_source_op)
-            for step in range(outter_steps):
+            for step in range(1000):
                 try:
                     #刷新输入数据,并且初始化网络初始状态
                     sess.run(refresh_input_op)
@@ -120,7 +155,7 @@ def train(hparam):
                         if (global_steps+5) % hparam.steps_per_state==0:
                             _, _loss, _acc,_,_lr,_summary=sess.run(stats_op)
                             _update_stat_info(stats_info, _loss, _acc, _lr,global_steps)
-                            print_state_info(stats_info)
+
                             logfs.add_summary(_summary, global_steps)
                             stats_info=_initStatsInfo(hparam)
                         else:
@@ -128,27 +163,50 @@ def train(hparam):
                             _update_stat_info(stats_info,_loss,_acc)
 
                 except tf.errors.OutOfRangeError:
+                    print('eval.................')
+                    run_eval1(evalModel,hparam,global_steps,logfs)
                     _save_model(trainModel,hparam.model_dir,global_steps)
                     sess.run(model.reset_source_op)
+                # except tf.errors.UnimplementedError:
+                #     print('ss')
+            print('finish')
 
-                    print('eval.................')
-                    run_eval(evalModel,hparam,global_steps,logfs)
 
+
+            for i in range(3):
+                acc=run_eval1(evalModel, hparam, 0, logfs)
+                # acc = []
+                # reflesh_input_op = [model.reset_initState_op, model.feed_source_op]
+                # innerstep = hparam.Tmax // hparam.perodic
+                # sess.run(model.reset_source_op)
+                # while True:
+                #     try:
+                #         sess.run(reflesh_input_op)
+                #         for s in range(innerstep):
+                #             __acc, _ = sess.run([model.accuracy, model.transfer_initState_op])
+                #             acc.append(__acc)
+                #
+                #     except tf.errors.OutOfRangeError:
+                #         break
+                print(acc)
 hparam = tf.contrib.training.HParams(
     mode='train',
     rnn_type='lstm',
     ndims=128,
     num_layers=2,
     num_output=2,
-    batch_size=4,
+    batch_size=128,
+    num_train_steps=500,
     dropout=0.0,
+    lr=1e-4,
+
     forget_bias=1.0,
     residual=False,
     perodic=3,
     Tmax=6,  # 序列的最大长度,是文件的宽度/特征数量
-    lr=1e-4,
+
     solver='adam',
-    num_train_steps=500,
+
     decay_scheme='luong5',  # "luong5", "luong10", "luong234"
     max_gradient_norm=5,
     features=2,
@@ -158,9 +216,9 @@ hparam = tf.contrib.training.HParams(
     log_dir='/home/zhangxk/projects/deepAI/ippackage/train/log',
     model_dir='/home/zhangxk/projects/deepAI/ippackage/train/models/MyNet',
     steps_per_state=10,
-    max_keeps=5,
+    max_keeps=None,
     scope='VPNNetWork',
-    best_model_path='/home/zhangxk/projects/deepAI/ippackage/train/best',
+    best_model_path=None,
 
     soft_placement=True,
     log_device=False

@@ -32,6 +32,19 @@ def connectId2tuple(connectid):
 
 def _read_single_file(filename,bean):
     '''
+    filaname是一秒钟libpcap抓取的数据包日志文件,
+    把这个文件转化成一个dict,key标识一个链接,规则是
+    根据bean.signature函数决定,value是bean对象,
+    记录了在这一秒内,有这个链接上传速度,下载速度,上传次数
+    下载次数,时间戳信息...
+    
+    返回dict..d
+    
+    :param filename: 
+    :param bean: 
+    :return: 
+    '''
+    '''
     arr:a list of Package object
     arr里面的数据都没有统计下载信息,这里会更新下载信息
     '''
@@ -59,7 +72,16 @@ def _read_single_file(filename,bean):
     for r in records:
         _size=int(r[6])
         _ts=r[0]
-        p = bean(r[1], r[3], r[2], r[4], r[5], 1, _size, _ts)
+        #字段含义:时间戳,源IP,目标IP(2),源端口(3),目标端口(4),协议号(5),数据包大小(6)
+        p = bean(
+            srcip=r[1],
+            srcport=r[3],
+            destip=r[2],
+            destport=r[4],
+            type=r[5],
+            upcount=1,
+            upsize=_size,
+            ts=_ts)
         _signature=p.signature
         if _signature in ret:
             _p=ret[_signature]
@@ -71,7 +93,7 @@ def _read_single_file(filename,bean):
     return ret
 
 
-def _get_package_info(basepath,bean):
+def get_package_info(basepath, bean):
     '''
     basepath如果有T个文件,说明在[start_time,start_time+T)时间段内的
     通信信息全部记录在本文件夹下面,对通信按照时序进行统计
@@ -111,7 +133,7 @@ def _get_package_info(basepath,bean):
         info_t=_read_single_file(filepath,bean)
         __updatedict__(ret,info_t,t,T)
         if t%10==5:
-            progess_print('finish %d/%d'%(t,T))
+            progess_print('file to beans %d/%d'%(t,T))
     print()
 
     return ret
@@ -127,7 +149,7 @@ def _extract_features(info, feature_names=[]):
     '''
     ret={}
     T=len(info)
-    #value is list of Package Object
+    #package_T is list of Package Object
     for t,(connectID,package_T) in enumerate(info.items()):
         Ts=[]
 
@@ -141,7 +163,7 @@ def _extract_features(info, feature_names=[]):
                     feature_values.append(getattr(pack_t,feature_name))
         ret[connectID] = np.array(Ts)
         if t%10==5:
-            progess_print('finish get_features %d/%d'%(t,T))
+            progess_print('finish extract_features %d/%d'%(t,T))
     print()
     return ret
 
@@ -211,7 +233,7 @@ class DB():
 
 
 def load_data(path,feature_names=[],bean=Package):
-    pack_infos=_get_package_info(path,bean)
+    pack_infos=get_package_info(path, bean)
     pack_infos=_extract_features(pack_infos,feature_names=feature_names)
     return DB(pack_infos,feature_names)
 
