@@ -132,8 +132,6 @@ def get_package_info(basepath, bean):
         filepath=os.path.join(basepath,fname)
         info_t=_read_single_file(filepath,bean)
         __updatedict__(ret,info_t,t,T)
-        if t%10==5:
-            progess_print('file to beans %d/%d'%(t,T))
     print()
 
     return ret

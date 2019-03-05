@@ -2,17 +2,12 @@ from data.movedata import move
 from data.dbutils import get_package_info
 from data.Beans import Package_FreeGate
 import collections
-import os
 import numpy as np
 from utils.common import progess_print
+from  data.Conf import DataConf
 
-source_path='/home/zhangxk/AIProject/ippack/ip_capture/out'
-target_path='/home/zhangxk/AIProject/ippack/ip_capture/hello'
-train_path=os.path.join(target_path,'train1.txt')
 
-features=['upcount','upsize','up_rate','downcount','downsize','down_rate']
-features=['upcount']
-Tmax=15
+
 
 class VPN_Record(collections.namedtuple('VPN_Record',['label','length','features'])):pass
 
@@ -78,6 +73,18 @@ def __extract__features(package_T,features,Tmax):
 
     return Ts
 
+def _label_data(connectid):
+
+    sps=connectid.split('->')
+    ip1=sps[0]
+    sps=sps[1].split('_')
+    ip2=sps[0]
+
+    if (ip1 in DataConf.BLACK_LIST) or (ip2 in DataConf.BLACK_LIST):
+        return '1'
+    else:
+        return '0'
+
 def dict_to_record(d,features=[],Tmax=0):
     '''
     d是dict,key表示一个链接,值是有效的时间序列list,
@@ -92,7 +99,14 @@ def dict_to_record(d,features=[],Tmax=0):
     N=len(d)
     for s,(cid,pack) in enumerate(d.items()):
         _feature=__extract__features(pack,features,Tmax)
-        _label='0'
+        #这里还会处理一下特征
+        D=_feature.shape[1]
+        for d in range(D):
+            fcn=DataConf.features_func[d]
+            if fcn:
+                _feature[:,d]=fcn(_feature[:,d])
+
+        _label=_label_data(cid)
         _length=len(pack)
         _record=VPN_Record(_label,_length,_feature)
         ret[cid]=_record
@@ -115,16 +129,17 @@ def write_record(d,output_file):
 if __name__ == '__main__':
     #第一步:输入数据分割成splits份,输出到target_path中,
     # 这样不至于数据量过大不好处理
-    outs=move(source_path, target_path, Tmax)
+    outs=move(DataConf.source_path, DataConf.target_path, DataConf.Tmax)
     #第二部,在outs[i]的文件是时间[Tmax*i,Tmax*(i+1)]
     # 内的流量统计信息,把大量文件转化成dict,然后取有效序列
+
     for p in outs:
-        #p是一个文件夹,把p文件夹下面的文件转成dict,key是connectid,value[package],
+        #p是一个文件夹,把p文件夹下面的文件转成dict,key是connectid,value[packages],
         #这里的value是定长Tmax的数组
         _t=get_package_info(p,Package_FreeGate)
         #提取出有效的values,不同key是connectid对于不同长度的values
         for k,v in _t.items():
             _t[k]=_get_valid_input(v)
         #再把上面的dick转化成一个固定格式的record,0会填充Trel<Tmax的部分
-        vv=dict_to_record(_t,features,Tmax)
-        write_record(vv,train_path)
+        vv=dict_to_record(_t,DataConf.features,DataConf.Tmax)
+        write_record(vv, DataConf.data_path)
