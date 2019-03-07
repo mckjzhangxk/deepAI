@@ -14,6 +14,8 @@ def  move(source_path, target_base_path, T):
     '''
 
     print('start split data')
+    if not os.path.exists(target_base_path):
+        os.mkdir(target_base_path)
     filelist=os.listdir(source_path)
     filelist=sorted(filelist)
 

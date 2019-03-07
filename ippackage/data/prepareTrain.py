@@ -1,9 +1,9 @@
 
 from  data.Conf import DataConf
 import numpy as np
+import os
 
-
-def read_data(datafile):
+def read_data(datafile,logfs=None):
     pos=[]
     neg=[]
 
@@ -14,6 +14,10 @@ def read_data(datafile):
             pos.append(l)
         else:
             neg.append(l)
+
+    if logfs:
+        filename=os.path.basename(datafile)
+        logfs.write('%s\n\t#pos:%d\n\t#neg:%d\n'%(filename,len(pos),len(neg)))
     return pos,neg
 def write2File(pos,pos_idx,neg,neg_idx,outputpath):
     pos_out=[pos[i] for i in pos_idx]
@@ -25,10 +29,19 @@ def write2File(pos,pos_idx,neg,neg_idx,outputpath):
         for l in out:
             fs.write(l)
 if __name__ == '__main__':
-    pos, neg=read_data(DataConf.data_path)
+    DATASET='train'
 
-    # print('# pos is %d'%(len(pos)))
-    # print('# neg is %d' % (len(neg)))
+
+    sourcepath=DataConf.TrainDataSource
+    fnames=sorted(os.listdir(sourcepath))
+    pos, neg = [], []
+    with open(DataConf.Dataset_Log,'w') as logfs:
+
+        for fname in fnames:
+            _pos, _neg=read_data(os.path.join(sourcepath,fname),logfs)
+            pos=pos+_pos
+            neg=neg+_neg
+    print('#pos %d,#neg %d'%(len(pos),len(neg)))
 
     if len(pos)<DataConf.BASE_NUM:
         pos_idx=np.random.choice(len(pos),DataConf.BASE_NUM,True)
@@ -39,6 +52,7 @@ if __name__ == '__main__':
         neg_idx=np.random.choice(len(neg),DataConf.BASE_NUM,True)
     else:
         neg_idx = np.random.choice(len(neg), DataConf.BASE_NUM, False)
-
-    write2File(pos, pos_idx, neg, neg_idx, DataConf.TrainFile)
-    # write2File(pos,pos_idx,neg,neg_idx,DataConf.DevFile)
+    if DATASET=='train':
+        write2File(pos, pos_idx, neg, neg_idx, DataConf.TrainFile)
+    else:
+        write2File(pos,pos_idx,neg,neg_idx,DataConf.DevFile)

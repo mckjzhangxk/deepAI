@@ -93,7 +93,7 @@ def _read_single_file(filename,bean):
     return ret
 
 
-def get_package_info(basepath, bean):
+def get_package_info(basepath, bean,verbose=False):
     '''
     basepath如果有T个文件,说明在[start_time,start_time+T)时间段内的
     通信信息全部记录在本文件夹下面,对通信按照时序进行统计
@@ -132,6 +132,9 @@ def get_package_info(basepath, bean):
         filepath=os.path.join(basepath,fname)
         info_t=_read_single_file(filepath,bean)
         __updatedict__(ret,info_t,t,T)
+
+        if verbose and t%10==0:
+            progess_print('finish get_package_info %d/%d'%(t,T))
     print()
 
     return ret

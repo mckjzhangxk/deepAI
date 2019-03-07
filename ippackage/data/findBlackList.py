@@ -3,8 +3,10 @@ import data.dbutils as dbutils
 from data.Beans import Package_FreeGate
 from data.Conf import DataConf
 
-basePath='/home/zhangxk/AIProject/ippack/3-5'
-IP = '192.168.060.160'
+
+basePath='/home/zhangxk/AIProject/ippack/vpndata/out'
+IP = '192.168.060.160' #笔记本
+# IP='192.168.000.096'    #home
 
 def sameNet(ip1,ip2):
     subnet='192.168'
@@ -51,17 +53,14 @@ def retrive(key):
         return ip2 + '--->' + ip1
 if __name__ == '__main__':
 
-    files=os.listdir(basePath)
     suspect=[]
     total=0
-    for fname in files:
-        p=os.path.join(basePath,fname)
 
-        r=dbutils.get_package_info(p,Package_FreeGate)
-        total+=len(r)
-        for k in r.keys():
-            if checkVPNConnect(k):
-                suspect.append(k)
+    r=dbutils.get_package_info(basePath,Package_FreeGate,True)
+    total+=len(r)
+    for k in r.keys():
+        if checkVPNConnect(k):
+            suspect.append(k)
     suspect=set(suspect)
     for x in suspect:
         print(x)

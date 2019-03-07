@@ -1,0 +1,19 @@
+1.准备数据:
+描述:从source_path下面分时间段(Tmax为一段),转移到target_path/{i},
+对的target_path记录汇总,并把标注好的结果,追加到data_path文件
+运行命令:
+    a.先把winpcap截获数据拷贝到source_path
+    b.修改data_path
+    c.在运行preparedata.py
+    d.最后删除source_path,target_path
+2.生成训练数据集
+    BASE_NUM是一个类别的数量
+
+    a.TrainFile,DevFile下面是生成的文件
+    b.修改prepareTrain.py 的DATASET='train'
+    c.然后运行prepareTrain.py
+
+3.更新黑名单
+    修改findBlackList.py basePath=winpcap截获数据
+    修改IP
+    运行findBlackList.py

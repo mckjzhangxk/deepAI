@@ -148,13 +148,13 @@ hparam = tf.contrib.training.HParams(
     Tmax=300,  # 序列的最大长度,是文件的宽度/特征数量
     lr=1e-4,
     solver='adam',
-    num_train_steps=1500,
+    num_train_steps=5000,
     decay_scheme='luong5',  # "luong5", "luong10", "luong234"
     max_gradient_norm=5,
     features=6,
 
-    train_datafile='/home/zhangxk/AIProject/ippack/output/train.txt',
-    eval_datafile='/home/zhangxk/AIProject/ippack/output/dev.txt',
+    train_datafile='/home/zhangxk/AIProject/ippack/vpndata/train.txt',
+    eval_datafile='/home/zhangxk/AIProject/ippack/vpndata/train.txt',
     log_dir='/home/zhangxk/projects/deepAI/ippackage/train/log',
     model_dir='/home/zhangxk/projects/deepAI/ippackage/train/models/MyNet',
     steps_per_state=10,
