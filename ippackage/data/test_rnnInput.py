@@ -12,8 +12,10 @@ def randomFile(path, N, T, D):
                     s1 +=cc  + ','
                 s += s1
             s = s[:-1]
+            label=str(n%2)
 
-            f.write('1,22,'+s + '\n')
+            slen=str(np.random.randint(1, T, dtype=np.int32))
+            f.write(label+','+slen+','+s+'\n')
 
 def output(batch, x, y, xlen, fs):
     '''
@@ -45,45 +47,49 @@ def output(batch, x, y, xlen, fs):
 filename = 'resource/data'
 
 
-BATCH, Tmax, D = 32, 6, 1
-perodic = 3
+BATCH, Tmax, D = 32, 300, 6
+perodic = 30
 
 
 # randomFile(filename, 1000, Tmax, D)
-trainInput = get_input(filename, BATCH, Tmax, D, perodic)
 
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
-sess.run(trainInput.Iterator.initializer)
+def xx():
+    trainInput = get_input(filename, BATCH, Tmax, D, perodic)
 
-steps = Tmax // perodic
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+    sess.run(trainInput.Iterator.initializer)
 
-output_filenames=[
-'resource/data_output1',
-'resource/data_output2',
-'resource/data_output3',
-]
-for i in range(len(output_filenames)):
-    with open(output_filenames[i], 'w') as ofs:
-        try:
+    steps = Tmax // perodic
 
-            while True:
-                sess.run(trainInput.feed_Source)
+    output_filenames=[
+    'resource/data_output1',
+    'resource/data_output2',
+    'resource/data_output3',
+    ]
+    for i in range(len(output_filenames)):
+        with open(output_filenames[i], 'w') as ofs:
+            try:
 
-                _xx = None
-                for s in range(steps):
-                    _bs, _x, _y, _xl, _cursor = sess.run([
-                        trainInput.batch_size,
-                        trainInput.X,
-                        trainInput.Y,
-                        trainInput.X_len,
-                        trainInput.Cursor
-                    ])
-                    if _xx is not None:
-                        _xx = np.append(_xx, _x, 1)
-                    else:
-                        _xx = _x
-                output(_bs, _xx, _y, _xl, ofs)
-        except tf.errors.OutOfRangeError:
-            sess.run(trainInput.Iterator.initializer)
-sess.close()
+                while True:
+                    sess.run(trainInput.feed_Source)
+
+                    _xx = None
+                    for s in range(steps):
+                        _bs, _x, _y, _xl, _cursor = sess.run([
+                            trainInput.batch_size,
+                            trainInput.X,
+                            trainInput.Y,
+                            trainInput.X_len,
+                            trainInput.Cursor
+                        ])
+                        if _xx is not None:
+                            _xx = np.append(_xx, _x, 1)
+                        else:
+                            _xx = _x
+                    output(_bs, _xx, _y, _xl, ofs)
+            except tf.errors.OutOfRangeError:
+                sess.run(trainInput.Iterator.initializer)
+    sess.close()
+
+xx()

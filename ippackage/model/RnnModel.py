@@ -73,7 +73,7 @@ class BaseModel():
             self._states=tf.stack(_states,axis=1)
 
             #这里的init_state可以看作是final state
-            self._transfer_state_op=rnnstateObj.update_init_state(self._initstate, init_state)
+            self._transfer_init_state_op=rnnstateObj.update_init_state(self._initstate, init_state)
 
 
 
@@ -298,10 +298,10 @@ class BaseModel():
         :param sess: 
         :return: 
         '''
-        sess.run(self.reset_source_op)
+        sess.run(self._input.Iterator.initializer)
         self._feed_Source(sess)
     def _feed_Source(self,sess):
-        sess.run([self.feed_source_op,self.reset_initState_op])
+        sess.run([self._input.feed_Source,self._reset_init_state_op])
     def train(self,sess,hparam):
         '''
         对外的训练接口，返回 
@@ -312,16 +312,16 @@ class BaseModel():
         :return: 
         '''
         common_op = [self._input.Cursor,
-                     self.train_op,
-                     self.loss,
-                     self.accuracy,
-                     self.transfer_initState_op]
-        stats_op = common_op + [self.learning_rate, self.summary_op]
+                     self._train_op,
+                     self._loss,
+                     self._accuracy,
+                     self._transfer_init_state_op]
+        stats_op = common_op + [self._learning_rate, self._summary_op]
 
         global_steps=sess.run(self.global_step)
 
         if (global_steps + 5) % hparam.steps_per_state == 0:
-            _cursor,_loss, _acc,_,_lr,_summary=sess.run(stats_op)
+            _cursor,_,_loss, _acc,_,_lr,_summary=sess.run(stats_op)
             ret={'stat':True,'result':[_loss,_acc,global_steps+1,_lr,_summary]}
         else:
             _cursor,_, _loss, _acc, _=sess.run(common_op)
@@ -333,8 +333,8 @@ class BaseModel():
 
     def eval(self,sess,hparam):
         common_op = [self._input.Cursor,
-                     self.accuracy,
-                     self.transfer_initState_op]
+                     self._accuracy,
+                     self._transfer_init_state_op]
 
         _cursor,_acc,_= sess.run(common_op)
         ret = {'accuracy': _acc}

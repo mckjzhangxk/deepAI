@@ -102,7 +102,7 @@ def train(hparam):
                 try:
                     result=model.train(sess,hparam)
                     _loss, _acc,_globalstep,_lr,_summary=result['result']
-                    _update_stat_info(stats_info, _loss, _acc,_lr)
+                    _update_stat_info(stats_info, _loss, _acc,_lr,_globalstep)
 
                     if result['stat']:
                         print_state_info(stats_info)
@@ -136,14 +136,17 @@ hparam = tf.contrib.training.HParams(
     max_gradient_norm=5,
     features=6,
 
-    train_datafile='/home/zhangxk/AIProject/ippack/vpndata/train.txt',
-    eval_datafile='/home/zhangxk/AIProject/ippack/vpndata/train.txt',
-    log_dir='/home/zhangxk/projects/deepAI/ippackage/train/log',
-    model_dir='/home/zhangxk/projects/deepAI/ippackage/train/models/MyNet',
+    # train_datafile='/home/zhangxk/AIProject/ippack/vpndata/train.txt',
+    # eval_datafile='/home/zhangxk/AIProject/ippack/vpndata/train.txt',
+    train_datafile='../data/resource/data',
+    eval_datafile='../data/resource/data',
+
+    log_dir='log',
+    model_dir='models/MyNet',
     steps_per_state=10,
     max_keeps=5,
     scope='VPNNetWork',
-    best_model_path='/home/zhangxk/projects/deepAI/ippackage/train/best',
+    best_model_path='best',
 
     soft_placement=True,
     log_device=False
