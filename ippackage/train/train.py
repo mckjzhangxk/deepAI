@@ -44,23 +44,18 @@ def run_eval(eval_model,hparam,globalstep,writer):
     sess=eval_model.session
     model=eval_model.model
 
-    reflesh_input_op=[model.reset_initState_op,model.feed_source_op]
     acc=[]
     with graph.as_default():
         helper.createOrLoadModel(eval_model,hparam)
-        innerstep=hparam.Tmax//hparam.perodic
-        sess.run(model.reset_source_op)
+        model.init_dataSource(sess)
         while True:
             try:
-                sess.run(reflesh_input_op)
-                for s in range(innerstep):
-                    __acc,_=sess.run([model.accuracy,model.transfer_initState_op])
-                    acc.append(__acc)
+                result=model.eval(sess,hparam)
+                acc.append(result['accuracy'])
             except tf.errors.OutOfRangeError:
                 break
     #对所有batch的统计结果
     avg_acc=np.average(acc)
-
 
     if getattr(hparam,'best_accuracy',0.0)<avg_acc:
         setattr(hparam,'best_accuracy',avg_acc)
@@ -90,12 +85,6 @@ def train(hparam):
     stats_info=_initStatsInfo(hparam)
 
 
-    common_op=[model.train_op,model.loss,model.accuracy,model.transfer_initState_op]
-    stats_op =common_op+ [model.learning_rate,model.summary_op]
-    #刷新输入数据, 并且初始化网络初始状态
-    refresh_input_op=[model.feed_source_op,model.reset_initState_op]
-
-
     with trainModel.session as sess:
         with tf.summary.FileWriter(hparam.log_dir,trainModel.graph) as logfs:
 
@@ -108,31 +97,25 @@ def train(hparam):
             inner_steps=hparam.Tmax // hparam.perodic
             outter_steps=hparam.num_train_steps//inner_steps
 
-            sess.run(model.reset_source_op)
+            model.init_dataSource(sess)
             for step in range(outter_steps):
                 try:
-                    #刷新输入数据,并且初始化网络初始状态
-                    sess.run(refresh_input_op)
+                    result=model.train(sess,hparam)
+                    _loss, _acc,_globalstep,_lr,_summary=result['result']
+                    _update_stat_info(stats_info, _loss, _acc,_lr)
 
-                    #横向扫描输入数据
-                    for p in range(inner_steps):
-                        global_steps=step*inner_steps+p
-                        if (global_steps+5) % hparam.steps_per_state==0:
-                            _, _loss, _acc,_,_lr,_summary=sess.run(stats_op)
-                            _update_stat_info(stats_info, _loss, _acc, _lr,global_steps)
-                            print_state_info(stats_info)
-                            logfs.add_summary(_summary, global_steps)
-                            stats_info=_initStatsInfo(hparam)
-                        else:
-                            _,_loss,_acc,_=sess.run(common_op)
-                            _update_stat_info(stats_info,_loss,_acc)
+                    if result['stat']:
+                        print_state_info(stats_info)
+                        logfs.add_summary(_summary, _globalstep)
+                        stats_info = _initStatsInfo(hparam)
+
 
                 except tf.errors.OutOfRangeError:
-                    _save_model(trainModel,hparam.model_dir,global_steps)
-                    sess.run(model.reset_source_op)
+                    _save_model(trainModel,hparam.model_dir,_globalstep)
+                    model.init_dataSource(sess)
 
                     print('eval.................')
-                    run_eval(evalModel,hparam,global_steps,logfs)
+                    run_eval(evalModel,hparam,_globalstep,logfs)
 
 hparam = tf.contrib.training.HParams(
     mode='train',

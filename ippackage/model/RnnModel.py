@@ -67,6 +67,7 @@ class BaseModel():
             _states=[]
             for t in range(self.T):
                 _,init_state=cell(self._input.X[:,t],init_state)
+                #第一個-1表示最後一層的狀態，第二個上狀態的最後一個元素
                 _states.append(init_state[-1][-1])
             #self._states.shape=(self.input.batch_size,self.T,ndims)
             self._states=tf.stack(_states,axis=1)
@@ -90,10 +91,8 @@ class BaseModel():
             #D)计算有效的idx一定要依赖_logit,因为计算_logit才会刷新输入数据的指针
             with tf.control_dependencies([_logit]):
                 _logit_idx=tf.minimum(self._input.X_len-_cursor-1,self.T-1)
-                self.xxx=_logit_idx
-                _valid_idx=tf.cast(tf.greater_equal(_logit_idx,0),tf.float32)
+                self._valid_idx=tf.cast(tf.greater_equal(_logit_idx,0),tf.float32)
                 _logit_idx=tf.maximum(_logit_idx,0)
-                self._valid_idx=_valid_idx
 
 
                 #logit(self.input.batch_size,self.T,num_output,float32)
@@ -293,31 +292,54 @@ class BaseModel():
 
         self._summary_op=tf.summary.merge_all()
 
-    @property
-    def feed_source_op(self):
-        return self._input.Update_Source
-    @property
-    def reset_source_op(self):
-        return self._input.Iterator.initializer
-    @property
-    def summary_op(self):
-        return self._summary_op
-    @property
-    def train_op(self):
-        return self._train_op
-    @property
-    def reset_initState_op(self):
-        return self._reset_init_state_op
-    @property
-    def transfer_initState_op(self):
-        return self._transfer_state_op
-    @property
-    def loss(self):
-        return self._loss
-    @property
-    def accuracy(self):
-        return self._accuracy
-    @property
-    def learning_rate(self):
-        return self._learning_rate
+    def init_dataSource(self,sess):
+        '''
+        
+        :param sess: 
+        :return: 
+        '''
+        sess.run(self.reset_source_op)
+        self._feed_Source(sess)
+    def _feed_Source(self,sess):
+        sess.run([self.feed_source_op,self.reset_initState_op])
+    def train(self,sess,hparam):
+        '''
+        对外的训练接口，返回 
+        [loss,accuracy]
+        [loss,accuracy,lr,summary],当steps_per_state时候
+        :param sess: 
+        :param hparam: 
+        :return: 
+        '''
+        common_op = [self._input.Cursor,
+                     self.train_op,
+                     self.loss,
+                     self.accuracy,
+                     self.transfer_initState_op]
+        stats_op = common_op + [self.learning_rate, self.summary_op]
+
+        global_steps=sess.run(self.global_step)
+
+        if (global_steps + 5) % hparam.steps_per_state == 0:
+            _cursor,_loss, _acc,_,_lr,_summary=sess.run(stats_op)
+            ret={'stat':True,'result':[_loss,_acc,global_steps+1,_lr,_summary]}
+        else:
+            _cursor,_, _loss, _acc, _=sess.run(common_op)
+            ret={'stat':False,'result':[_loss,_acc,global_steps+1,0,None]}
+
+        if _cursor==hparam.Tmax-hparam.perodic:
+            self._feed_Source(sess)
+        return ret
+
+    def eval(self,sess,hparam):
+        common_op = [self._input.Cursor,
+                     self.accuracy,
+                     self.transfer_initState_op]
+
+        _cursor,_acc,_= sess.run(common_op)
+        ret = {'accuracy': _acc}
+
+        if _cursor == hparam.Tmax - hparam.perodic:
+            self._feed_Source(sess)
+        return ret
 

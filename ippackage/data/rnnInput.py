@@ -1,9 +1,9 @@
 import tensorflow as tf
 import collections
+import numpy as np
+class TrainInput(collections.namedtuple('TrainInput',['X','Y','X_len','batch_size','Cursor','Iterator','feed_Source'])):pass
 
-class TrainInput(collections.namedtuple('TrainInput',['X','Y','X_len','batch_size','Cursor','Iterator','Update_Source'])):pass
-
-def _dataSource(datafile, BATCH_SIZE, D):
+def _dataSource(datafile, BATCH_SIZE,Tmax, D):
     '''
         datafile:要训练的数据集,每一行是一个EXAMPLE,第一个字段是label,第二个字段是times,
         其他的是T个序列的特征,换句话说,后面的字段长度是T*D
@@ -14,6 +14,7 @@ def _dataSource(datafile, BATCH_SIZE, D):
             1.分割
             2.标签,时序长度,特征分割
             3.类型转化
+            
             5.文件shape转化
         返回(source,label,source_length,iterator)
         
@@ -43,8 +44,7 @@ def _dataSource(datafile, BATCH_SIZE, D):
 
     iterator=dataset.make_initializable_iterator()
     label,source_length,source=iterator.get_next()
-    batch_size=tf.shape(source_length)[0]
-    source=tf.reshape(source,[batch_size,-1,D])
+    source=tf.reshape(source,[-1,Tmax,D])
 
 
     return (source,label,source_length,iterator)
@@ -58,7 +58,7 @@ def _assign(source,label,sourceLen,BATCH,Tmax,D):
     
     创建4个变量
     batch_size:(int32)
-    X(BATCH,Tmax,float32):
+    X(BATCH,Tmax,D,float32):
     Y:(BATCH,int32)
     X_len:(BATCH,int32)
     
@@ -95,7 +95,7 @@ def _assign(source,label,sourceLen,BATCH,Tmax,D):
         assign_op3=tf.assign(XsourceLen[:N],sourceLen)
         assign_op4 = tf.assign(batch_size, N)
 
-        assign_op=tf.group([assign_op1,assign_op2,assign_op3,assign_op4])
+        assign_op=tf.group(assign_op1,assign_op2,assign_op3,assign_op4)
 
     return (assign_op,Xsource,Ysource,XsourceLen,batch_size)
 
@@ -132,7 +132,7 @@ def get_input(datafile,BATCH_SIZE,Tmax,D,perodic):
         Xsource(BATCH_SIZE,Tmax,D),Ysource(BATCH_SIZE),Xsource_len(Batch),batchsize中,
     你可以对这些取出数据任意操作,数据源数据不会变化,除非执行update_source
     
-    定义pointor,curosr,pointer是取以一个perodic个时序的错在,cursor表示当前时序在Xsource的位置,
+    定义pointor,curosr,pointer是取以一个perodic个时序的操作,cursor表示当前时序在Xsource的位置,
     和Xsource_len联合使用 可以指定是否是有效时序
     
     返回RNN的输入
@@ -151,7 +151,7 @@ def get_input(datafile,BATCH_SIZE,Tmax,D,perodic):
     '''
 
     #获得数据源
-    source,tgt,source_len,iterator=_dataSource(datafile,BATCH_SIZE,D)
+    source,tgt,source_len,iterator=_dataSource(datafile,BATCH_SIZE,Tmax,D)
     #寄存数据源
     update_source_op,R_source,R_tgt,R_source_len,R_batchsize=\
         _assign(source,tgt,source_len,BATCH_SIZE,Tmax,D)
@@ -164,29 +164,4 @@ def get_input(datafile,BATCH_SIZE,Tmax,D,perodic):
     X_len=R_source_len[:R_batchsize]
 
     return TrainInput(X,Y,X_len,R_batchsize,cursor,iterator,update_source_op)
-# filename='/home/zhangxk/projects/deepAI/ippackage/data/data'
-# BATCH,T,D=3,6,2
-# perodic=3
-#
-#
-# trainInput=get_input(filename,BATCH,T,D,perodic)
-#
-# sess=tf.Session()
-# sess.run(tf.global_variables_initializer())
-# sess.run(trainInput.Iterator.initializer)
-#
-# steps=T//perodic
-# for i in range(2):
-#     sess.run(trainInput.Update_Source)
-#
-#     for s in range(steps):
-#         _bs,_x,_y,_xl,_cursor=sess.run([trainInput.batch_size,trainInput.X,trainInput.Y,trainInput.X_len,trainInput.Cursor])
-#         print('batchsize',_bs)
-#         print('x:',_x)
-#         print('y:', _y)
-#         print('len:', _xl)
-#         print('_cursor:', _cursor)
-#         print('-------------------')
-#     print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-#
-# sess.close()
+
