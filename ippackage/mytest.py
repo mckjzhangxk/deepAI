@@ -3,7 +3,7 @@ from data import TrainInput,get_input
 from model.RnnModel import BaseModel as Model
 
 hparam=tf.contrib.training.HParams(
-    mode='train',
+    mode='run_train',
     rnn_type='lstm',
     ndims=128,
     num_layers=2,
@@ -32,7 +32,7 @@ myinput=get_input(path,
           Tmax=hparam.Tmax,
           D=hparam.features,
           perodic=hparam.perodic)
-model=Model(myinput,hparam,'train')
+model=Model(myinput,hparam,'run_train')
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())

@@ -8,7 +8,7 @@ class BaseModel():
         self._mode=mode
         self._setParameter(hparam)
         self._buildNetWork(hparam)
-        if self._mode=='train':
+        if self._mode=='run_train':
             self._set_train(hparam)
             self._summary()
         elif self._mode=='eval':
@@ -21,10 +21,10 @@ class BaseModel():
         :param hparam: 
         :return: 
         '''
-        self._dropout=hparam.dropout if self._mode == 'train' else  0.0
+        self._dropout=hparam.dropout if self._mode == 'run_train' else  0.0
     def _setSaver(self,hparam):
         varlist=[]
-        for v in tf.global_variables():
+        for v in tf.trainable_variables():
             if v.name.startswith(hparam.scope):
                 varlist.append(v)
         self.saver=tf.train.Saver(varlist,max_to_keep=hparam.max_keeps)

@@ -1,0 +1,6 @@
+model_checkpoint_path: "MyNet-26069"
+all_model_checkpoint_paths: "MyNet-22909"
+all_model_checkpoint_paths: "MyNet-23699"
+all_model_checkpoint_paths: "MyNet-24489"
+all_model_checkpoint_paths: "MyNet-25279"
+all_model_checkpoint_paths: "MyNet-26069"

@@ -84,7 +84,13 @@ class RNNState():
             else:
                 reset_op.append(tf.assign(state, tf.zeros_like(state)))
         return reset_op
+def _redidual_func(inp,out):
+    in_dim=inp.get_shape()[-1]
+    out_dim=out.get_shape()[-1]
 
+    if in_dim==out_dim:
+        return inp+out
+    return out
 
 def _singleRNNCell(type, ndims, dropout, forget_bias, residual):
     cell = None
@@ -97,7 +103,7 @@ def _singleRNNCell(type, ndims, dropout, forget_bias, residual):
     if dropout > 0.0:
         cell = tf.contrib.rnn.DropoutWrapper(cell, input_keep_prob=1 - dropout)
     if residual:
-        cell = tf.contrib.rnn.ResidualWrapper(cell, None)
+        cell = tf.contrib.rnn.ResidualWrapper(cell, _redidual_func)
     return cell
 
 
@@ -137,7 +143,7 @@ def _get_config_proto(hparam):
 class VPNModel(collections.namedtuple('VPNModel', ['model', 'graph', 'session'])):pass
 
 def createTrainModel(hparam,ModelFunc):
-    return _createModel(hparam,ModelFunc,'train')
+    return _createModel(hparam,ModelFunc,'run_train')
 def createEvalModel(hparam,ModelFunc):
     return _createModel(hparam, ModelFunc, 'eval')
 def _createModel(hparam,ModelFunc,mode):
@@ -149,7 +155,7 @@ def _createModel(hparam,ModelFunc,mode):
     :param hparam: 
     :return: 
     '''
-    if mode=='train':
+    if mode=='run_train':
         datafile=hparam.train_datafile
     elif mode=='eval':
         datafile=hparam.eval_datafile
@@ -184,3 +190,4 @@ def createOrLoadModel(anymodel,hparam):
     if tf.train.get_checkpoint_state(modeldir):
         model_path=tf.train.latest_checkpoint(modeldir)
         anymodel.model.saver.restore(sess,model_path)
+        print('restore model from path %s'%model_path)

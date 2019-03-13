@@ -4,14 +4,9 @@ import numpy as np
 def randomFile(path, N, T, D):
     with open(path, 'w') as f:
         for n in range(N):
-            s = ''
-            for t in range(T):
-                s1 = ''
-                for d in range(D):
-                    cc=str(np.random.randint(0,500,dtype=np.int32))
-                    s1 +=cc  + ','
-                s += s1
-            s = s[:-1]
+
+
+            s=','.join(map(str,np.random.randint(0,500,T*D,dtype=np.int32)))
             label=str(n%2)
 
             slen=str(np.random.randint(1, T, dtype=np.int32))
@@ -51,7 +46,7 @@ BATCH, Tmax, D = 32, 300, 6
 perodic = 30
 
 
-# randomFile(filename, 1000, Tmax, D)
+randomFile(filename, 10000, Tmax, D)
 
 def xx():
     trainInput = get_input(filename, BATCH, Tmax, D, perodic)
@@ -92,4 +87,4 @@ def xx():
                 sess.run(trainInput.Iterator.initializer)
     sess.close()
 
-xx()
+# xx()

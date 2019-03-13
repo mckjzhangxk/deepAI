@@ -29,7 +29,7 @@ def write2File(pos,pos_idx,neg,neg_idx,outputpath):
         for l in out:
             fs.write(l)
 if __name__ == '__main__':
-    DATASET='train'
+    DATASET='run_train'
 
 
     sourcepath=DataConf.TrainDataSource
@@ -52,7 +52,7 @@ if __name__ == '__main__':
         neg_idx=np.random.choice(len(neg),DataConf.BASE_NUM,True)
     else:
         neg_idx = np.random.choice(len(neg), DataConf.BASE_NUM, False)
-    if DATASET=='train':
+    if DATASET=='run_train':
         write2File(pos, pos_idx, neg, neg_idx, DataConf.TrainFile)
     else:
         write2File(pos,pos_idx,neg,neg_idx,DataConf.DevFile)

@@ -28,7 +28,7 @@ class DataConf():
 
     BASE_NUM=10000
     TrainDataSource='/home/zhangxk/AIProject/ippack/vpndata/data'
-    TrainFile='/home/zhangxk/AIProject/ippack/vpndata/train.txt'
+    TrainFile='/home/zhangxk/AIProject/ippack/vpndata/run_train.txt'
     DevDataSource = '/home/zhangxk/AIProject/ippack/vpndata/data'
     DevFile = '/home/zhangxk/AIProject/ippack/vpndata/dev.txt'
     Dataset_Log='/home/zhangxk/AIProject/ippack/vpndata/readme.txt'
