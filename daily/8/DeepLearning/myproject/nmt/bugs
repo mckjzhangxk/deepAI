@@ -1,0 +1,4 @@
+1.tf.contrib.seq2seq.BasicDecoder忘记使用project,导致得到的rnn_output.sample_id不是最终的预测，
+而只是RNN的输出
+2.加上proj后，由于训练是在dynamic_decoder后面加的，而infer是在BasicDecoder加的，导致命名不一致，恢复变量
+的时候出错
