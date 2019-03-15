@@ -3,7 +3,7 @@ def _clean(sentence,subword_option):
     sentence=sentence.strip()
 
     if subword_option=='bpe':
-        re.sub('@@','',sentence)
+        sentence=re.sub('@@ ','',sentence)
     return sentence
 
 def get_translation(nmt_output,sen_id,eos,subword_option):

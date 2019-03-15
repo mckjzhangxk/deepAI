@@ -298,10 +298,11 @@ class Model(BaseModel):
             helper=tf.contrib.seq2seq.TrainingHelper(self._emb_tgt,
                                                      self._batchInput.tgt_seq_len)
             decoder=tf.contrib.seq2seq.BasicDecoder(rnn_cell,helper,init_state,output_layer=proj)
-            final_outputs,_,_=tf.contrib.seq2seq.dynamic_decode(decoder,output_time_major=False)
+            final_outputs,final_state,_=tf.contrib.seq2seq.dynamic_decode(decoder,output_time_major=False)
 
             self._logit=final_outputs.rnn_output
             self._sample_id=final_outputs.sample_id
+            self._final_state=final_state
         elif hparam.infer_mode!='beam_search':
             tgt_sos_id, tgt_eos_id = get_special_word_id(hparam)
             start_tokens = tf.fill([self._batch], tgt_sos_id)
@@ -319,11 +320,12 @@ class Model(BaseModel):
                     start_tokens=start_tokens,
                     end_token=tgt_eos_id)
             decoder = tf.contrib.seq2seq.BasicDecoder(rnn_cell, helper, init_state,output_layer=proj)
-            final_outputs,_,_=tf.contrib.seq2seq.dynamic_decode(decoder,
+            final_outputs,final_state,_=tf.contrib.seq2seq.dynamic_decode(decoder,
                                                                output_time_major = False,
                                                                maximum_iterations=self.__max__iteration())
             self._isBeam = False
             self._logit=tf.no_op()
+            self._final_state = final_state
             self._sample_id=final_outputs.sample_id
             self._result=self._batchInput.reverse_vocab.lookup(tf.to_int64(self._sample_id))
 
@@ -337,12 +339,13 @@ class Model(BaseModel):
                                                  initial_state=init_state,
                                                  beam_width=hparam.beam_width,
                                                  output_layer=proj)
-            final_outputs,_,_ = tf.contrib.seq2seq.dynamic_decode(decoder,
+            final_outputs,final_state,_ = tf.contrib.seq2seq.dynamic_decode(decoder,
                                                                   maximum_iterations=self.__max__iteration(),
                                                                   output_time_major=False)
 
             self._isBeam=True
             self._logit=tf.no_op()
+            self._final_state=final_state
             self._sample_id=final_outputs.predicted_ids
             self._result = self._batchInput.reverse_vocab.lookup(tf.to_int64(self._sample_id))
 
@@ -351,3 +354,92 @@ class Model(BaseModel):
         rnn_cell,decode_init_state=self._build_decode_cell(hparam)
 
         self.__set_decoder_output__(rnn_cell, decode_init_state, hparam)
+
+class AttentionModel(Model):
+    def _get_attention_mechanism(self,hparam):
+        '''
+        返回一个tensorflow的包attention machanism,这个类封装了关于
+        memory的信息，（memory,valid_memory,query_dims）
+        
+        有4种attention_machion
+        luong,babdanau,2scale version
+        
+        luong
+        score(i)=hs(i)*W*ht
+        s(i)=softmax(score(1)......score(n))
+        cxt=sum(s(i)*hs(i))
+        at=Dense([cxt,ht])
+        
+        :param hparam: 
+        :return: 
+        '''
+        if self.mode=='infer' and hparam.infer_mode=='beam_search':
+            memory=tf.contrib.seq2seq.tile_batch(self._encoder_output,hparam.beam_width)
+            memory_length = tf.contrib.seq2seq.tile_batch(self._batchInput.src_seq_len,
+                                                          hparam.beam_width)
+        else:
+            memory=self._encoder_output
+            memory_length = self._batchInput.src_seq_len
+        if hparam.atten_type=='luong':
+            return tf.contrib.seq2seq.LuongAttention(
+                    hparam.ndim,
+                    memory=memory,
+                    memory_sequence_length=memory_length,
+                    scale=False)
+        if hparam.atten_type=='luong_scale':
+            return tf.contrib.seq2seq.LuongAttention(
+                    hparam.ndim,
+                    memory=memory,
+                    memory_sequence_length=memory_length,
+                    scale=True)
+        if hparam.atten_type=='bahdanau':
+            return tf.contrib.seq2seq.LuongAttention(
+                    hparam.ndim,
+                    memory=memory,
+                    memory_sequence_length=memory_length,
+                    scaled=False)
+        if hparam.atten_type=='bahdanau_scale':
+            return tf.contrib.seq2seq.LuongAttention(
+                    hparam.ndim,
+                    memory=memory,
+                    memory_sequence_length=memory_length,
+                    scaled=True)
+        raise ValueError('unknown attention type'%hparam.atten_type)
+
+    def _build_decode_cell(self,hparam):
+        rnn_cell, init_state = super(AttentionModel, self)._build_decode_cell(hparam)
+
+        att_mechanism=self._get_attention_mechanism(hparam)
+        alignment_history = (self.mode == tf.contrib.learn.ModeKeys.INFER and
+                             hparam.infer_mode != "beam_search")
+        cell=tf.contrib.seq2seq.AttentionWrapper(
+            rnn_cell,
+            att_mechanism,
+            attention_layer_size=hparam.ndim,
+            alignment_history=alignment_history,
+            cell_input_fn=None,#默认attention concat with cell input
+            output_attention=True,
+            initial_cell_state=None,
+        )
+        if self.mode == 'infer' and hparam.infer_mode == 'beam_search':
+            decoder_initial_state = cell.zero_state(self._batch * hparam.beam_width,tf.float32)
+            decoder_initial_state.clone(cell_state=
+                                        tf.contrib.seq2seq.tile_batch(self._encode_state,hparam.beam_width))
+        else:
+            decoder_initial_state = cell.zero_state(self._batch,tf.float32)
+            if hasattr(hparam,'pass_hidden_state') and hparam.pass_hidden_state:
+                decoder_initial_state.clone(cell_state=self._encode_state)
+        if alignment_history:
+            self._create_attention_images_summary()
+        return cell,decoder_initial_state
+
+    def _create_attention_images_summary(self):
+        """create attention image and attention summary."""
+        attention_images = (self._final_state.alignment_history.stack())
+        # Reshape to (batch, src_seq_len, tgt_seq_len,1)
+        attention_images = tf.expand_dims(
+            tf.transpose(attention_images, [1, 2, 0]), -1)
+        # Scale to range [0, 255]
+        attention_images *= 255
+        attention_summary = tf.summary.image("attention_images", attention_images)
+        tf.summary

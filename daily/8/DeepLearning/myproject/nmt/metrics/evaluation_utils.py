@@ -25,7 +25,7 @@ def _clean(sentence,subword_option):
     sentence=sentence.strip()
 
     if subword_option=='bpe':
-        re.sub('@@','',sentence)
+        sentence=re.sub('@@ ','',sentence)
     return sentence
 
 def load_file(file_path,subword_option=False):

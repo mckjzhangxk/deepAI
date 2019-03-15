@@ -3,8 +3,16 @@ from utils.iterator_utils import get_iterator,get_infer_iterator
 from utils.vocab_utils import check_vocab
 import collections
 import os
+from model.BaseModel import Model,AttentionModel
 
 def _residual_func(inp,out):
+    in_dim=inp.get_shape()[-1]
+    out_dim=out.get_shape()[-1]
+    if in_dim==out_dim:
+        return inp+out
+    else:
+        return inp[:,:out_dim]+out
+
     return inp+out
 
 def _sigle_rnn_cell(hparam,dropout):
@@ -25,10 +33,18 @@ def _sigle_rnn_cell(hparam,dropout):
     activation= hparam.activation_fn
 
     if rnn_type=='lstm':
-        _cell=tf.contrib.rnn.BasicLSTMCell(ndim,
-                                     activation=activation,
-                                     forget_bias=hparam.forget_bias,
-                                     state_is_tuple=True)
+        _cell=tf.contrib.rnn.LayerNormBasicLSTMCell(
+            ndim,
+            forget_bias=hparam.forget_bias,
+            input_size=ndim,
+            activation=activation,
+            layer_norm=hparam.layer_norm,
+            norm_gain=1.0,
+            norm_shift=0.0,
+            dropout_keep_prob=1.0,
+            dropout_prob_seed=None,
+            reuse=None
+        )
 
     elif rnn_type=='gru':
         _cell=tf.contrib.rnn.GRUCell(ndim)
@@ -225,3 +241,7 @@ def createInferModel(hparam,modelFunc=None,src_path=None,tgt_path=None):
         model=modelFunc(batch_input,'infer',hparam)
 
         return InferModel(model,sess,graph,batch_input,ref_file)
+def chooseModel(hparam):
+    if hasattr(hparam,'atten_type'):
+        return AttentionModel
+    return Model

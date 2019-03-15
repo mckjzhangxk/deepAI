@@ -1,6 +1,5 @@
 import modelHelper as helper
 import tensorflow as tf
-from model.BaseModel import Model
 import time
 import os
 from metrics.evaluation_utils import blue
@@ -21,14 +20,15 @@ hparam=tf.contrib.training.HParams(
     UNK='<unk>',
     batch_size=128,
 
-    #####网络相关参数###########
+    #####网络模型相关参数###########
     scope='nmt',
     encode_type='uni',
     rnn_type='lstm',
+    layer_norm=True,
     emb_size=128,
     ndim=128,
     num_layer=2,
-    activation_fn=None,
+    activation_fn=tf.nn.tanh,
     dropout=0.0,
     forget_bias=1.0,
     residual_layer=False,
@@ -36,6 +36,9 @@ hparam=tf.contrib.training.HParams(
 
     infer_mode='beam_search',
     beam_width=3,
+
+    atten_type='luong',
+    pass_hidden_state=True,
     ##########训练参数相关###########
     optimizer='adam',
     lr=1e-2,
@@ -190,10 +193,9 @@ def __print_stat_info__(stat,globalstep,hparam):
     speed=stat['words']/(time.time()-stat['start_time'])
     s='step %d,avg loss:%.f,avg_grad_norm:%.3f,lr:%f,speed:%d wps'%(globalstep,loss,norm,lr,speed)
     print(s)
-def _chooseModel(hparam):
-    return Model
+
 def train(hparam):
-    modelFunc=_chooseModel(hparam)
+    modelFunc=helper.chooseModel(hparam)
 
     train_model=helper.createTrainModel(hparam,modelFunc)
     cal_param_cnt(train_model)
