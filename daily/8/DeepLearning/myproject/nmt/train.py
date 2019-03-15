@@ -52,15 +52,40 @@ hparam=tf.contrib.training.HParams(
     model_path='result/baseModel/model',
     max_to_keep=5,
     ckpt=False,
-    checkpoint_path='result/baseModel/model/best',
+    checkpoint_path='result/baseModel/best',
     log_dir='result/baseModel/log',
-
+    avg_ckpt=True,
     ###########Eval相关参数##############
     subword_option=None,
+
 )
+def cal_param_cnt(model):
+    import numpy as np
+    cnt=0
+    with model.graph.as_default():
+        for v in tf.trainable_variables():
+            cnt+=np.prod(v.shape.as_list())
+    print('total have %d paramaters'%cnt)
+
 def run_full_eval(eval_model,infer_model,steps,logfs,hparam):
     run_innernal_eval(eval_model,steps,logfs,hparam)
     run_external_eval(infer_model,steps,logfs, hparam)
+def _innernal_eval(evalModel,steps,logfs, hparam):
+    model = evalModel.model
+    sess = evalModel.session
+    keyword = 'perplexity'
+
+    with evalModel.graph.as_default():
+        perplexity = model.eval(sess)
+    _summary = tf.Summary(value=[tf.Summary.Value(tag=keyword, simple_value=perplexity)])
+    logfs.add_summary(_summary, steps)
+
+    if not hasattr(hparam, keyword) or getattr(hparam, keyword) > perplexity:
+        setattr(hparam, keyword, perplexity)
+        model.save(sess, os.path.join(hparam.checkpoint_path, keyword + '.ckpt'))
+        print('perplexity:%f,beat the previous!' % perplexity)
+    else:
+        print('perplexity:%f,not improve the best %f' % (perplexity, getattr(hparam, keyword)))
 
 def run_innernal_eval(evalModel,steps,logfs, hparam):
 
@@ -77,22 +102,42 @@ def run_innernal_eval(evalModel,steps,logfs, hparam):
     print('---------------Interval Eval at step %d---------------'%steps)
     model=evalModel.model
     sess=evalModel.session
-    keyword = 'perplexity'
+    graph=evalModel.graph
 
-    with evalModel.graph.as_default():
-        helper.createOrLoadModel(model,sess,hparam)
-        perplexity=model.eval(sess)
 
-    _summary=tf.Summary(value=[tf.Summary.Value(tag=keyword,simple_value=perplexity)])
-    logfs.add_summary(_summary,steps)
+    helper.createOrLoadModel(model,graph,sess,hparam)
+    _innernal_eval(evalModel, steps, logfs, hparam)
+    if hparam.avg_ckpt:
+        print('run avg internal eval....')
+        helper.avg_Ckpt_Of_Model(graph,sess,hparam)
+        _innernal_eval(evalModel,steps,logfs,hparam)
 
-    if not hasattr(hparam,keyword) or getattr(hparam,keyword)>perplexity:
-        setattr(hparam,keyword,perplexity)
-        model.save(sess,os.path.join(hparam.checkpoint_path,keyword+'.ckpt'))
-        print('perplexity:%f,beat the previous!'%perplexity)
-    else:
-        print('perplexity:%f,not improve the best %f' %(perplexity,getattr(hparam,keyword)))
     print('---------------Finish Interval Eval---------------------')
+
+def _external_eval(inferModel,steps,logfs, hparam):
+    def _output_result(path,translation):
+        with codecs.open(path,mode='w',encoding='utf-8') as fs:
+            for t in translation:
+                fs.write(t+'\n')
+    keyword='BLUE_SCORE'
+    model=inferModel.model
+    sess=inferModel.session
+    graph=inferModel.graph
+
+    with graph.as_default():
+        rs=model.infer(sess)
+    blue_score=blue(rs.translation,inferModel.ref_file,hparam.subword_option)
+    if logfs:
+        _summary=tf.Summary(value=[tf.Summary.Value(tag=keyword,simple_value=blue_score)])
+        logfs.add_summary(_summary,steps)
+
+    if not hasattr(hparam,keyword) or getattr(hparam,keyword)<blue_score:
+        setattr(hparam,keyword,blue_score)
+        model.save(sess,os.path.join(hparam.checkpoint_path,keyword+'.ckpt'))
+        _output_result(os.path.join(hparam.checkpoint_path,'translation.txt'),rs.translation)
+        print('BLUE SCORE:%f,beat the previous!'%blue_score)
+    else:
+        print('BLUE SCORE:%f,not improve the best %f' %(blue_score,getattr(hparam,keyword)))
 
 def run_external_eval(inferModel,steps,logfs, hparam):
     '''
@@ -106,31 +151,19 @@ def run_external_eval(inferModel,steps,logfs, hparam):
     :param hparam: 
     :return: 
     '''
-    def _output_result(path,translation):
-        with codecs.open(path,mode='w',encoding='utf-8') as fs:
-            for t in translation:
-                fs.write(t+'\n')
+
     print('---------------External Eval at step %d---------------'%steps)
-    keyword='BLUE_SCORE'
     model=inferModel.model
     sess=inferModel.session
+    graph=inferModel.graph
 
-    with inferModel.graph.as_default():
-        helper.createOrLoadModel(model,sess,hparam)
-        rs=model.infer(sess)
-    blue_score=blue(rs.translation,inferModel.ref_file,hparam.subword_option)
+    helper.createOrLoadModel(model,graph,sess,hparam)
+    _external_eval(inferModel, steps, logfs, hparam)
 
-    _summary=tf.Summary(value=[tf.Summary.Value(tag=keyword,simple_value=blue_score)])
-    logfs.add_summary(_summary,steps)
-
-    if not hasattr(hparam,keyword) or getattr(hparam,keyword)<blue_score:
-        setattr(hparam,keyword,blue_score)
-        model.save(sess,os.path.join(hparam.checkpoint_path,keyword+'.ckpt'))
-        _output_result(os.path.join(hparam.checkpoint_path,'translation.txt'),rs.translation)
-        print('BLUE SCORE:%f,beat the previous!'%blue_score)
-    else:
-        print('BLUE SCORE:%f,not improve the best %f' %(blue_score,getattr(hparam,keyword)))
-
+    if hparam.avg_ckpt:
+        print('run avg external eval....')
+        helper.avg_Ckpt_Of_Model(graph,sess,hparam)
+        _external_eval(inferModel, steps, logfs, hparam)
     print('---------------Finish External Eval---------------------')
 
 def __init_stat_info__(hparam):
@@ -163,15 +196,16 @@ def train(hparam):
     modelFunc=_chooseModel(hparam)
 
     train_model=helper.createTrainModel(hparam,modelFunc)
+    cal_param_cnt(train_model)
     eval_model=helper.createEvalModel(hparam,modelFunc)
-    infer_model=helper.createInferModel(hparam,modelFunc,hparam.dev_src)
+    infer_model=helper.createInferModel(hparam,modelFunc,hparam.dev_src,hparam.dev_tgt)
 
     stat_info=__init_stat_info__(hparam)
 
 
     with train_model.session as sess:
         with tf.summary.FileWriter(hparam.log_dir) as fs:
-            helper.createOrLoadModel(train_model.model, sess, hparam)
+            helper.createOrLoadModel(train_model.model,train_model.graph, sess, hparam)
             sess.run(train_model.batch_input.initializer)
             for step in range(hparam.num_train):
                 try:
@@ -190,4 +224,8 @@ def train(hparam):
                     sess.run(train_model.batch_input.initializer)
                     train_model.model.save(sess,hparam.model_path,rs.global_step)
                     # run_full_eval(eval_model,infer_model,rs.global_step,fs,hparam)
+
+    #final report test result
+    infer_model = helper.createInferModel(hparam, modelFunc, hparam.dev_src)
+    _external_eval(infer_model,0,None,hparam)
 train(hparam)

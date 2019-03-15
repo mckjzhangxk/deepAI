@@ -102,7 +102,7 @@ class InferModel(collections.namedtuple('InferModel',['model','session','graph',
 
 
 
-def createOrLoadModel(model,sess,hparam):
+def createOrLoadModel(model,graph,sess,hparam):
     '''
     如果hparam.checkpoint_path设置了，那么从checkpoint_path
     回复参数
@@ -113,20 +113,42 @@ def createOrLoadModel(model,sess,hparam):
     :param hparam: 
     :return: 
     '''
+    with graph.as_default():
+        model_path=None
+        if hparam.ckpt:
+            model_path=hparam.checkpoint_path
+        elif tf.train.get_checkpoint_state(os.path.dirname(hparam.model_path)):
+            model_path=tf.train.latest_checkpoint(os.path.dirname(hparam.model_path))
 
-    model_path=None
-    if hparam.ckpt:
-        model_path=hparam.checkpoint_path
-    elif tf.train.get_checkpoint_state(os.path.dirname(hparam.model_path)):
-        model_path=tf.train.latest_checkpoint(os.path.dirname(hparam.model_path))
+        if model_path is None:
+            sess.run(tf.global_variables_initializer())
+        else:
+            model.restore(sess,model_path)
+            print('recover model from %s'%model_path)
+        sess.run(tf.tables_initializer())
 
-    if model_path is None:
-        sess.run(tf.global_variables_initializer())
-    else:
-        model.restore(sess,model_path)
-        print('recover model from %s'%model_path)
-    sess.run(tf.tables_initializer())
+def avg_Ckpt_Of_Model(graph,sess,hparam):
+    model_dir=os.path.dirname(hparam.model_path)
+    ckt_state = tf.train.get_checkpoint_state(model_dir)
+    if ckt_state:
+        with graph.as_default():
+            model_paths = ckt_state.all_model_checkpoint_paths
+            vars, num = collections.defaultdict(float), len(model_paths)
+            for p in model_paths:
+                vars_info = tf.contrib.framework.list_variables(p)
+                reader = tf.contrib.framework.load_checkpoint(p)
 
+                for varname, varshape in vars_info:
+                    vars[varname] += reader.get_tensor(varname) / num
+            assign_op = []
+            for name, value in vars.items():
+                try:
+                    with tf.variable_scope('', reuse=True):
+                        x = tf.get_variable(name)
+                        assert x.shape.as_list() == list(value.shape), 'variable shape must compatiable'
+                        assign_op.append(tf.assign(x, value))
+                except ValueError:pass
+            sess.run(assign_op)
 
 def _createModel(mode, hparam, modelFunc=None):
     '''

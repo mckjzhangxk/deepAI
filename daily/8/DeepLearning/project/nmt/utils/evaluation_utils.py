@@ -75,21 +75,27 @@ def _bleu(ref_file, trans_file, subword_option=None):
     with codecs.getreader("utf-8")(
         tf.gfile.GFile(reference_filename, "rb")) as fh:
       reference_text.append(fh.readlines())
-
+  # reference_text保存的上参考副本， reference_text[0]是第一个副本。。。
   per_segment_references = []
   for references in zip(*reference_text):
+    # references 是某一据的多个参考
     reference_list = []
     for reference in references:
       reference = _clean(reference, subword_option)
       reference_list.append(reference.split(" "))
     per_segment_references.append(reference_list)
+  # per_segment_references[0]是第一句的参考，
+  # per_segment_references[0][i]是第一句的第i个参考，
+  # per_segment_references[0][i][j]是第一句的第i个参考的单词j，
 
+
+  # reference_text(R,N,str)->(N,R,?,char)
   translations = []
   with codecs.getreader("utf-8")(tf.gfile.GFile(trans_file, "rb")) as fh:
     for line in fh:
       line = _clean(line, subword_option=None)
       translations.append(line.split(" "))
-
+   #translations(N,?,char)
   # bleu_score, precisions, bp, ratio, translation_length, reference_length
   bleu_score, _, _, _, _, _ = bleu.compute_bleu(
       per_segment_references, translations, max_order, smooth)
