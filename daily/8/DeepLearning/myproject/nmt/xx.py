@@ -1,5 +1,7 @@
 import tensorflow as tf
 import collections
+
+
 # global_step=tf.Variable(0,trainable=False,name='global_step')
 # ass=tf.assign(global_step,global_step+1)
 #
@@ -27,8 +29,9 @@ import collections
 # print(D1&D2)
 # print(D1|D2)
 
-import codecs
-translation=['Rachel Pike : The science behind a climate headline','Khoa học đằng sau một tiêu đề về khí hậu']
-with codecs.open('xx', mode='w', encoding='utf-8') as fs:
-    for t in translation:
-        fs.write(t + '\n')
+# import codecs
+# translation=['Rachel Pike : The science behind a climate headline','Khoa học đằng sau một tiêu đề về khí hậu']
+# with codecs.open('xx', mode='w', encoding='utf-8') as fs:
+#     for t in translation:
+#         fs.write(t + '\n')
+

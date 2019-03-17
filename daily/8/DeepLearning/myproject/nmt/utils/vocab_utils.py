@@ -40,7 +40,10 @@ def check_vocab(vocab_file):
     vocab_size = len(vocab)
     return vocab_size, vocab_file
 
-
+def get_dataset_size(datafile):
+    with tf.gfile.FastGFile(datafile) as fs:
+        lines = fs.readlines()
+        return len(lines)
 
 def get_special_word_id(hparam):
     tb = tf.contrib.lookup.index_table_from_file(hparam.vocab_tgt)

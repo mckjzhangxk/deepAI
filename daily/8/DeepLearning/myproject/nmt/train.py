@@ -6,51 +6,63 @@ from metrics.evaluation_utils import blue
 import codecs
 
 hparam=tf.contrib.training.HParams(
-    train_src='data/train.vi',
-    train_tgt='data/train.en',
-    dev_src='data/train.vi',
-    dev_tgt='data/train.en',
-    test_src='data/train.vi',
-    test_tgt='data/train.en',
-    vocab_src='data/vocab.vi',
-    vocab_tgt='data/vocab.en',
+    train_src='/home/zxk/AI/WMT/train.tok.clean.bpe.16000.de',
+    train_tgt='/home/zxk/AI/WMT/train.tok.clean.bpe.16000.en',
+    dev_src='/home/zxk/AI/WMT/dev.de',
+    dev_tgt='/home/zxk/AI/WMT/dev.en',
+    test_src='/home/zxk/AI/WMT/newstest2016.tok.bpe.16000.de',
+    test_tgt='/home/zxk/AI/WMT/newstest2016.tok.bpe.16000.en',
+    vocab_src='/home/zxk/AI/WMT/vocab.bpe.16000.de',
+    vocab_tgt='/home/zxk/AI/WMT/vocab.bpe.16000.en',
+    # train_src='data/train.vi',
+    # train_tgt='data/train.en',
+    # dev_src='data/train.vi',
+    # dev_tgt='data/train.en',
+    # test_src='data/train.vi',
+    # test_tgt='data/train.en',
+    # vocab_src='data/vocab.vi',
+    # vocab_tgt='data/vocab.en',
 
-    SOS='<sos>',
-    EOS='<eos>',
+    src_max_len=50,
+    tgt_max_len=50,
+    SOS='<s>',
+    EOS='</s>',
     UNK='<unk>',
-    batch_size=128,
+    batch_size=256,
 
     #####网络模型相关参数###########
     scope='nmt',
+    dtype=tf.float32,
     encode_type='uni',
-    rnn_type='lstm',
-    layer_norm=True,
+    rnn_type='gru',
+    layer_norm=False,
     emb_size=128,
     ndim=128,
     num_layer=2,
     activation_fn=tf.nn.tanh,
-    dropout=0.0,
+    dropout=0.2,
     forget_bias=1.0,
-    residual_layer=False,
+    residual_layer=True,
     share_vocab=False,
+    nsample_softmax=2000,
 
-    infer_mode='beam_search',
-    beam_width=3,
+    infer_mode='greedy',
+    beam_width=1,
 
-    atten_type='luong',
+    #atten_type='luong',
     pass_hidden_state=True,
     ##########训练参数相关###########
     optimizer='adam',
-    lr=1e-2,
+    lr=1e-4,
     decay_scheme='luong5', #luong5,luong10
     warmup_steps=1000,
     warmup_scheme='t2t',
     max_norm=5,
     ##########训练流程相关###########
-    num_train=6000,
+    num_train=860000,
     steps_per_stat=10,
-    steps_per_innernal_eval=50,
-    steps_per_external_eval=100,
+    steps_per_innernal_eval=500,
+    steps_per_external_eval=1000,
 
     model_path='result/baseModel/model',
     max_to_keep=5,
@@ -59,7 +71,9 @@ hparam=tf.contrib.training.HParams(
     log_dir='result/baseModel/log',
     avg_ckpt=True,
     ###########Eval相关参数##############
-    subword_option=None,
+    subword_option='bpe',
+    BLUE_SCORE=2.385563,
+    perplexity=48.906841
 
 )
 def cal_param_cnt(model):
@@ -201,14 +215,19 @@ def train(hparam):
     cal_param_cnt(train_model)
     eval_model=helper.createEvalModel(hparam,modelFunc)
     infer_model=helper.createInferModel(hparam,modelFunc,hparam.dev_src,hparam.dev_tgt)
-
+    with train_model.graph.as_default():
+        train_model.session.run(tf.tables_initializer())
+    with eval_model.graph.as_default():
+        eval_model.session.run(tf.tables_initializer())
+    with infer_model.graph.as_default():
+        infer_model.session.run(tf.tables_initializer())
     stat_info=__init_stat_info__(hparam)
 
 
     with train_model.session as sess:
         with tf.summary.FileWriter(hparam.log_dir) as fs:
             helper.createOrLoadModel(train_model.model,train_model.graph, sess, hparam)
-            sess.run(train_model.batch_input.initializer)
+            train_model.model.do_Initialization(sess, hparam)
             for step in range(hparam.num_train):
                 try:
                     rs=train_model.model.train(sess)
@@ -219,15 +238,16 @@ def train(hparam):
                         stat_info=__init_stat_info__(hparam)
 
                     if rs.global_step% hparam.steps_per_innernal_eval==0:
+                        train_model.model.save(sess,hparam.model_path,rs.global_step)
                         run_innernal_eval(eval_model,rs.global_step,fs,hparam)
                     if rs.global_step % hparam.steps_per_external_eval == 0:
                         run_external_eval(infer_model,rs.global_step,fs,hparam)
                 except tf.errors.OutOfRangeError:
-                    sess.run(train_model.batch_input.initializer)
+                    train_model.model.do_Initialization(sess,hparam)
                     train_model.model.save(sess,hparam.model_path,rs.global_step)
-                    # run_full_eval(eval_model,infer_model,rs.global_step,fs,hparam)
+                    run_full_eval(eval_model,infer_model,rs.global_step,fs,hparam)
 
     #final report test result
-    infer_model = helper.createInferModel(hparam, modelFunc, hparam.dev_src)
-    _external_eval(infer_model,0,None,hparam)
+    #infer_model = helper.createInferModel(hparam, modelFunc, hparam.dev_src)
+    #_external_eval(infer_model,0,None,hparam)
 train(hparam)

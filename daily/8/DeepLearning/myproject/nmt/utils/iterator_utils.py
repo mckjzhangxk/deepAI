@@ -1,10 +1,10 @@
 import tensorflow as tf
 import collections
 
-class BatchInput(collections.namedtuple('BatchInput',['src','tgt_inp','tgt_out','src_seq_len','tgt_seq_len','initializer','reverse_vocab'])):pass
+class BatchInput(collections.namedtuple('BatchInput',['src','tgt_inp','tgt_out','src_seq_len','tgt_seq_len','initializer','skipCount','reverse_vocab'])):pass
 
 
-def get_iterator(src_dataset,tgt_dataset,hparam):
+def get_iterator(src_dataset,tgt_dataset,skipCount,hparam):
     '''
     src_dataset:Dataset类型，对应hparam.train_src/dev_src文件
     tgt_dataset:Dataset类型，对应hparam.train_tgt/dev_tgt文件
@@ -47,6 +47,9 @@ def get_iterator(src_dataset,tgt_dataset,hparam):
 
 
     dataset=tf.data.Dataset.zip((src_dataset,tgt_dataset))
+    if skipCount is not None:
+        dataset=dataset.skip(skipCount)
+    # dataset=dataset.shuffle(hparam.batch_size)
     dataset=dataset.map(lambda src,tgt:
                         (tf.string_split([src]).values,tf.string_split([tgt]).values)
                         )
@@ -64,6 +67,12 @@ def get_iterator(src_dataset,tgt_dataset,hparam):
                          tf.concat( [tgt,tgt_eos_id] ,0)
                          )
                         )
+    if hparam.src_max_len:
+        dataset=dataset.map(lambda src,tgt_in,tgt_out:
+                            (src[:hparam.src_max_len],tgt_in,tgt_out))
+    if hparam.tgt_max_len:
+        dataset=dataset.map(lambda src,tgt_in,tgt_out:
+                            (src,tgt_in[:hparam.tgt_max_len],tgt_out[:hparam.tgt_max_len]))
     dataset=dataset.map(lambda src,tgt_in,tgt_out:
                         (src,tgt_in,tgt_out,tf.size(src),tf.size(tgt_in))
                         )
@@ -88,6 +97,7 @@ def get_iterator(src_dataset,tgt_dataset,hparam):
                       src_seq_len,
                       tgt_seq_len,
                       batch_iter.initializer,
+                      skipCount,
                       None)
 
 
@@ -118,6 +128,8 @@ def get_infer_iterator(src_dataset,hparam):
     dataset=src_dataset
     dataset=dataset.map(lambda src:(tf.string_split([src]).values))
     dataset=dataset.map(lambda src:vocab_src.lookup(src))
+    if hparam.src_max_len:
+        dataset=dataset.map(lambda src:src[:hparam.src_max_len])
     dataset=dataset.map(lambda src:(src,tf.size(src)))
 
     dataset=dataset.padded_batch(batch_size=hparam.batch_size,
@@ -137,4 +149,5 @@ def get_infer_iterator(src_dataset,hparam):
                       src_seq_len,
                       None,
                       batch_iter.initializer,
+                      None,
                       reverse_vocab_tgt)

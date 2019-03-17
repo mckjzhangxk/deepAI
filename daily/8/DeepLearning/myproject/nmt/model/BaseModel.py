@@ -1,6 +1,6 @@
 import tensorflow as tf
 import  modelHelper as helper
-from utils.vocab_utils import get_special_word_id,check_vocab
+from utils.vocab_utils import get_special_word_id,check_vocab,get_dataset_size
 import collections
 import numpy as np
 from utils.nmt_utils import get_translation
@@ -81,7 +81,8 @@ class BaseModel():
                 tf.nn.dynamic_rnn(rnn_cell,
                                   self._emb_src,
                                   sequence_length=self._batchInput.src_seq_len,
-                                  dtype=tf.float32)
+                                  dtype = hparam.dtype,
+                                  swap_memory=True)
         elif hparam.encode_type=='bi':
             fw_cell = self._build_encoder_cell(hparam)
             bk_cell = self._build_encoder_cell(hparam)
@@ -91,7 +92,8 @@ class BaseModel():
                                             fw_cell,
                                             bk_cell,
                                             self._emb_src,
-                                            dtype=tf.float32)
+                                            dtype=hparam.dtype,
+                                            swap_memory=True)
             self._encode_state=_encode_state[0]
             self._encoder_output=tf.concat(_encoder_output,-1)
     def _build_decoder(self,hparam):
@@ -135,25 +137,48 @@ class BaseModel():
                         )
 
     def _warmup_lr(self,hparam):
-        if hparam.warmup_scheme=='t2t':
-            warmup_factor=tf.exp(tf.log(0.01)/hparam.warmup_steps)
-            inv_decay=tf.pow(warmup_factor, tf.to_float(hparam.warmup_steps-self.global_step))
-
+        if hasattr(hparam,'warmup_scheme') and hparam.warmup_scheme=='t2t':
+            warmup_factor=tf.exp(tf.log(tf.constant(0.01,hparam.dtype))/hparam.warmup_steps)
+            inv_decay=tf.pow(warmup_factor, tf.cast(hparam.warmup_steps-self.global_step,hparam.dtype))
+        else:
+            return
         base_lr=self.lr
         self.lr=tf.cond(self.global_step<hparam.warmup_steps,
                         lambda :base_lr*inv_decay,
                         lambda :base_lr)
     def _set_lr(self,hparam):
-        self.lr=hparam.lr
+        self.lr=tf.constant(hparam.lr,dtype=hparam.dtype)
         self._warmup_lr(hparam)
         self._set_decay_lr(hparam)
 
-    def _set_loss(self):
+    def _set_loss(self,hparam):
+        if self.mode=='train' and hparam.nsample_softmax>0:
+            is_sequence = (self._logit.shape.ndims == 3)
+            if is_sequence:
+                labels = tf.reshape(self._batchInput.tgt_out, [-1, 1])
+                inputs = tf.reshape(self._logit, [-1,hparam.ndim ])
+
+            loss=tf.nn.sampled_softmax_loss(
+                tf.transpose(self._output_layer.kernel),
+                self._output_layer.bias,
+                labels,
+                inputs,
+                num_sampled=hparam.nsample_softmax,
+                num_classes=self.C,
+                num_true=1,
+                partition_strategy='div',
+                name='sampled_softmax_loss',
+            )
+            if is_sequence:
+                loss = tf.reshape(loss, [self._batch, -1])
+
         #(?,T)
-        loss=tf.nn.sparse_softmax_cross_entropy_with_logits(
-            logits=self._logit,
-            labels=self._batchInput.tgt_out)
-        mask=tf.to_float(tf.sequence_mask(self._batchInput.tgt_seq_len,tf.reduce_max(self._batchInput.tgt_seq_len)))
+        else:
+            loss=tf.nn.sparse_softmax_cross_entropy_with_logits(
+                logits=self._logit,
+                labels=self._batchInput.tgt_out)
+
+        mask=tf.cast(tf.sequence_mask(self._batchInput.tgt_seq_len,tf.reduce_max(self._batchInput.tgt_seq_len)),hparam.dtype)
         #(?,)
         loss=tf.reduce_sum(loss*mask,axis=1)
         self._loss=tf.reduce_mean(loss)
@@ -179,7 +204,7 @@ class BaseModel():
         :param hparam: 
         :return: 
         '''
-        self._set_loss()
+        self._set_loss(hparam)
         if self.mode=='train':
             self.global_step = tf.Variable(0, trainable=False, name='global_step',dtype=tf.int32)
             self._set_lr(hparam)
@@ -189,6 +214,8 @@ class BaseModel():
                 optimizer=tf.train.AdamOptimizer(self.lr)
             elif hparam.optimizer=='sgd':
                 optimizer = tf.train.GradientDescentOptimizer(self.lr)
+            elif hparam.optimizer=='adaDelta':
+                optimizer=tf.train.AdamOptimizer()
             else:
                 raise ValueError('Unknown Optimizer %s'%hparam.optimizer)
             vars=tf.trainable_variables()
@@ -199,7 +226,7 @@ class BaseModel():
 
             self._set_train_summary(hparam)
         else:
-            self._loss=self._loss*tf.to_float(self._batch)
+            self._loss=self._loss*tf.cast(self._batch,hparam.dtype)
 
     def _set_Saver(self,hparam):
         varlist=tf.global_variables()
@@ -209,9 +236,17 @@ class BaseModel():
         self._saver.save(sess,model_dir,global_step)
     def restore(self,sess,model_dir):
         self._saver.restore(sess,model_dir)
+    def do_Initialization(self,sess,hparam):
+        global_step=sess.run(self.global_step)
+        import math
 
+        step_per_epoch = math.ceil(get_dataset_size(hparam.train_src)/hparam.batch_size)
+        skipCount=(global_step%step_per_epoch)*hparam.batch_size
+
+        sess.run(self._batchInput.initializer,feed_dict={self._batchInput.skipCount:skipCount})
     def train(self,sess):
-        op=[self._train_op,
+        op=[
+            self._train_op,
             self._loss,
             self.lr,
             self._summary,
@@ -293,16 +328,24 @@ class Model(BaseModel):
         :param init_state: 
         :return: 
         '''
-        proj = tf.layers.Dense(self.C)
+        if self.mode!='infer':
+            proj = tf.layers.Dense(self.C,name='decoder/dense')
+        else:
+            proj = tf.layers.Dense(self.C, name='dense')
+
+        self._output_layer=proj
         if self.mode!='infer':
             helper=tf.contrib.seq2seq.TrainingHelper(self._emb_tgt,
                                                      self._batchInput.tgt_seq_len)
-            decoder=tf.contrib.seq2seq.BasicDecoder(rnn_cell,helper,init_state,output_layer=proj)
-            final_outputs,final_state,_=tf.contrib.seq2seq.dynamic_decode(decoder,output_time_major=False)
+            decoder=tf.contrib.seq2seq.BasicDecoder(rnn_cell,helper,init_state)
+            final_outputs,_,_=tf.contrib.seq2seq.dynamic_decode(decoder,output_time_major=False,swap_memory=True)
 
-            self._logit=final_outputs.rnn_output
-            self._sample_id=final_outputs.sample_id
-            self._final_state=final_state
+
+            self._logit = self._output_layer(final_outputs.rnn_output)
+            if self.mode=='train' and hparam.nsample_softmax>0:
+                self._logit=final_outputs.rnn_output
+            # self._sample_id=final_outputs.sample_id
+            # self._final_state=final_state
         elif hparam.infer_mode!='beam_search':
             tgt_sos_id, tgt_eos_id = get_special_word_id(hparam)
             start_tokens = tf.fill([self._batch], tgt_sos_id)
@@ -322,6 +365,7 @@ class Model(BaseModel):
             decoder = tf.contrib.seq2seq.BasicDecoder(rnn_cell, helper, init_state,output_layer=proj)
             final_outputs,final_state,_=tf.contrib.seq2seq.dynamic_decode(decoder,
                                                                output_time_major = False,
+                                                               swap_memory=True,
                                                                maximum_iterations=self.__max__iteration())
             self._isBeam = False
             self._logit=tf.no_op()
@@ -341,7 +385,7 @@ class Model(BaseModel):
                                                  output_layer=proj)
             final_outputs,final_state,_ = tf.contrib.seq2seq.dynamic_decode(decoder,
                                                                   maximum_iterations=self.__max__iteration(),
-                                                                  output_time_major=False)
+                                                                  output_time_major=False,swap_memory=True)
 
             self._isBeam=True
             self._logit=tf.no_op()

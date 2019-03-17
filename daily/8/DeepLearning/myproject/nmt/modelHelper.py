@@ -47,12 +47,12 @@ def _sigle_rnn_cell(hparam,dropout):
         )
 
     elif rnn_type=='gru':
-        _cell=tf.contrib.rnn.GRUCell(ndim)
+        _cell=tf.contrib.rnn.GRUCell(ndim,dtype=hparam.dtype)
     else:
         raise ValueError('Unkwon Rnn Cell Type %s'%rnn_type)
 
     if dropout>0.0:
-        _cell=tf.contrib.rnn.DropoutWrapper(_cell,input_keep_prob=1-dropout)
+        _cell=tf.contrib.rnn.DropoutWrapper(_cell,input_keep_prob=1-dropout,dtype=hparam.dtype)
     if residual:
         _cell=tf.contrib.rnn.ResidualWrapper(_cell,_residual_func)
     return _cell
@@ -104,11 +104,11 @@ def create_emb_matric(hparam):
     if share_vocab:
         if src_size!=tgt_size:
             raise ValueError('can not share vocab,because src.Vsize !=tgt.Vsize')
-        emb_matric=tf.get_variable('embeding',shape=(src_size,emb_size))
+        emb_matric=tf.get_variable('embeding',shape=(src_size,emb_size),dtype=hparam.dtype)
         return (emb_matric,emb_matric)
     else:
-        encode_matric=tf.get_variable('embeding/encoder',shape=(src_size,emb_size))
-        decoder_matric=tf.get_variable('embeding/decoder',shape=(tgt_size,emb_size))
+        encode_matric=tf.get_variable('embeding/encoder',shape=(src_size,emb_size),dtype=hparam.dtype)
+        decoder_matric=tf.get_variable('embeding/decoder',shape=(tgt_size,emb_size),dtype=hparam.dtype)
         return (encode_matric,decoder_matric)
 
 class TrainModel(collections.namedtuple('TrainModel',['model','session','graph','batch_input'])):pass
@@ -141,7 +141,7 @@ def createOrLoadModel(model,graph,sess,hparam):
         else:
             model.restore(sess,model_path)
             print('recover model from %s'%model_path)
-        sess.run(tf.tables_initializer())
+        # sess.run(tf.tables_initializer())
 
 def avg_Ckpt_Of_Model(graph,sess,hparam):
     model_dir=os.path.dirname(hparam.model_path)
@@ -183,16 +183,18 @@ def _createModel(mode, hparam, modelFunc=None):
 
     graph=tf.Graph()
     with graph.as_default():
-
+        skipCount=None
         if mode=='train':
             src_dataset=tf.data.TextLineDataset(hparam.train_src)
             tgt_dataset=tf.data.TextLineDataset(hparam.train_tgt)
+            skipCount=tf.placeholder(tf.int64,shape=())
         elif mode=='eval':
             src_dataset=tf.data.TextLineDataset(hparam.dev_src)
             tgt_dataset=tf.data.TextLineDataset(hparam.dev_tgt)
         else:
             raise ValueError('_createTrainModel.mode must be train or eval')
-        batch_input=get_iterator(src_dataset,tgt_dataset,hparam)
+
+        batch_input=get_iterator(src_dataset,tgt_dataset,skipCount,hparam)
         sess=tf.Session(config=_get_config_proto())
         model=modelFunc(batch_input,mode,hparam)
 
