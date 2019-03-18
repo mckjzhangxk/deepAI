@@ -72,8 +72,8 @@ hparam=tf.contrib.training.HParams(
     avg_ckpt=True,
     ###########Eval相关参数##############
     subword_option='bpe',
-    BLUE_SCORE=2.385563,
-    perplexity=48.906841
+    BLUE_SCORE=2.672592,
+    perplexity=47.060705
 
 )
 def cal_param_cnt(model):
@@ -99,8 +99,8 @@ def _innernal_eval(evalModel,steps,logfs, hparam):
 
     if not hasattr(hparam, keyword) or getattr(hparam, keyword) > perplexity:
         setattr(hparam, keyword, perplexity)
-        model.save(sess, os.path.join(hparam.checkpoint_path, keyword + '.ckpt'))
         print('perplexity:%f,beat the previous!' % perplexity)
+        model.save(sess, os.path.join(hparam.checkpoint_path, keyword + '.ckpt'))
     else:
         print('perplexity:%f,not improve the best %f' % (perplexity, getattr(hparam, keyword)))
 
@@ -150,9 +150,10 @@ def _external_eval(inferModel,steps,logfs, hparam):
 
     if not hasattr(hparam,keyword) or getattr(hparam,keyword)<blue_score:
         setattr(hparam,keyword,blue_score)
-        model.save(sess,os.path.join(hparam.checkpoint_path,keyword+'.ckpt'))
         _output_result(os.path.join(hparam.checkpoint_path,'translation.txt'),rs.translation)
         print('BLUE SCORE:%f,beat the previous!'%blue_score)
+        model.save(sess,os.path.join(hparam.checkpoint_path,keyword+'.ckpt'))
+
     else:
         print('BLUE SCORE:%f,not improve the best %f' %(blue_score,getattr(hparam,keyword)))
 
