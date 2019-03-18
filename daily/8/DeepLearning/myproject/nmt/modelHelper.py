@@ -47,7 +47,7 @@ def _sigle_rnn_cell(hparam,dropout):
         )
 
     elif rnn_type=='gru':
-        _cell=tf.contrib.rnn.GRUCell(ndim,dtype=hparam.dtype)
+        _cell=tf.contrib.rnn.GRUCell(ndim)
     else:
         raise ValueError('Unkwon Rnn Cell Type %s'%rnn_type)
 
@@ -156,14 +156,18 @@ def avg_Ckpt_Of_Model(graph,sess,hparam):
 
                 for varname, varshape in vars_info:
                     vars[varname] += reader.get_tensor(varname) / num
-            assign_op = []
-            for name, value in vars.items():
-                try:
-                    with tf.variable_scope('', reuse=True):
-                        x = tf.get_variable(name)
-                        assert x.shape.as_list() == list(value.shape), 'variable shape must compatiable'
-                        assign_op.append(tf.assign(x, value))
-                except ValueError:pass
+            try:
+                assign_op=graph.get_operation_by_name('assign_op')
+            except KeyError:
+                assign_op = []
+                for name, value in vars.items():
+                    try:
+                        with tf.variable_scope('', reuse=True):
+                            x = tf.get_variable(name)
+                            assert x.shape.as_list() == list(value.shape), 'variable shape must compatiable'
+                            assign_op.append(tf.assign(x, value))
+                    except ValueError:pass
+                assign_op=tf.group(*assign_op,name='assign_op')
             sess.run(assign_op)
 
 def _createModel(mode, hparam, modelFunc=None):
