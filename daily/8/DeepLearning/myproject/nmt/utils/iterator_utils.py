@@ -39,7 +39,7 @@ def get_iterator(src_dataset,tgt_dataset,skipCount,hparam):
     vocab_src=tf.contrib.lookup.index_table_from_file(hparam.vocab_src,default_value=0)
     vocab_tgt=tf.contrib.lookup.index_table_from_file(hparam.vocab_tgt, default_value=0)
 
-    SOS,EOS,UNK=hparam.SOS,hparam.EOS,hparam.EOS
+    SOS,EOS,UNK=hparam.SOS,hparam.EOS,hparam.UNK
 
     src_eos_id=vocab_src.lookup(tf.constant([EOS]))
     tgt_sos_id=vocab_tgt.lookup(tf.constant([SOS]))
@@ -117,7 +117,7 @@ def get_infer_iterator(src_dataset,hparam):
     :param hparam: 
     :return: 
     '''
-    SOS, EOS, UNK = hparam.SOS, hparam.EOS, hparam.EOS
+    SOS, EOS, UNK = hparam.SOS, hparam.EOS, hparam.UNK
     vocab_src=tf.contrib.lookup.index_table_from_file(hparam.vocab_src,default_value=0)
     reverse_vocab_tgt=tf.contrib.lookup.index_to_string_table_from_file(hparam.vocab_tgt, default_value=UNK)
 

@@ -28,11 +28,12 @@ max_pool=functools.partial(
             data_format='channels_last'
 )()
 bn=functools.partial(
-    tf.layers.BatchNormalization,
+    tf.layers.batch_normalization,
     axis=-1,
-    momentum=0.99,
+    momentum=0.9,
     center=True,
     scale=True,
+    trainable=True
 )
 up_conv=functools.partial(tf.layers.Conv2DTranspose,
                           kernel_size=(3,3),
@@ -78,26 +79,27 @@ class Unet():
         with tf.variable_scope('encoder',reuse=tf.AUTO_REUSE):
             for i in range(5):
                 if i!=0:
-                    current,_next=self._encode_block(_next,'layer_%d'%(i+1))
+                    current,_next=self._encode_block(_next,'encoder%d'%(i+1))
                 else:
-                    current, _next = self._encode_block(_next, 'layer_%d' % (i + 1),32)
+                    current, _next = self._encode_block(_next, 'encoder%d' % (i + 1),32)
                 self._stack.append(current)
-            self._center=self._conv_block(_next)
+            with tf.variable_scope('center'):
+                self._center=self._conv_block(_next)
 
     def _build_decoder(self,hparam):
         _prev=self._center
         with tf.variable_scope('decoder',reuse=tf.AUTO_REUSE):
             for i in range(4,-1,-1):
-                _prev=self._decode_block(self._stack[i],_prev,'layer_%d'%(i+1))
+                _prev=self._decode_block(self._stack[i],_prev,'decoder%d'%(i+1))
 
-            self._logit=conv1_1(1)(_prev)
+            self._logit=conv1_1(1,name='final')(_prev)
 
     def _conv_block(self,inp,dim=None):
         X=inp
         ndim=inp.get_shape()[-1]*2 if dim==None else dim
         for i in range(2):
-            X=conv3_3(ndim)(X)
-            X=bn()(X,self.mode)
+            X=conv3_3(ndim,name='conv%d'%i)(X)
+            X=bn(X,training=self.mode,name='BN%d'%i)
             X=relu(X)
         return X
 
@@ -131,13 +133,13 @@ class Unet():
 
 
         with tf.variable_scope(name):
-            a=up_conv(ndim)(bottom_inp)
+            a=up_conv(ndim,name='upconv')(bottom_inp)
             X=concat([a,right_inp])
-            X=bn()(X,self.mode)
+            X=bn(X,training=self.mode,name='BN_upconv')
             X=relu(X)
             for i in  range(2):
-                X=conv3_3(ndim)(X)
-                X = bn()(X, self.mode)
+                X=conv3_3(ndim,name='conv%d'%i)(X)
+                X = bn(X, training=self.mode,name='BN%d'%i)
                 X = relu(X)
             return X
 
@@ -164,6 +166,8 @@ class Unet():
             optimizer=tf.train.RMSPropOptimizer(lr)
         self.global_step=tf.Variable(0,trainable=False,dtype=tf.int32)
         self._train_op=optimizer.minimize(self._loss,self.global_step)
+        update_op=tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        self._train_op=tf.group(self._train_op,*update_op)
     def _set_train_summary(self):
         vars=tf.trainable_variables()
         grads=tf.gradients(self._loss,vars)
@@ -178,10 +182,11 @@ class Unet():
     def _set_eval(self,hparam):
         pred=tf.greater(self._logit , 0.0)
         label=tf.cast(self._batch_input.Y,tf.bool)
-
+        
         true_predict=tf.reduce_sum(tf.to_float(tf.equal(pred,label)))
         total=tf.to_float(tf.size(label))
         self._accuracy=true_predict/total
+        #self._accuracy=dice_loss(self._batch_input.Y,self._logit,hparam.smooth)
     def _set_eval_summary(self):
         tf.summary.scalar('accuracy', self._accuracy)
         self._eval_summary = tf.summary.merge_all()

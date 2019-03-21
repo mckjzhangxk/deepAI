@@ -6,14 +6,14 @@ from metrics.evaluation_utils import blue
 import codecs
 
 hparam=tf.contrib.training.HParams(
-    train_src='/home/zxk/AI/WMT/train.tok.clean.bpe.16000.de',
-    train_tgt='/home/zxk/AI/WMT/train.tok.clean.bpe.16000.en',
-    dev_src='/home/zxk/AI/WMT/dev.de',
-    dev_tgt='/home/zxk/AI/WMT/dev.en',
-    test_src='/home/zxk/AI/WMT/newstest2016.tok.bpe.16000.de',
-    test_tgt='/home/zxk/AI/WMT/newstest2016.tok.bpe.16000.en',
-    vocab_src='/home/zxk/AI/WMT/vocab.bpe.16000.de',
-    vocab_tgt='/home/zxk/AI/WMT/vocab.bpe.16000.en',
+    train_src='/home/zxk/AI/iwsl/train.bpe.vi',
+    train_tgt='/home/zxk/AI/iwsl/train.bpe.en',
+    dev_src='/home/zxk/AI/iwsl/dev.bpe.vi',
+    dev_tgt='/home/zxk/AI/iwsl/dev.bpe.en',
+    test_src='/home/zxk/AI/iwsl/test.bpe.vi',
+    test_tgt='/home/zxk/AI/iwsl/test.bpe.en',
+    vocab_src='/home/zxk/AI/iwsl/vocab.bpe.20000.vi',
+    vocab_tgt='/home/zxk/AI/iwsl/vocab.bpe.20000.en',
     # train_src='data/train.vi',
     # train_tgt='data/train.en',
     # dev_src='data/train.vi',
@@ -28,7 +28,7 @@ hparam=tf.contrib.training.HParams(
     SOS='<s>',
     EOS='</s>',
     UNK='<unk>',
-    batch_size=256,
+    batch_size=128,
 
     #####网络模型相关参数###########
     scope='nmt',
@@ -36,8 +36,8 @@ hparam=tf.contrib.training.HParams(
     encode_type='uni',
     rnn_type='gru',
     layer_norm=False,
-    emb_size=128,
-    ndim=128,
+    emb_size=256,
+    ndim=256,
     num_layer=2,
     activation_fn=tf.nn.tanh,
     dropout=0.2,
@@ -53,16 +53,16 @@ hparam=tf.contrib.training.HParams(
     pass_hidden_state=True,
     ##########训练参数相关###########
     optimizer='adam',
-    lr=1e-4,
+    lr=1e-3,
     decay_scheme='luong5', #luong5,luong10
-    warmup_steps=1000,
+    warmup_steps=100,
     warmup_scheme='t2t',
     max_norm=5,
     ##########训练流程相关###########
-    num_train=860000,
+    num_train=12000,
     steps_per_stat=10,
-    steps_per_innernal_eval=500,
-    steps_per_external_eval=1000,
+    steps_per_innernal_eval=100,
+    steps_per_external_eval=500,
 
     model_path='result/baseModel/model',
     max_to_keep=5,
@@ -72,8 +72,8 @@ hparam=tf.contrib.training.HParams(
     avg_ckpt=True,
     ###########Eval相关参数##############
     subword_option='bpe',
-    BLUE_SCORE=2.672592,
-    perplexity=47.060705
+    BLUE_SCORE=0.0,
+    perplexity=100000.0
 
 )
 def cal_param_cnt(model):

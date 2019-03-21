@@ -146,6 +146,7 @@ def createOrLoadModel(model,graph,sess,hparam):
 def avg_Ckpt_Of_Model(graph,sess,hparam):
     model_dir=os.path.dirname(hparam.model_path)
     ckt_state = tf.train.get_checkpoint_state(model_dir)
+    print(ckt_state)
     if ckt_state:
         with graph.as_default():
             model_paths = ckt_state.all_model_checkpoint_paths

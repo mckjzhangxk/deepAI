@@ -6,12 +6,12 @@ import time
 import numpy as np
 
 hparam=tfcontrib.training.HParams(
-    src_prefix='/home/jncf/segment/train',
-    tgt_prefix='/home/jncf/segment/train_masks',
-    train_mask_file='/home/jncf/segment/train_masks_1.csv',
+    src_prefix='/home/zxk/AI/carana/carvana-image-masking-challenge/train',
+    tgt_prefix='/home/zxk/AI/carana/carvana-image-masking-challenge/train_masks',
+    train_mask_file='/home/zxk/AI/carana/carvana-image-masking-challenge/train_masks.csv',
     num_parallel_calls=4,
-    batch_size=2,
-    epoch=300,
+    batch_size=1,
+    epoch=30,
     train_size=0.8,
     shift_range=0.1,
     hue_delta=0.1,
@@ -22,8 +22,8 @@ hparam=tfcontrib.training.HParams(
     solver='adam',
     smooth=1,
     log_dir='model/log',
-    steps_per_state=1,
-    steps_per_eval=3,
+    steps_per_state=10,
+    steps_per_eval=2000,
     model_path='model/UNet',
     max_keep=5
 )
