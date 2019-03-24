@@ -1,3 +1,4 @@
+
 import modelHelper as helper
 import tensorflow as tf
 import time
@@ -6,14 +7,14 @@ from metrics.evaluation_utils import blue
 import codecs
 
 hparam=tf.contrib.training.HParams(
-    train_src='/home/zxk/AI/iwsl/train.bpe.vi',
-    train_tgt='/home/zxk/AI/iwsl/train.bpe.en',
-    dev_src='/home/zxk/AI/iwsl/dev.bpe.vi',
-    dev_tgt='/home/zxk/AI/iwsl/dev.bpe.en',
-    test_src='/home/zxk/AI/iwsl/test.bpe.vi',
-    test_tgt='/home/zxk/AI/iwsl/test.bpe.en',
-    vocab_src='/home/zxk/AI/iwsl/vocab.bpe.20000.vi',
-    vocab_tgt='/home/zxk/AI/iwsl/vocab.bpe.20000.en',
+    train_src='/home/zxk/AI/nmt/nmt/nmt_data/train.vi',
+    train_tgt='/home/zxk/AI/nmt/nmt/nmt_data/train.en',
+    dev_src='/home/zxk/AI/nmt/nmt/nmt_data/tst2012.vi',
+    dev_tgt='/home/zxk/AI/nmt/nmt/nmt_data/tst2012.en',
+    test_src='/home/zxk/AI/nmt/nmt/nmt_data/st2013.vi',
+    test_tgt='/home/zxk/AI/nmt/nmt/nmt_data/st2013.en',
+    vocab_src='/home/zxk/AI/nmt/nmt/nmt_data/vocab.vi',
+    vocab_tgt='/home/zxk/AI/nmt/nmt/nmt_data/vocab.en',
     # train_src='data/train.vi',
     # train_tgt='data/train.en',
     # dev_src='data/train.vi',
@@ -34,15 +35,15 @@ hparam=tf.contrib.training.HParams(
     scope='nmt',
     dtype=tf.float32,
     encode_type='uni',
-    rnn_type='gru',
+    rnn_type='lstm',
     layer_norm=False,
-    emb_size=256,
-    ndim=256,
+    emb_size=512,
+    ndim=512,
     num_layer=2,
     activation_fn=tf.nn.tanh,
     dropout=0.2,
     forget_bias=1.0,
-    residual_layer=True,
+    residual_layer=False,
     share_vocab=False,
     nsample_softmax=2000,
 
@@ -52,17 +53,17 @@ hparam=tf.contrib.training.HParams(
     #atten_type='luong',
     pass_hidden_state=True,
     ##########训练参数相关###########
-    optimizer='adam',
-    lr=1e-3,
-    decay_scheme='luong5', #luong5,luong10
+    optimizer='sgd',
+    lr=1.0,
+    decay_scheme='luong10', #luong5,luong10
     warmup_steps=100,
     warmup_scheme='t2t',
     max_norm=5,
     ##########训练流程相关###########
     num_train=12000,
     steps_per_stat=10,
-    steps_per_innernal_eval=100,
-    steps_per_external_eval=500,
+    steps_per_innernal_eval=200,
+    steps_per_external_eval=1000,
 
     model_path='result/baseModel/model',
     max_to_keep=5,
@@ -71,9 +72,10 @@ hparam=tf.contrib.training.HParams(
     log_dir='result/baseModel/log',
     avg_ckpt=True,
     ###########Eval相关参数##############
-    subword_option='bpe',
+    #subword_option='bpe',
+    subword_option=None,
     BLUE_SCORE=0.0,
-    perplexity=100000.0
+    perplexity=10000000.0
 
 )
 def cal_param_cnt(model):
