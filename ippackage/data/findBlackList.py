@@ -4,7 +4,7 @@ from data.Beans import Package_FreeGate
 from data.Conf import DataConf
 
 
-basePath='/home/zhangxk/AIProject/ippack/vpndata/out-3-13'
+basePath='/home/zhangxk/AIProject/ippack/vpndata/3-21'
 IP = '192.168.060.160' #笔记本
 # IP='192.168.000.096'    #home
 

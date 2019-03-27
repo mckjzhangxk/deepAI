@@ -6,7 +6,7 @@ class DataConf():
     #把source_path每Tmax进行一个归组,输出到target_path/{group_index}下面
     target_path = '/home/zhangxk/AIProject/ippack/vpndata/out_T'
     #临时输出的数据文件
-    data_path = '/home/zhangxk/AIProject/ippack/vpndata/data/3-6.txt'
+    data_path = '/home/zhangxk/AIProject/ippack/vpndata/data/3-21.txt'
 
     features = ['upcount', 'upsize', 'up_rate', 'downcount', 'downsize', 'down_rate']
     features_func=[None,

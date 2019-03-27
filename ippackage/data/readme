@@ -8,7 +8,6 @@
     d.最后删除source_path,target_path
 2.生成训练数据集
     BASE_NUM是一个类别的数量
-
     a.TrainFile,DevFile下面是生成的文件
     b.修改prepareTrain.py 的DATASET='train'
     c.然后运行prepareTrain.py
