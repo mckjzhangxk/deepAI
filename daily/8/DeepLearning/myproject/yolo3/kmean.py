@@ -1,5 +1,9 @@
 import numpy as np
 from iou import general_iou
+import os
+import cv2
+import tensorflow as tf
+
 def kmeans(boxes, k, dist=np.median,seed=1):
     """
     Calculates k-means clustering with the Intersection over Union (IoU) metric.
@@ -33,3 +37,36 @@ def kmeans(boxes, k, dist=np.median,seed=1):
         last_clusters = nearest_clusters
 
     return clusters, nearest_clusters, distances
+
+def _get_boxes(path):
+    basedir=os.path.dirname(path)
+    def _getHW(imagepath):
+        I=cv2.imread(imagepath)
+        H,W=I.shape[0],I.shape[1]
+        return W,H
+    anchor_box=[]
+    with tf.gfile.GFile(path) as reader:
+        lines=reader.readlines()
+        for line in lines:
+            sps=line.strip().split(' ')
+            W,H=_getHW(os.path.join(basedir,sps[0]))
+            for j in range(1,len(sps),5):
+                x1,y1,x2,y2=float(sps[j]),float(sps[j+1]),float(sps[j+2]),float(sps[j+3])
+                anchor_box.append([(x2-x1)/W,(y2-y1)/H])
+    anchor_box=np.array(anchor_box)
+    return anchor_box
+
+
+def create_anchor_boxes(anofile,outputfile,num_anchors=9):
+    boxes=_get_boxes(anofile)
+    clusters,nearst_cluster,distances=kmeans(boxes,k=num_anchors,seed=None)
+    clusters=sorted(clusters,key=lambda x:x[0]*x[1])
+    clusters=np.array(clusters).ravel().tolist()
+
+    with open(outputfile,'w') as fs:
+        fs.write(' '.join(map(str,clusters)))
+
+if __name__ == '__main__':
+    anofile='data/train.txt'
+    outputfile='data/raccoon_my_anchors.txt'
+    create_anchor_boxes(anofile, outputfile, num_anchors=9)

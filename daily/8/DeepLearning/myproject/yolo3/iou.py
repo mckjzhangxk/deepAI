@@ -43,10 +43,10 @@ def general_iou(A,B):
 
     return iou
 
-A=np.random.rand(2)
-print(A)
-B=np.random.rand(2,2)
-print(B)
-iou=general_iou(A,B)
-print(iou.shape)
-print(iou)
+# A=np.random.rand(2)
+# print(A)
+# B=np.random.rand(2,2)
+# print(B)
+# iou=general_iou(A,B)
+# print(iou.shape)
+# print(iou)

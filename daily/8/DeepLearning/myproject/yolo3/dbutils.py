@@ -1,32 +1,17 @@
 import tensorflow as tf
-# tf.enable_eager_execution()
-# tf.executing_eagerly()
-# X=tf.constant(['./raccoon_dataset/images/raccoon-168.jpg 98 88 374 303 0 173 1 471 309 0'])
-#
-# values=tf.string_split(X).values
-# image_path=values[0]
-# box=tf.string_to_number(values[1:],tf.float32)
-# # print(box.shape[0])
-# # for i in range(0,box.shape[0],5):
-# #     boxes=tf.string_to_number(box[i:i+4])
-# #     label=tf.string_to_number(box[i+4])
-# #     print(boxes)
-# #     print(label)
-# # tf.py_func
-# import numpy as np
-# def mypy_func(x,size):
-#     print(x)
-#     print(size)
-#     a=np.array(0.1).astype(np.float32)
-#     return np.float32(a*size)
-# y1=tf.py_func(mypy_func,[box,13],tf.float32)
-# y2=tf.py_func(mypy_func,[box,26],tf.float32)
-# y3=tf.py_func(mypy_func,[box,52],tf.float32)
-#
-# with tf.Session() as sess:
-#     print(sess.run([y1,y2,y3]))
 import numpy as np
 from iou import general_iou
+
+def get_anchors(anchors_path, image_h, image_w):
+    '''loads the anchors from a file'''
+    with open(anchors_path) as f:
+        anchors = f.readline()
+    anchors = np.array(anchors.split(), dtype=np.float32)
+    anchors = anchors.reshape(-1,2)
+    anchors[:, 1] = anchors[:, 1] * image_h
+    anchors[:, 0] = anchors[:, 0] * image_w
+    return anchors.astype(np.int32)
+
 def feature_map(y,
                 grid_size,
                 image_size,
