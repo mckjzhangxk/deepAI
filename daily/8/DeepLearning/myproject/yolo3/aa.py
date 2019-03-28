@@ -1,57 +1,84 @@
-import tensorflow as tf
+from PyQt5 import QtWidgets,QtGui
+import sys
 import numpy as np
+import cv2
+
+def clickfunc():
+    print('oooooooooooo')
+def window():
+    app=QtWidgets.QApplication(sys.argv)
+    w=QtWidgets.QWidget()
+    w.setWindowTitle('YOLO V3')
+    w.setGeometry(100,100,100+1024,100+768)
+    title=createLabel(None,'Demo')
+    title=wrapHorizion(title)
 
 
+    container=QtWidgets.QVBoxLayout()
+    container.addLayout(title)
 
-def get_label_boxes(y):
-    gh, gw = y.shape[0:2]
-    logit = y[:, :, :, 4]  # (gh,gw,a)
-    mask = logit > 0
-    indices = np.where(mask)
-    indices = np.array(indices)
-    indices = indices.transpose()  # (#gt,3) 3=(i,j,a)
+    w.setLayout(container)
+    w_left=createImage(None, cv2.imread('data/raccoon_dataset/images/raccoon-33.jpg'))
+    bn1=  createButton(None, 'forward',clickfunc)
+    edit1=QtWidgets.QLineEdit()
+    bn2 = createButton(None, 'backward')
+    bn3 = createButton(None, 'exit')
+    w_right=wrapVertical([bn1,edit1,bn2,bn3])
 
-    # (#gt,5+C)
-    labelobj = y[mask]
+    frame=wrapHorizion([w_left,w_right])
+    container.addLayout(frame)
 
-    y = gh * indices[:, 0]
-    x = gw * indices[:, 1]
+    w.show()
 
-    labelobj_anchor = indices[:, 2]
+    sys.exit(app.exec())
 
-    labelobj_cx = labelobj[:, 0] * gw + x
-    labelobj_cy = labelobj[:, 1] * gh + y
-    labelobj_w = labelobj[:, 2]
-    labelobj_h = labelobj[:, 3]
-    labelobj_classes = labelobj[:, 5:]
+def createLabel(parent,text):
+    l=QtWidgets.QLabel(parent) if parent else QtWidgets.QLabel()
+    l.setText(text)
+    return l
 
-    labelobj_x1 = labelobj_cx - 0.5 * labelobj_w
-    labelobj_y1 = labelobj_cy - 0.5 * labelobj_h
-    labelobj_x2 = labelobj_cx + 0.5 * labelobj_w
-    labelobj_y2 = labelobj_cy + 0.5 * labelobj_h
+def createButton(parent,text,handler=None):
+    b = QtWidgets.QPushButton(parent) if parent else QtWidgets.QPushButton()
+    b.setText(text)
+    if handler:
+        b.clicked.connect(handler)
+    return b
+def wrapHorizion(p):
+    hlayout=QtWidgets.QHBoxLayout()
+    hlayout.addStretch()
+    if isinstance(p,list):
+        for w in p:
+            if isinstance(w,QtWidgets.QBoxLayout):
+                hlayout.addLayout(w)
+            elif isinstance(w,QtWidgets.QFrame):
+                hlayout.addWidget(w)
+    else:
+        if isinstance(p, QtWidgets.QBoxLayout):
+            hlayout.addLayout(p)
+        elif isinstance(p, QtWidgets.QFrame):
+            hlayout.addWidget(p)
+    hlayout.addStretch()
+    return hlayout
 
-    return labelobj_x1,labelobj_y1,labelobj_x2,labelobj_y2,labelobj_anchor,labelobj_classes
-y=np.random.rand(13,13,3,8)
-y[...,4]=y[...,4]>0.5
-labelobj_x1,labelobj_y1,labelobj_x2,labelobj_y2,labelobj_anchor,labelobj_classes=get_label_boxes(y)
+def wrapVertical(p):
+    vlayout=QtWidgets.QVBoxLayout()
+    vlayout.addStretch()
+    if isinstance(p,list):
+        for w in p:
+            vlayout.addWidget(w)
+    else:
+        vlayout.addWidget(p)
+    vlayout.addStretch()
+    return vlayout
 
-print(labelobj_x1.shape)
-print(labelobj_y1.shape)
-print(labelobj_x2.shape)
-print(labelobj_y2.shape)
-print(labelobj_anchor.shape)
-print(labelobj_classes.shape)
-# print(np.sum(y[...,4]))
-# print(np.prod(y.shape[:-1]))
-# tf.enable_eager_execution()
-# tf.executing_eagerly()
-# line=tf.constant('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_dataset/images/raccoon-163.jpg 6 7 240 157 0')
-# print(line)
-# sps = tf.string_split([line]).values
-# path = sps[0]
-# contents=tf.read_file(path)
-# image = tf.image.decode_jpeg(contents, 3)
-# image = tf.to_float(image)
-# boxes = tf.string_to_number(sps[1:])
-# boxes = tf.reshape(boxes, (-1, 5))
-# print(contents)
+
+def createImage(parent,content):
+    if isinstance(content,str):
+        pixels=QtGui.QPixmap(content)
+    if isinstance(content,np.ndarray):
+        img=QtGui.QImage(content,content.shape[1],content.shape[0],3*content.shape[1],QtGui.QImage.Format_RGB888)
+        pixels=QtGui.QPixmap(img)
+    l = QtWidgets.QLabel(parent) if parent else QtWidgets.QLabel()
+    l.setPixmap(pixels)
+    return l
+window()
