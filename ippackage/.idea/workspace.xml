@@ -4,26 +4,26 @@
     <list default="true" id="4a4d54ce-739f-4277-bda5-750a0ee6b14d" name="Default" comment="">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/train/testTrain.py" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/train/inference.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/train/train2.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/train/train1.py" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/resource/data_output1" afterPath="$PROJECT_DIR$/data/resource/data_output1" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/Conf.py" afterPath="$PROJECT_DIR$/data/Conf.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/ippackage.iml" afterPath="$PROJECT_DIR$/.idea/ippackage.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/model/modelHelper.py" afterPath="$PROJECT_DIR$/model/modelHelper.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/resource/data_output3" afterPath="$PROJECT_DIR$/data/resource/data_output3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/resource/data_output2" afterPath="$PROJECT_DIR$/data/resource/data_output2" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../java/myspring/src/org/zxk/javabrain/module2/ShowNameBeanProcessor.java" afterPath="$PROJECT_DIR$/../java/myspring/src/org/zxk/javabrain/module2/ShowNameBeanProcessor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/prepareTrain.py" afterPath="$PROJECT_DIR$/data/prepareTrain.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/resource/data" afterPath="$PROJECT_DIR$/data/resource/data" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/model/RnnModel.py" afterPath="$PROJECT_DIR$/model/RnnModel.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../java/myspring/src/org/zxk/javabrain/module3/custom.properties" afterPath="$PROJECT_DIR$/../java/myspring/src/org/zxk/javabrain/module3/custom.properties" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/train2.py" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../java/myspring/out/production/myspring/org/zxk/javabrain/module3/custom.properties" afterPath="$PROJECT_DIR$/../java/myspring/out/production/myspring/org/zxk/javabrain/module3/custom.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/test_rnnInput.py" afterPath="$PROJECT_DIR$/data/test_rnnInput.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/train/train.py" afterPath="$PROJECT_DIR$/train/trainNetwork.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../java/myspring/out/production/myspring/org/zxk/javabrain/module2/ShowNameBeanProcessor.class" afterPath="$PROJECT_DIR$/../java/myspring/out/production/myspring/org/zxk/javabrain/module2/ShowNameBeanProcessor.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/ippackage.iml" afterPath="$PROJECT_DIR$/.idea/ippackage.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/model/RnnModel.py" afterPath="$PROJECT_DIR$/model/RnnModel.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/Conf.py" afterPath="$PROJECT_DIR$/data/Conf.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/prepareTrain.py" afterPath="$PROJECT_DIR$/data/prepareTrain.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/resource/data_output1" afterPath="$PROJECT_DIR$/data/resource/data_output1" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/train/train.py" afterPath="$PROJECT_DIR$/train/trainNetwork.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/test_rnnInput.py" afterPath="$PROJECT_DIR$/data/test_rnnInput.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../java/myspring/src/org/zxk/javabrain/module3/custom.properties" afterPath="$PROJECT_DIR$/../java/myspring/src/org/zxk/javabrain/module3/custom.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/resource/data" afterPath="$PROJECT_DIR$/data/resource/data" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/resource/data_output2" afterPath="$PROJECT_DIR$/data/resource/data_output2" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/resource/data_output3" afterPath="$PROJECT_DIR$/data/resource/data_output3" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../java/myspring/src/org/zxk/javabrain/module2/ShowNameBeanProcessor.java" afterPath="$PROJECT_DIR$/../java/myspring/src/org/zxk/javabrain/module2/ShowNameBeanProcessor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mytest.py" afterPath="$PROJECT_DIR$/mytest.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/model/modelHelper.py" afterPath="$PROJECT_DIR$/model/modelHelper.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -89,29 +89,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="dbutils.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/dbutils.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="243">
-              <caret line="89" column="5" lean-forward="false" selection-start-line="89" selection-start-column="5" selection-end-line="103" selection-end-column="17" />
-              <folding>
-                <element signature="e#0#23#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="iou.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/iou.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="810">
-              <caret line="45" column="10" lean-forward="false" selection-start-line="45" selection-start-column="10" selection-end-line="51" selection-end-column="12" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="script_ops.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="script_ops.py" pinned="false" current-in-tab="true">
         <entry file="file:///usr/local/lib/python3.5/dist-packages/tensorflow/python/ops/script_ops.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="114">
@@ -165,10 +143,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="64" />
-    <option name="y" value="-11" />
-    <option name="width" value="1303" />
-    <option name="height" value="780" />
+    <option name="x" value="65" />
+    <option name="y" value="24" />
+    <option name="width" value="1301" />
+    <option name="height" value="744" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -517,15 +495,15 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="-11" width="1303" height="780" extended-state="6" />
+    <frame x="65" y="24" width="1301" height="744" extended-state="6" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22001588" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.223193" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28892455" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28892455" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2494043" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -551,11 +529,34 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/dbutils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1098">
+          <caret line="89" column="5" lean-forward="false" selection-start-line="89" selection-start-column="5" selection-end-line="103" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python3.5/dist-packages/tensorflow/python/ops/script_ops.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6768">
+          <caret line="400" column="0" lean-forward="false" selection-start-line="400" selection-start-column="0" selection-end-line="402" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iou.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="810">
+          <caret line="45" column="10" lean-forward="false" selection-start-line="45" selection-start-column="10" selection-end-line="51" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/data/readme">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
           <caret line="9" column="20" lean-forward="false" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -563,7 +564,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
           <caret line="8" column="65" lean-forward="false" selection-start-line="8" selection-start-column="65" selection-end-line="8" selection-end-column="65" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -571,7 +571,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1782">
           <caret line="99" column="28" lean-forward="false" selection-start-line="99" selection-start-column="28" selection-end-line="99" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -593,7 +592,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="5" column="17" lean-forward="false" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -601,7 +599,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="846">
           <caret line="53" column="7" lean-forward="true" selection-start-line="53" selection-start-column="7" selection-end-line="53" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -609,7 +606,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="126">
           <caret line="8" column="65" lean-forward="false" selection-start-line="8" selection-start-column="65" selection-end-line="8" selection-end-column="65" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -761,7 +757,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
           <caret line="9" column="20" lean-forward="false" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -769,7 +764,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="126">
           <caret line="8" column="65" lean-forward="false" selection-start-line="8" selection-start-column="65" selection-end-line="8" selection-end-column="65" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -777,7 +771,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="31">
           <caret line="92" column="14" lean-forward="true" selection-start-line="92" selection-start-column="14" selection-end-line="92" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -789,20 +782,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dbutils.py">
+    <entry file="file://$PROJECT_DIR$/iou.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
-          <caret line="89" column="5" lean-forward="false" selection-start-line="89" selection-start-column="5" selection-end-line="103" selection-end-column="17" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="432">
+          <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/iou.py">
+    <entry file="file://$PROJECT_DIR$/dbutils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="810">
-          <caret line="45" column="10" lean-forward="false" selection-start-line="45" selection-start-column="10" selection-end-line="51" selection-end-column="12" />
+        <state relative-caret-position="1872">
+          <caret line="104" column="1" lean-forward="true" selection-start-line="104" selection-start-column="1" selection-end-line="104" selection-end-column="1" />
           <folding />
         </state>
       </provider>

@@ -1,0 +1,5 @@
+/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_dataset/images/raccoon-163.jpg 6 7 240 157 0
+/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_dataset/images/raccoon-165.jpg 27 11 194 228 0
+/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_dataset/images/raccoon-90.jpg 44 90 577 426 0
+/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_dataset/images/raccoon-53.jpg 71 45 197 171 0
+/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_dataset/images/raccoon-12.jpg 28 21 126 181 0 85 33 235 193 0
