@@ -215,10 +215,11 @@ class ImageDataset():
     # (1, 253, 199, 3)
     # tf.Tensor([[[27.  11. 194. 228.   0.]]], shape=(1, 1, 5), dtype=float32)
 
-from drawutils import decodeImage
+from drawutils import decodeImage,anchorBox2Img
 class ImageBrower():
     def __init__(self,annpath,anchorboxpath,C=1):
         anchor_boxes = load_anchor_boxes(anchorboxpath, 416, 416)
+        self.anchor_boxes=anchor_boxes
         db = ImageDataset(gridsize=13, imagesize=416, anchor_boxes=anchor_boxes, num_classes=C)
         self.iterator = db.build_example(annpath,
                                     batch_size=32,
@@ -251,6 +252,9 @@ class ImageBrower():
             i2=self.y2[self.cursor]
             i3=self.y3[self.cursor]
             return decodeImage(ii,i1,i2,i3,(255, 255, 0))
+
+    def anchorBox2Img(self):
+        return anchorBox2Img(self.anchor_boxes)
 # N,C=22,6
 # xy=np.random.rand(N,2)
 # xy1=xy+np.random.rand(N,2)*20

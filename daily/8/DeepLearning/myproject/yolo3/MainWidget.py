@@ -65,9 +65,15 @@ class MyWidge(QtWidgets.QWidget):
         left  =self.left_frame()
         right =self.right_frame()
 
-        container = QtWidgets.QHBoxLayout()
-        container.addLayout(left)
-        container.addLayout(right)
+        container = QtWidgets.QVBoxLayout()
+        self.anchorbox_img=createImage(None,np.zeros((1,1,3),np.uint8))
+        container.addWidget(self.anchorbox_img)
+
+        frame=QtWidgets.QHBoxLayout()
+        frame.addLayout(left)
+        frame.addLayout(right)
+        container.addLayout(frame)
+        # container.addLayout(right)
         self.setLayout(container)
         self.show()
     def left_frame(self):
@@ -91,6 +97,8 @@ class MyWidge(QtWidgets.QWidget):
         def loadBtn_click():
             self.imagebrower=ImageBrower(self.filepath.text(),self.anchorbox.text(),1)
             self.refleshImage()
+            I=self.imagebrower.anchorBox2Img()
+            self.anchorbox_img.setPixmap(numpy2pixel(I))
 
         ediaLanel=QtWidgets.QLabel('coco file path:')
         self.filepath  = QtWidgets.QLineEdit('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/sample.txt')
@@ -106,6 +114,7 @@ class MyWidge(QtWidgets.QWidget):
         bn1 = createButton(None, '<<',lambda :self.refleshImage(False))
         bn2 = createButton(None, '>>',self.refleshImage)
         p3=wrap([bn1,bn2],'H')
+
 
         panel=wrap([p1,p2,p3],mode='V')
         return panel

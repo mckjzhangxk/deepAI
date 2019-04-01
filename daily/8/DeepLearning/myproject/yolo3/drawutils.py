@@ -101,3 +101,25 @@ def decodeImage(image, y1, y2, y3, color=(255, 0, 0), linewidth=[5, 2, 1]):
     image52 = decodeGridImage(image, y3, color, linewidth[2])
 
     return image, image13, image26, image52
+
+
+def anchorBox2Img(anchorbox,scale=0.2):
+    COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
+
+    anchor_boxes = sorted(anchorbox, key=lambda x: x[0] * x[1])
+    Ws = [int(box[0]*scale) for box in anchor_boxes]
+    # 注意uint32,设置8溢出错误
+    offset = np.cumsum(np.concatenate([[0.0], Ws])).astype(np.uint32)
+
+    Hs = [int(box[1]*scale) for box in anchor_boxes]
+    WW, HH = sum(Ws), max(Hs)
+    I = np.zeros((HH, WW, 3), np.uint8)
+
+    for i in range(len(Hs)):
+        s = offset[i]
+        pt1 = (s, 0)
+        pt2 = (s + Ws[i], Hs[i])
+        I = cv2.rectangle(I, pt1, pt2, COLORS[i % 3], -1)
+        # I = cv2.putText(I, 'C%d' % i, (s + Ws[i] // 2 - 10, Hs[i] // 2), cv2.FONT_ITALIC, 2, 0.5, 3)
+    # I=cv2.rotate(I,cv2.ROTATE_90_CLOCKWISE)
+    return I
