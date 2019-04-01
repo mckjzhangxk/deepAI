@@ -10,14 +10,11 @@ def window():
     w=QtWidgets.QWidget()
     w.setWindowTitle('YOLO V3')
     w.setGeometry(100,100,100+1024,100+768)
-    title=createLabel(None,'Demo')
-    title=wrapHorizion(title)
+
 
 
     container=QtWidgets.QVBoxLayout()
-    container.addLayout(title)
 
-    w.setLayout(container)
     w_left=createImage(None, cv2.imread('data/raccoon_dataset/images/raccoon-33.jpg'))
     bn1=  createButton(None, 'forward',clickfunc)
     edit1=QtWidgets.QLineEdit()
@@ -27,6 +24,7 @@ def window():
 
     frame=wrapHorizion([w_left,w_right])
     container.addLayout(frame)
+    w.setLayout(container)
 
     w.show()
 

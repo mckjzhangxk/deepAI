@@ -122,7 +122,7 @@ def feature_map_v1(y,
     return dtype(Z[0]),dtype(Z[1]),dtype(Z[2])
 
 class ImageDataset():
-    def __init__(self,gridsize=13,imagesize=406,anchor_boxes=None,num_classes=80):
+    def __init__(self,gridsize=13,imagesize=416,anchor_boxes=None,num_classes=80):
         self.gridsize=gridsize
         self.imagesize=imagesize
         self.anchor_boxes=anchor_boxes
@@ -214,6 +214,43 @@ class ImageDataset():
     # tf.Tensor([[[6.   7. 240. 157.   0.]]], shape=(1, 1, 5), dtype=float32)
     # (1, 253, 199, 3)
     # tf.Tensor([[[27.  11. 194. 228.   0.]]], shape=(1, 1, 5), dtype=float32)
+
+from drawutils import decodeImage
+class ImageBrower():
+    def __init__(self,annpath,anchorboxpath,C=1):
+        anchor_boxes = load_anchor_boxes(anchorboxpath, 416, 416)
+        db = ImageDataset(gridsize=13, imagesize=416, anchor_boxes=anchor_boxes, num_classes=C)
+        self.iterator = db.build_example(annpath,
+                                    batch_size=32,
+                                    epoch=1000,
+                                    shuffle=False,
+                                    parallels=4,
+                                    eager=True)
+        self.cursor=-1
+    def next(self):
+        if self.cursor==-1 or self.cursor>len(self.img):
+            img, y1, y2, y3 = self.iterator.next()
+            self.img = img.numpy()
+            self.y1 = y1.numpy()
+            self.y2 = y2.numpy()
+            self.y3 = y3.numpy()
+            self.cursor=-1
+        self.cursor+=1
+
+        ii=self.img[self.cursor]
+        i1=self.y1[self.cursor]
+        i2=self.y2[self.cursor]
+        i3=self.y3[self.cursor]
+
+        return decodeImage(ii,i1,i2,i3,(255, 255, 0))
+    def prev(self):
+        if self.img is not None:
+            self.cursor-=1
+            ii=self.img[self.cursor]
+            i1=self.y1[self.cursor]
+            i2=self.y2[self.cursor]
+            i3=self.y3[self.cursor]
+            return decodeImage(ii,i1,i2,i3,(255, 255, 0))
 # N,C=22,6
 # xy=np.random.rand(N,2)
 # xy1=xy+np.random.rand(N,2)*20
