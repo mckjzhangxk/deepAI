@@ -8,6 +8,11 @@ def general_iou(A,B):
     return value have shape
     (D1,D2,...Dk,d1,d2,...dj)
     '''
+    if isinstance(A,list) or isinstance(A,tuple):
+        A=np.array(A)
+    if isinstance(B,list) or isinstance(B,tuple):
+        B=np.array(B)
+
     Ashape=A.shape
     Bshape=B.shape
 

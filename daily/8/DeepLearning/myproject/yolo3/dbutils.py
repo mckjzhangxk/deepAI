@@ -15,13 +15,58 @@ def load_anchor_boxes(anchors_path, image_h, image_w):
     anchors[:, 1] = anchors[:, 1] * image_h
     anchors[:, 0] = anchors[:, 0] * image_w
     return anchors.astype(np.int32)
+def feature_map_v2(y,
+                   grid_size,
+                   image_size,
+                   anchor_boxes,
+                   num_classes,
+                   dtype=np.float32):
+    def filter_mask(X,mask):
+        return [x[mask] for x in X]
 
-def feature_map(y,
-                grid_size,
-                image_size,
-                anchor_boxes,
-                num_classes,
-                dtype=np.float32):
+    num_anchors = len(anchor_boxes) // 3
+    Z=[np.zeros(((2**l)*grid_size, (2**l)*grid_size, num_anchors, 5 + num_classes))
+       for l in range(3)]
+
+    cx,cy=(y[:,0]+y[:,2])/2,(y[:,1]+y[:,3])/2
+    w,h=y[:,2]-y[:,0],y[:,3]-y[:,1]
+    label=y[:,4].astype(np.int32)
+    validmask=(w>0) * (h>0)
+
+    cx,cy,w,h,label=filter_mask([cx,cy,w,h,label],validmask)
+
+
+    boxsize=np.stack((w,h),axis=1)
+    iou=general_iou(boxsize,anchor_boxes)
+    bestAnchor = np.argmax(iou,axis=-1)
+
+    for i,z in enumerate(Z):
+        mapsize=grid_size*(2**i)
+        cellsize=image_size//mapsize
+
+        x=cx/cellsize
+        y=cy/cellsize
+
+        r=np.floor(y).astype(np.int32)
+        c=np.floor(x).astype(np.int32)
+        ancharmask=(bestAnchor>=6-3*i) * (bestAnchor<9-3*i)
+        x,y,r,c,k,_w,_h,_label=filter_mask([x,y,r,c,bestAnchor,w,h,label],ancharmask)
+        if len(x)==0:continue
+        k=k%3
+
+        z[r,c,k,0]=x-c
+        z[r,c,k,1]=y-r
+        z[r,c,k,2]=_w/cellsize
+        z[r,c,k,3]=_h/cellsize
+        z[r,c,k,4]=1
+        z[r,c,k,_label+5]=1
+    return dtype(Z[0]), dtype(Z[1]), dtype(Z[2])
+def feature_map_v1(y,
+                   grid_size,
+                   image_size,
+                   anchor_boxes,
+                   num_classes,
+                   dtype=np.float32):
     '''
     y:输入的标注对象信息,有gtbox个,对于每个box信息,计算box的大小,与全局的anchor_box比较,
     确定标注的box最接近那个anchorbox,然后在那个anchorbox对应的热力图标注出来,对于关系
@@ -70,7 +115,7 @@ def feature_map(y,
                 z[r,c,k,0:2]=cx,cy
                 # set ralative size to chioced anchor box
 
-                z[r,c,k,2:4]=w,h
+                z[r,c,k,2:4]=w/CELL_SIZES[l],h/CELL_SIZES[l]
                 # set logit=1,and class
                 z[r, c, k,4]=1
                 z[r, c, k,5+label] = 1
@@ -137,34 +182,39 @@ class ImageDataset():
         return image,boxes
 
     def _featureMap(self,image,boxes):
-        y1,y2,y3=tf.py_func(feature_map,
+        y1,y2,y3=tf.py_func(feature_map_v2,
                             [boxes,self.gridsize,self.imagesize,self.anchor_boxes,self.num_classes],
                             [tf.float32,tf.float32,tf.float32])
         return image,y1,y2,y3
-
-# filepath='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/train.txt'
+#
+# filepath='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/sample.txt'
 # anchorpath='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_my_anchors.txt'
-# anchorbox=get_anchors(anchorpath,416,416)
+# anchorbox=load_anchor_boxes(anchorpath,416,416)
 #
 # db=ImageDataset(anchor_boxes=anchorbox.tolist())
 
 # tf.enable_eager_execution()
 # tf.executing_eagerly()
 # iterator=db.build_example(filepath,batch_size=1,epoch=2,shuffle=False)
-# image,y1,y2,y3=db.build_example(filepath,batch_size=1,epoch=2,shuffle=False)
+# KK=1000
+# image,y1,y2,y3=db.build_example(filepath,batch_size=5,epoch=KK,shuffle=False)
 # with tf.Session() as sess:
-#     for i in range(8):
+#     import time
+#     st=time.time()
+#     for i in range(KK):
 #         # images,y1,y2,y3=iterator.next()
 #         # print(images.shape)
 #         # print(y1.shape,y2.shape,y3.shape)
 #         _image, _y1, _y2, _y3=sess.run([image,y1,y2,y3])
-#         print(_image.shape)
-#         print(_y1.shape,_y2.shape,_y3.shape)
+#         # print(_image.shape)
+#         # print(_y1.shape,_y2.shape,_y3.shape)
+#     ed=time.time()
+#     print((ed-st)/KK)
     # (1, 203, 248, 3)
     # tf.Tensor([[[6.   7. 240. 157.   0.]]], shape=(1, 1, 5), dtype=float32)
     # (1, 253, 199, 3)
     # tf.Tensor([[[27.  11. 194. 228.   0.]]], shape=(1, 1, 5), dtype=float32)
-     # N,C=22,6
+# N,C=22,6
 # xy=np.random.rand(N,2)
 # xy1=xy+np.random.rand(N,2)*20
 # label=np.random.randint(0,C,size=(N,1))
@@ -174,11 +224,17 @@ class ImageDataset():
 # anchors_box=np.random.rand(9,2)
 # anchors_box=sorted(anchors_box,key=lambda x:x[0]*x[1])
 # anchors_box=np.array(anchors_box)
+# import time
 #
-# z1,z2,z3=feature_map(y,13,416,
-#               anchor_boxes=anchors_box,
-#               num_classes=C,
-#               )
+# st=time.time()
+# KK=1000
+# for i in range(KK):
+#     z1,z2,z3=feature_map_v1(y, 13, 416,
+#                             anchor_boxes=anchors_box,
+#                             num_classes=C,
+#                             )
+# ed=time.time()
+# print((ed-st)/KK)
 #
 # c=np.sum(z1[...,4])+np.sum(z2[...,4])+np.sum(z3[...,4])
 # print(c)
