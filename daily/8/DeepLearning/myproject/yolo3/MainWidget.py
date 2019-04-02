@@ -67,8 +67,6 @@ class MyWidge(QtWidgets.QWidget):
 
         container = QtWidgets.QVBoxLayout()
         self.anchorbox_img=createImage(None,np.zeros((1,1,3),np.uint8))
-        container.addWidget(self.anchorbox_img)
-
         frame=QtWidgets.QHBoxLayout()
         frame.addLayout(left)
         frame.addLayout(right)
@@ -95,28 +93,33 @@ class MyWidge(QtWidgets.QWidget):
         return imglist
     def right_frame(self):
         def loadBtn_click():
-            self.imagebrower=ImageBrower(self.filepath.text(),self.anchorbox.text(),1)
+
+            self.imagebrower=ImageBrower(self.filepath.text(),self.anchorbox.text(),self.classname.text())
             self.refleshImage()
             I=self.imagebrower.anchorBox2Img()
             self.anchorbox_img.setPixmap(numpy2pixel(I))
-
+            self.anchorbox_img.show()
         ediaLanel=QtWidgets.QLabel('coco file path:')
         self.filepath  = QtWidgets.QLineEdit('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/sample.txt')
-        loadBtn= createButton(None, 'load',loadBtn_click)
-        p1=wrap([ediaLanel,self.filepath,loadBtn],mode='H')
+        p1=wrap([ediaLanel,self.filepath],mode='H')
 
 
         ediaLanel=QtWidgets.QLabel('anchorbox path:')
         self.anchorbox= QtWidgets.QLineEdit('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_my_anchors.txt')
         p2=wrap([ediaLanel,self.anchorbox],mode='H')
 
+        ediaLanel = QtWidgets.QLabel('class name:')
+        self.classname= QtWidgets.QLineEdit('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon.names')
+        p3 = wrap([ediaLanel, self.classname], mode='H')
 
+
+        loadBtn = createButton(None, 'load', loadBtn_click)
         bn1 = createButton(None, '<<',lambda :self.refleshImage(False))
-        bn2 = createButton(None, '>>',self.refleshImage)
-        p3=wrap([bn1,bn2],'H')
+        bn2 = createButton(None, '>>',lambda :self.refleshImage(True))
+        p4=wrap([loadBtn,bn1,bn2],'H')
 
 
-        panel=wrap([p1,p2,p3],mode='V')
+        panel=wrap([p1,p2,p3,p4],mode='V')
         return panel
 
     def refleshImage(self,forward=True):

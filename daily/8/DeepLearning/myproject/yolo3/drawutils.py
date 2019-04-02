@@ -56,11 +56,13 @@ def drawBox(I, x1, y1, x2, y2, anchor, classes, alpha=0.4):
         I = cv2.rectangle(I, (x1[i], y1[i]), (x2[i], y2[i]), COLORS[anchor[i]], -1)
         I = cv2.addWeighted(I, alpha, orgin, 1 - alpha, 0)
         I = cv2.circle(I, ((x1[i] + x2[i]) // 2, (y1[i] + y2[i]) // 2), 2, COLORS_CENTER[anchor[i]], 2, -1)
+        I=cv2.putText(I,str(classes[i]),((x1[i] + x2[i]) // 2, (y1[i] + y2[i]) // 2),fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    fontScale=1, color=(0,0,0), thickness=2)
         orgin = I.copy()
     return I
 
 
-def decodeGridImage(img, y, color, linewidth):
+def decodeGridImage(img, y, color, linewidth,classnames):
     '''
     y:(gh,gh,3,5+C),全都是相对与单元格的坐标
     把y转化成相对图片坐标后,在图上画出网格以及标注的box
@@ -80,11 +82,12 @@ def decodeGridImage(img, y, color, linewidth):
         pt2 = (c * cellx, H)
         I = cv2.line(I, pt1, pt2, color, linewidth)
     vx1, vy1, vx2, vy2, va, vclasses = get_label_boxes(I, y)
-    I = drawBox(I, vx1, vy1, vx2, vy2, va, vclasses, alpha=0.4)
+    vclasses=[classnames[c] for c in vclasses]
+    I = drawBox(I, vx1, vy1, vx2, vy2, va, vclasses, alpha=0.6)
     return I
 
 
-def decodeImage(image, y1, y2, y3, color=(255, 0, 0), linewidth=[5, 2, 1]):
+def decodeImage(image, y1, y2, y3, color=(255, 0, 0), linewidth=[5, 2, 1],classnames=None):
     '''
     
     :param image: 
@@ -96,9 +99,9 @@ def decodeImage(image, y1, y2, y3, color=(255, 0, 0), linewidth=[5, 2, 1]):
     :return: 
     '''
     image = np.uint8(image * 255)
-    image13 = decodeGridImage(image, y1, color, linewidth[0])
-    image26 = decodeGridImage(image, y2, color, linewidth[1])
-    image52 = decodeGridImage(image, y3, color, linewidth[2])
+    image13 = decodeGridImage(image, y1, color, linewidth[0],classnames)
+    image26 = decodeGridImage(image, y2, color, linewidth[1],classnames)
+    image52 = decodeGridImage(image, y3, color, linewidth[2],classnames)
 
     return image, image13, image26, image52
 

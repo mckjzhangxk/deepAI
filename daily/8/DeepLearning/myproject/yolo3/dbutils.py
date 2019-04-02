@@ -1,6 +1,13 @@
 import tensorflow as tf
 import numpy as np
 from iou import general_iou
+
+def read_coco_names(class_file_name):
+    names = {}
+    with open(class_file_name, 'r') as data:
+        for ID, name in enumerate(data):
+            names[ID] = name.strip('\n')
+    return names
 '''
 1.修改feature_map,使他更高效
 2.修改pyfunc->pyfunction
@@ -217,13 +224,16 @@ class ImageDataset():
 
 from drawutils import decodeImage,anchorBox2Img
 class ImageBrower():
-    def __init__(self,annpath,anchorboxpath,C=1):
+    def __init__(self,annpath,anchorboxpath,classnamepath):
+        classnames=read_coco_names(classnamepath)
+        self.classnames=classnames
+        C=len(classnames)
         anchor_boxes = load_anchor_boxes(anchorboxpath, 416, 416)
         self.anchor_boxes=anchor_boxes
         db = ImageDataset(gridsize=13, imagesize=416, anchor_boxes=anchor_boxes, num_classes=C)
         self.iterator = db.build_example(annpath,
                                     batch_size=32,
-                                    epoch=1000,
+                                    epoch=1,
                                     shuffle=False,
                                     parallels=4,
                                     eager=True)
@@ -237,21 +247,20 @@ class ImageBrower():
             self.y3 = y3.numpy()
             self.cursor=-1
         self.cursor+=1
-
         ii=self.img[self.cursor]
         i1=self.y1[self.cursor]
         i2=self.y2[self.cursor]
         i3=self.y3[self.cursor]
 
-        return decodeImage(ii,i1,i2,i3,(255, 255, 0))
+        return decodeImage(ii,i1,i2,i3,(255, 255, 0),classnames=self.classnames)
     def prev(self):
         if self.img is not None:
-            self.cursor-=1
+            self.cursor=self.cursor-1
             ii=self.img[self.cursor]
             i1=self.y1[self.cursor]
             i2=self.y2[self.cursor]
             i3=self.y3[self.cursor]
-            return decodeImage(ii,i1,i2,i3,(255, 255, 0))
+            return decodeImage(ii,i1,i2,i3,(255, 255, 0),classnames=self.classnames)
 
     def anchorBox2Img(self):
         return anchorBox2Img(self.anchor_boxes)
