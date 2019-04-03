@@ -129,7 +129,7 @@ class darknet53(object):
                     y1,y2,y3=dtype(y1),dtype(y2),dtype(y3)
                     n =len(y1)
                     for i in range(n):
-                        example=createFeature(('y1','y2','y3'),(y1[i],y2[i],y3[i]))
+                        example=createFeature(('y1','y2','y3'),(y1[i].tostring(),y2[i].tostring(),y3[i].tostring()))
                         cache.append(example.SerializeToString())
                     cnt+=1
                     if cnt%10==0:
