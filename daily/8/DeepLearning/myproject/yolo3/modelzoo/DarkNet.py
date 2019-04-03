@@ -1,6 +1,11 @@
 import tensorflow as tf
-
+import sys
 slim = tf.contrib.slim
+
+def progess_print(info):
+    sys.stdout.write('\r>>' + info)
+    sys.stdout.flush()
+
 
 def _conv2d_fixed_padding(inputs, filters, kernel_size, strides=1):
     if strides > 1: inputs = _fixed_padding(inputs, kernel_size)
@@ -128,6 +133,7 @@ class darknet53(object):
                         example=createFeature(('y1','y2','y3'),(y1,y2,y3))
                         record_writer.write(example.SerializeToString())
                     cnt+=1
-                    if cnt%10==0:print('finish %d example'%(cnt*n))
+                    if cnt%10==0:progess_print('finish %d example'%(cnt*n))
             except tf.errors.OutOfRangeError:pass
         record_writer.close()
+
