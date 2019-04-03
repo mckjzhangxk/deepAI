@@ -1,5 +1,6 @@
 import tensorflow as tf
 import sys
+import numpy as np
 slim = tf.contrib.slim
 
 def progess_print(info):
@@ -108,7 +109,7 @@ class darknet53(object):
 
         return route_1, route_2, inputs
 
-    def extractFeature(self,model_file,tfrecord_file):
+    def extractFeature(self,model_file,tfrecord_file,dtype=np.float16):
         '''
         
         :param model_file: 模型路径
@@ -125,12 +126,10 @@ class darknet53(object):
             try:
                 while True:
                     y3,y2,y1=sess.run(self.outputs)
-                    n = len(y1)
-                    y1=y1.tostring()
-                    y2 = y2.tostring()
-                    y3 = y3.tostring()
+                    y1,y2,y3=dtype(y1),dtype(y2),dtype(y3)
+                    n =len(y1)
                     for i in range(n):
-                        example=createFeature(('y1','y2','y3'),(y1,y2,y3))
+                        example=createFeature(('y1','y2','y3'),(y1[i],y2[i],y3[i]))
                         cache.append(example.SerializeToString())
                     cnt+=1
                     if cnt%10==0:
