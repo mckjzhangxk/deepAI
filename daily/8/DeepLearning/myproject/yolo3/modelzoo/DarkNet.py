@@ -121,6 +121,7 @@ class darknet53(object):
             saver.restore(sess,model_file)
 
             cnt=0
+            cache=[]
             try:
                 while True:
                     y3,y2,y1=sess.run(self.outputs)
@@ -129,11 +130,15 @@ class darknet53(object):
                     y2 = y2.tostring()
                     y3 = y3.tostring()
                     for i in range(n):
-
                         example=createFeature(('y1','y2','y3'),(y1,y2,y3))
-                        record_writer.write(example.SerializeToString())
+                        cache.append(example.SerializeToString())
                     cnt+=1
-                    if cnt%10==0:progess_print('finish %d example'%(cnt*n))
+                    if cnt%10==0:
+                        progess_print('finish %d example'%(cnt*n))
+                        for ex in cache:
+                            record_writer.write(ex)
+                        cache=[]
+
             except tf.errors.OutOfRangeError:pass
         record_writer.close()
 
