@@ -100,16 +100,16 @@ class MyWidge(QtWidgets.QWidget):
             self.anchorbox_img.setPixmap(numpy2pixel(I))
             self.anchorbox_img.show()
         ediaLanel=QtWidgets.QLabel('coco file path:')
-        self.filepath  = QtWidgets.QLineEdit('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/sample.txt')
+        self.filepath  = QtWidgets.QLineEdit('/home/zxk/AI/coco/annotations/dev.txt')
         p1=wrap([ediaLanel,self.filepath],mode='H')
 
 
         ediaLanel=QtWidgets.QLabel('anchorbox path:')
-        self.anchorbox= QtWidgets.QLineEdit('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_my_anchors.txt')
+        self.anchorbox= QtWidgets.QLineEdit('/home/zxk/AI/tensorflow-yolov3/anchors.txt')
         p2=wrap([ediaLanel,self.anchorbox],mode='H')
 
         ediaLanel = QtWidgets.QLabel('class name:')
-        self.classname= QtWidgets.QLineEdit('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon.names')
+        self.classname= QtWidgets.QLineEdit('/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/coco.names')
         p3 = wrap([ediaLanel, self.classname], mode='H')
 
 

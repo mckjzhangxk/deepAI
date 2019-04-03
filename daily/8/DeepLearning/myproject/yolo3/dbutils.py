@@ -228,6 +228,7 @@ class ImageBrower():
         classnames=read_coco_names(classnamepath)
         self.classnames=classnames
         C=len(classnames)
+        print('sssss',C)
         anchor_boxes = load_anchor_boxes(anchorboxpath, 416, 416)
         self.anchor_boxes=anchor_boxes
         db = ImageDataset(gridsize=13, imagesize=416, anchor_boxes=anchor_boxes, num_classes=C)

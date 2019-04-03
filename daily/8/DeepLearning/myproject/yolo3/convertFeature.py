@@ -39,6 +39,7 @@ class ImageDataset():
         return image
 
 db=ImageDataset(416)
-X=db.build_example('/home/jncf/coco/yolo3/data/train.txt',batch_size=5,eager=False)
+X=db.build_example('/home/zxk/AI/coco/annotations/train.txt',batch_size=48,eager=False)
 model=darknet53(X)
-model.extractFeature('../checkpoint/yolov3.ckpt','featuremap.rfrecords')
+model.extractFeature('/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt',
+                     '/home/zxk/AI/coco/annotations/train_darknet53.rfrecords')

@@ -61,7 +61,7 @@ def coco_dataset(cocopath,output_path,prefix=''):
             fs.write(' '.join(line_info)+'\n')
 
 if __name__ == '__main__':
-    in_path='instances_val2017.json'
-    out_path='r.txt'
-    prefix='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3'
+    in_path='/home/zxk/AI/coco/annotations/instances_val2017.json'
+    out_path='/home/zxk/AI/coco/annotations/dev.txt'
+    prefix='/home/zxk/AI/coco/val2017'
     coco_dataset(in_path,out_path,prefix)
