@@ -393,7 +393,7 @@ class YoLoService():
             xs=x[k*batchSize:k*batchSize+batchSize]
             _boxes,_scores=self.sess.run([self.boxes,self.score_per_class],feed_dict={self.X:xs})
             for _box,_score in zip(_boxes,_scores):
-                _b,_l,_s=cpu_nms(_box,_score,
+                _b,_s,_l=cpu_nms(_box,_score,
                                  self.backend._NUM_CLASSES,
                                  score_thresh=score_thresh,
                                  iou_thresh=iou_thresh)
