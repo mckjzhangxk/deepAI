@@ -1,5 +1,5 @@
 import tensorflow as tf
-from modelzoo.DarkNet import darknet53
+from model.DarkNet import darknet53
 class ImageDataset():
     def __init__(self,imagesize):
         self.imagesize=imagesize

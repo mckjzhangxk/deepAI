@@ -99,12 +99,12 @@ class MyWidge(QtWidgets.QWidget):
             I=self.imagebrower.anchorBox2Img()
             self.anchorbox_img.setPixmap(numpy2pixel(I))
             self.anchorbox_img.show()
-        ediaLanel=QtWidgets.QLabel('coco file path:')
+        ediaLanel=QtWidgets.QLabel('coco file gt_json_file:')
         self.filepath  = QtWidgets.QLineEdit('/home/zxk/AI/coco/annotations/dev.txt')
         p1=wrap([ediaLanel,self.filepath],mode='H')
 
 
-        ediaLanel=QtWidgets.QLabel('anchorbox path:')
+        ediaLanel=QtWidgets.QLabel('anchorbox gt_json_file:')
         self.anchorbox= QtWidgets.QLineEdit('/home/zxk/AI/tensorflow-yolov3/anchors.txt')
         p2=wrap([ediaLanel,self.anchorbox],mode='H')
 
