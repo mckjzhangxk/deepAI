@@ -61,8 +61,8 @@ def cpu_nms(boxes, scores, num_classes, max_boxes=50, score_thresh=0.3, iou_thre
         picked_boxes.append(filter_boxes[indices])
         picked_score.append(filter_scores[indices])
         picked_label.append(np.ones(len(indices), dtype='int32')*i)
-    if len(picked_boxes) == 0: return None, None, None
-
+    if len(picked_boxes) == 0:
+        return np.empty((0, 4)), np.empty((0,)), np.empty((0,))
     boxes = np.concatenate(picked_boxes, axis=0)
     score = np.concatenate(picked_score, axis=0)
     label = np.concatenate(picked_label, axis=0)

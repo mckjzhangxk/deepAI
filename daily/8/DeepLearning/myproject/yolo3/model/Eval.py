@@ -4,17 +4,16 @@ import os
 import json
 
 if __name__ == '__main__':
-    gt_json_file= '../data/instances_val2017.json'
-    predict_json_file = ''
-    basepath=''
-    model_path='weights/yolov3.ckpt'
+    gt_json_file = '/home/zxk/AI/coco/annotations/instances_val2017.json'
+    predict_json_file = '/home/zxk/AI/coco/bencemark/yolo_result.json'
+    basepath = '/home/zxk/AI/coco/val2017'
+    model_path = '/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt'
 
 
     coco=COCODataset(gt_json_file)
     imagelist=coco.getImageList()#image_id,file_name
     filelist=[os.path.join(basepath,x['file_name']) for x in imagelist]
     service=YoLoService(model_path)
-    filelist=['../data/demo_data/611.jpg','../data/demo_data/car.jpg']
     result=service.predict_imagelist(filelist,batchSize=32)
 
     ret=[]
