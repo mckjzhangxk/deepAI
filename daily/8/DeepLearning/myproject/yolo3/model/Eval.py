@@ -14,13 +14,14 @@ if __name__ == '__main__':
     imagelist=coco.getImageList()#image_id,file_name
     filelist=[os.path.join(basepath,x['file_name']) for x in imagelist]
     service=YoLoService(model_path)
-    result=service.predict_imagelist(filelist)
+    result=service.predict_imagelist(filelist,batchSize=32)
 
     ret=[]
     for predict,imageinfo in zip(result,imagelist):
         _id=imageinfo['image_id']
 
         for box,score,label in zip(predict['boxes'],predict['scores'],predict['labels']):
+            if box is None:continue
             _category_id=coco.classId2COCOId(label)
             box[2] -= box[0]
             box[3] -= box[1]

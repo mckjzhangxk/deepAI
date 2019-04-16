@@ -410,6 +410,7 @@ class YoLoService():
         result=self.predict_416(images,batchSize,score_thresh,iou_thresh)
         for r,orgin in zip(result,orgin_shape):
             w,h=orgin
+            if r['boxes'] is None:continue
             bb=r['boxes']*np.array([w,h,w,h])/416
             bb[:, [0, 2]] = np.maximum(bb[:, [0, 2]], 0)
             bb[:, [1, 3]] = np.maximum(bb[:, [1, 3]], 0)
