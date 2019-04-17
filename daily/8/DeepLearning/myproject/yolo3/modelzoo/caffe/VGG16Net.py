@@ -1,4 +1,4 @@
-from  modelzoo.BaseNet import BaseModel
+from  modelzoo.caffe.BaseNet import BaseModel
 
 
 class vgg16(BaseModel):

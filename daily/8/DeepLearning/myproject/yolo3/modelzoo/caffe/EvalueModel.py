@@ -1,12 +1,14 @@
 import caffe
-from modelzoo.inputs import DataIterator
+import numpy as np
+from modelzoo.AlexNet import alexNet
 from modelzoo.CaffeNet import caffeNet
 from modelzoo.GoogleNet import googleNet
-from modelzoo.AlexNet import alexNet
+from modelzoo.ResNet import resNet50, resNet101, resNet152
 from modelzoo.VGG16Net import vgg16
-from modelzoo.ResNet import resNet50,resNet101,resNet152
-import numpy as np
 from tqdm import tqdm
+
+from modelzoo.caffe.inputs import DataIterator
+
 '''
 =====================AlexNet=====================
 top1 Accuracy:55.79%,top5 Accuracy:79.12%

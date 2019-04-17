@@ -1,4 +1,4 @@
-from  modelzoo.BaseNet import BaseModel
+from  modelzoo.caffe.BaseNet import BaseModel
 
 class resNet50(BaseModel):
     def __init__(self,model_path):

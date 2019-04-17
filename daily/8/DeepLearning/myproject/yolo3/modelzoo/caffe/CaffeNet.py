@@ -1,7 +1,4 @@
-import caffe
-from modelzoo.inputs import DataIterator,cafeDataTransfer,getImageNetMean
-import os
-from modelzoo.BaseNet import BaseModel
+from modelzoo.caffe.BaseNet import BaseModel
 class caffeNet(BaseModel):
     def __init__(self,modelpath):
         super(caffeNet,self).__init__(modelpath,(227,227,3))
