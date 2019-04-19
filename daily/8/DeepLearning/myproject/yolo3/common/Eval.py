@@ -1,20 +1,31 @@
-from model.CocoData import COCODataset
-from model.YoloNet import YoLoService
-import os
 import json
+import os
 
+from data.CocoData import COCODataset
+
+from model.yolo.YoloNet import YoLoService
+from model.frcnn.Models import FRCnnService
+
+def doEval(modelName,model_path):
+    if modelName=='yolo':
+        service=YoLoService(model_path)
+    if modelName=='frcnn':
+        service=FRCnnService(model_path)
+
+    result=service.predict_imagelist(filelist,batchSize=32)
+
+    return result
 if __name__ == '__main__':
     gt_json_file = '/home/zxk/AI/coco/annotations/instances_val2017.json'
     predict_json_file = '/home/zxk/AI/coco/bencemark/yolo_result.json'
     basepath = '/home/zxk/AI/coco/val2017'
     model_path = '/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt'
-
+    model_name='frcnn'
 
     coco=COCODataset(gt_json_file)
     imagelist=coco.getImageList()#image_id,file_name
     filelist=[os.path.join(basepath,x['file_name']) for x in imagelist]
-    service=YoLoService(model_path)
-    result=service.predict_imagelist(filelist,batchSize=32)
+    result = doEval(model_name, model_path)
 
     ret=[]
     for predict,imageinfo in zip(result,imagelist):

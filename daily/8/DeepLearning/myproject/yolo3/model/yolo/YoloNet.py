@@ -1,11 +1,10 @@
-import tensorflow as tf
-from model.DarkNet import darknet53
-import model.common as common
-from model.utils import cpu_nms
-from tqdm import tqdm
+import model.yolo.common as common
 import numpy  as np
+import tensorflow as tf
+from model.yolo.DarkNet import darknet53
+from tqdm import tqdm
 
-
+from model.yolo.utils import cpu_nms
 
 slim = tf.contrib.slim
 class yolov3(object):
@@ -402,7 +401,7 @@ class YoLoService():
         return ret
 
     def predict_imagelist(self,imagelist,batchSize=128,score_thresh=0.3, iou_thresh=0.5):
-        images_and_shape=list(map(common.processImage,imagelist))
+        images_and_shape=list(map(common.processImage, imagelist))
         images=np.array([im for im,_  in images_and_shape])
         orgin_shape=[s for _,s in images_and_shape]
 

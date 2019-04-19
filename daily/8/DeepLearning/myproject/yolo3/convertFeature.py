@@ -1,5 +1,8 @@
 import tensorflow as tf
-from model.DarkNet import darknet53
+
+from model.yolo.DarkNet import darknet53
+
+
 class ImageDataset():
     def __init__(self,imagesize):
         self.imagesize=imagesize

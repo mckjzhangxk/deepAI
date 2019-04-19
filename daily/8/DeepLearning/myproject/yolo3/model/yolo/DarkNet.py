@@ -1,6 +1,8 @@
-import tensorflow as tf
-import model.common as common
 import numpy as np
+import tensorflow as tf
+
+import model.yolo.common as common
+
 slim = tf.contrib.slim
 
 
@@ -48,8 +50,8 @@ class darknet53(object):
 
     def forward(self, inputs):
 
-        inputs = common._conv2d_fixed_padding(inputs, 32,  3, strides=1)
-        inputs = common._conv2d_fixed_padding(inputs, 64,  3, strides=2)
+        inputs = common._conv2d_fixed_padding(inputs, 32, 3, strides=1)
+        inputs = common._conv2d_fixed_padding(inputs, 64, 3, strides=2)
         inputs = self._darknet53_block(inputs, 32)
         inputs = common._conv2d_fixed_padding(inputs, 128, 3, strides=2)
 
@@ -99,7 +101,7 @@ class darknet53(object):
                         cache.append(example.SerializeToString())
                     cnt+=1
                     if cnt%10==0:
-                        common.progess_print('finish %d example'%(cnt*n))
+                        common.progess_print('finish %d example' % (cnt * n))
                         for ex in cache:
                             record_writer.write(ex)
                         cache=[]
