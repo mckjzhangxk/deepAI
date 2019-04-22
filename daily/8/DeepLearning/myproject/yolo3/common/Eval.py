@@ -8,18 +8,23 @@ from model.frcnn.Models import FRCnnService
 
 def doEval(modelName,model_path):
     if modelName=='yolo':
-        service=YoLoService(model_path)
+        service=YoLoService(model_path=model_path)
     if modelName=='frcnn':
-        service=FRCnnService(model_path)
+        service=FRCnnService(model_path=model_path)
 
     result=service.predict_imagelist(filelist,batchSize=32)
 
     return result
 if __name__ == '__main__':
     gt_json_file = '/home/zxk/AI/coco/annotations/instances_val2017.json'
-    predict_json_file = '/home/zxk/AI/coco/bencemark/yolo_result.json'
+    # predict_json_file = '/home/zxk/AI/coco/bencemark/yolo_result.json'
+    predict_json_file = '/home/zxk/AI/coco/bencemark/frcnnR50C4_result.json'
+
     basepath = '/home/zxk/AI/coco/val2017'
-    model_path = '/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt'
+    # model_path = '/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt'
+    model_path = '/home/zxk/AI/tensorpack/FRCNN/COCO-R50C4-MaskRCNN-Standard.npz'
+
+    # model_name='yolo'
     model_name='frcnn'
 
     coco=COCODataset(gt_json_file)

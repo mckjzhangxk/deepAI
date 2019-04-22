@@ -153,7 +153,7 @@ class ResNetC4Model(DetectionModel):
         )
         decoded_boxes = clip_boxes(decoded_boxes,tf.shape(self.image)[2:],
                                    name='fastrcnn_all_boxes')
-        label_scores=tf.nn.sigmoid(self.roi_label_logit)
+        label_scores=tf.nn.softmax(self.roi_label_logit)
         return fastrcnn_predictions(decoded_boxes, label_scores, name_scope='output')
 
 class ResNet50_C4(ResNetC4Model):
@@ -164,7 +164,8 @@ class ResNet50_C4(ResNetC4Model):
 
 class FRCnnService():
     def __init__(self,configure=None,model_path=None):
-        if configure is None:configure=cfg
+        if configure is None:
+            configure=cfg
 
         model = ResNet50_C4(configure,False)
         self.X=tf.placeholder(tf.float32,shape=(None,None,3))
@@ -178,31 +179,34 @@ class FRCnnService():
     def predict_imagelist(self,imagelist,**kwargs):
         ds =DataFromList(imagelist)
         def f(fname):
-            im = cv2.imread(fname, cv2.IMREAD_COLOR)
+            im = cv2.imread(fname)
             assert im is not None, fname
             return im
         ds = MapData(ds, f)
-
+        ds.reset_state()
         ret=[]
         for img in tqdm(ds,'Doing Predictions:'):
             _b,_s,_l=self.session.run([self.box,self.score,self.label],feed_dict={self.X:img})
             obj = {'boxes': _b, 'labels': _l, 'scores': _s}
             ret.append(obj)
         return ret
+# import tensorpack.utils.viz as viz
 # if __name__ == '__main__':
-#     # istraining=False
-#     # model_path='/home/zhangxk/AIProject/tensorpack/weight/COCO-R50C4-MaskRCNN-Standard.npz'
-#     # service=DetectService(cfg,model_path)
-#     imagelist=['/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_dataset/images/raccoon-163.jpg',
-#                '/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/yolo3/data/raccoon_dataset/images/raccoon-163.jpg']
-#     ds = DataFromList(imagelist)
 #
+#     with open('/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/coco.names') as fs:
+#         names=fs.readlines()
 #
-#     def f(fname):
-#         im = cv2.imread(fname)
-#         return im
-#     ds = MapData(ds, f)
-#     ds.reset_state()
-#     print(len(ds))
-#     for d in ds:
-#         print(d.shape)
+#     istraining=False
+#     model_path='/home/zxk/AI/tensorpack/FRCNN/COCO-R50C4-MaskRCNN-Standard.npz'
+#     service=FRCnnService(cfg,model_path)
+#     imagelist=['/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/car.jpg']
+#     result=service.predict_imagelist(imagelist)
+#
+#     im=cv2.imread(imagelist[0])
+#     for r in result:
+#         # print(r['boxes'].shape,r['labels'].shape,r['scores'].shape)
+#         # print(r['scores'])
+#
+#         labels=['%s:%.2f'%(names[ll-1],round(ss,2)) for ll,ss in zip(r['labels'],r['scores'])]
+#         im=viz.draw_boxes(im,r['boxes'],labels)
+#         viz.interactive_imshow(im)

@@ -396,7 +396,7 @@ class YoLoService():
                                  self.backend._NUM_CLASSES,
                                  score_thresh=score_thresh,
                                  iou_thresh=iou_thresh)
-                obj={'boxes':_b,'labels':_l,'scores':_s}
+                obj={'boxes':_b,'labels':_l+1,'scores':_s}
                 ret.append(obj)
         return ret
 
@@ -417,3 +417,11 @@ class YoLoService():
             bb[:, [1, 3]] = np.minimum(bb[:, [1, 3]], h)
             r['boxes']=bb
         return result
+if __name__ == '__main__':
+    model_path='/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt'
+    service=YoLoService(model_path)
+    imagelist=['/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg']
+    result=service.predict_imagelist(imagelist)
+
+    for r in result:
+        print(r['boxes'].shape,r['labels'].shape,r['scores'].shape)

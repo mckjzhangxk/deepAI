@@ -25,7 +25,7 @@ class COCODataset():
         ret=[self.coco.loadImgs(imgid)[0] for imgid in imgIds]
         return ret
     def classId2COCOId(self,id):
-        return self.categoru_id_to_COCO_id[id+1]
+        return self.categoru_id_to_COCO_id[id]
     def print_coco_metrics(self, json_file):
         """
         Args:

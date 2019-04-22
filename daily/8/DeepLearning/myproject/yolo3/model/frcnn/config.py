@@ -172,7 +172,7 @@ _C.RPN.HEAD_DIM = 1024      # used in C4 only
 _C.RPN.TRAIN_PRE_NMS_TOPK = 12000
 _C.RPN.TRAIN_POST_NMS_TOPK = 2000
 _C.RPN.TEST_PRE_NMS_TOPK = 6000
-_C.RPN.TEST_POST_NMS_TOPK = 1000   # if you encounter OOM in inference, set this to a smaller number
+_C.RPN.TEST_POST_NMS_TOPK = 800   # if you encounter OOM in inference, set this to a smaller number
 # for FPN, #proposals_boxes per-level and #proposals_boxes after merging are (for now) the same
 # if FPN.PROPOSAL_MODE = 'Joint', these options have no effect
 _C.RPN.TRAIN_PER_LEVEL_NMS_TOPK = 2000
@@ -209,7 +209,7 @@ _C.TEST.FRCNN_NMS_THRESH = 0.5
 
 # Smaller threshold value gives significantly better mAP. But we use 0.05 for consistency with Detectron.
 # mAP with 1e-4 threshold can be found at https://github.com/tensorpack/tensorpack/commit/26321ae58120af2568bdbf2269f32aa708d425a8#diff-61085c48abee915b584027e1085e1043  # noqa
-_C.TEST.RESULT_SCORE_THRESH = 0.05
+_C.TEST.RESULT_SCORE_THRESH = 0.5
 _C.TEST.RESULT_SCORE_THRESH_VIS = 0.5   # only visualize confident results
 _C.TEST.RESULTS_PER_IM = 100
 
@@ -285,3 +285,4 @@ def finalize_configs(is_training):
 
     _C.freeze()
     logger.info("Config: ------------------------------------------\n" + str(_C))
+# ./train.py --predict /home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg --load /home/zxk/AI/tensorpack/FRCNN/COCO-R50C4-MaskRCNN-Standard.npz --config SAME-AS-TRAINING --config MODE_MASK=False
