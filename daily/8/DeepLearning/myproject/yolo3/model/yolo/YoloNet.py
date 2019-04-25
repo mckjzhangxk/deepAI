@@ -399,7 +399,9 @@ class YoLoService():
                 obj={'boxes':_b,'labels':_l+1,'scores':_s}
                 ret.append(obj)
         return ret
-
+    def predict(self,I,score_thresh=0.3, iou_thresh=0.5):
+        ret=self.predict_416(np.expand_dims(I,0),1,score_thresh, iou_thresh)
+        return ret[0]
     def predict_imagelist(self,imagelist,batchSize=128,score_thresh=0.3, iou_thresh=0.5):
         images_and_shape=list(map(common.processImage, imagelist))
         images=np.array([im for im,_  in images_and_shape])

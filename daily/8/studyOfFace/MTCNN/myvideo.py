@@ -39,6 +39,7 @@ while True:
 
     ret, frame=cap.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    # frame=cv2.rotate(frame,cv2.ROTATE_90_CLOCKWISE)
     # frame=cv2.imread('images/M.jpg')
     # frame=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     # ret=True
