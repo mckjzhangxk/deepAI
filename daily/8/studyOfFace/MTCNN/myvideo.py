@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 from detect import Detector_tf,drawDectectBox,drawLandMarks
-
+frame=cv2.resize(frame,(320,480))
 def bigPicture(a,b,c,d,h=None,w=None):
     if h:
         a=cv2.resize(a, (w, h), interpolation=cv2.INTER_AREA)
