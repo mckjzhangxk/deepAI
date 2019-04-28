@@ -3,6 +3,7 @@ import tensorflow.feature_column as fc
 import urllib
 import argparse
 import os
+from functools import partial
 
 DATA_URL = 'https://archive.ics.uci.edu/ml/machine-learning-databases/adult'
 TRAINING_FILE = 'adult.data'
@@ -15,13 +16,8 @@ _CSV_COLUMNS = [
     'capital_gain', 'capital_loss', 'hours_per_week', 'native_country',
     'income_bracket'
 ]
-# _CSV_default = [
-#     '0', '', '', '', '0',
-#     '', '', '', '', '',
-#     '0', '0', '0', '0',
-#     ''
-# ]
-_CSV_default =[0,'',0,'',0,'','','','','',0, 0, 0, '', '']
+
+_CSV_default =[[0],[''],[0],[''],[0],[''],[''],[''],[''],[''],[0], [0], [0], [''], ['']]
 def _download_and_clean_file(filename, url):
   """Downloads data from url, and makes changes to match the CSV format."""
   temp_file, _ = urllib.request.urlretrieve(url)
@@ -90,26 +86,25 @@ def define_feature_names():
     hours_per_week=fc.numeric_column('hours_per_week')
 
     #categorical,embedding_column
-    relationship=fc.categorical_column_with_vocabulary_list('relationship',['Husband', 'Not-in-family', 'Wife', 'Own-child', 'Unmarried', 'Other-relative'])
+    relationship=fc.categorical_column_with_vocabulary_file('relationship',vocabulary_file='data/relationship')
     relationship=fc.indicator_column(relationship)
 
+    education=fc.categorical_column_with_vocabulary_file('education',vocabulary_file='data/education')
+    education=fc.indicator_column(education)
 
-    occupation=fc.indicator_column(fc.categorical_column_with_hash_bucket('occupation',1000))
-    return [education_num,capital_gain,capital_loss,hours_per_week,relationship,occupation]
-  def _combination():pass
+    race=fc.categorical_column_with_vocabulary_file('race',vocabulary_file='data/race')
+    race=fc.indicator_column(race)
 
+    occupation=fc.indicator_column(fc.categorical_column_with_hash_bucket('occupation',20))
+    return [education_num,capital_gain,capital_loss,hours_per_week,relationship,education,race,occupation]
+  def _combination():
+    education_occupation=fc.crossed_column(['education','occupation'],300)
+    education_occupation=fc.indicator_column(education_occupation)
+    return [education_occupation]
   def _bucket():
     age=fc.bucketized_column(fc.numeric_column('age'),[18,30,40,50,60])
     return [age]
-  return _bucket()
-
-tf.enable_eager_execution()
-ds=getDataSet('/home/zhangxk/AIProject/census_dataset/tmp.txt',shuffle=False,batch_size=3,epoch=1)
-
-for feature_dict,label in ds:
-  # print(feature_dict['age'])
-  X=fc.input_layer(feature_dict,define_feature_names())
-  print(X.numpy())
+  return _base()+_combination()+_bucket()
 
 if __name__ == '__main__':
     parser=createParser()

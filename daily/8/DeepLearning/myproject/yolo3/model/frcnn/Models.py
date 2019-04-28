@@ -190,23 +190,25 @@ class FRCnnService():
             obj = {'boxes': _b, 'labels': _l, 'scores': _s}
             ret.append(obj)
         return ret
-# import tensorpack.utils.viz as viz
-# if __name__ == '__main__':
-#
-#     with open('/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/coco.names') as fs:
-#         names=fs.readlines()
-#
-#     istraining=False
-#     model_path='/home/zxk/AI/tensorpack/FRCNN/COCO-R50C4-MaskRCNN-Standard.npz'
-#     service=FRCnnService(cfg,model_path)
-#     imagelist=['/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/car.jpg']
-#     result=service.predict_imagelist(imagelist)
-#
-#     im=cv2.imread(imagelist[0])
-#     for r in result:
-#         # print(r['boxes'].shape,r['labels'].shape,r['scores'].shape)
-#         # print(r['scores'])
-#
-#         labels=['%s:%.2f'%(names[ll-1],round(ss,2)) for ll,ss in zip(r['labels'],r['scores'])]
-#         im=viz.draw_boxes(im,r['boxes'],labels)
-#         viz.interactive_imshow(im)
+import tensorpack.utils.viz as viz
+if __name__ == '__main__':
+
+    with open('/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/coco.names') as fs:
+        names=fs.readlines()
+    print(names[0])
+    istraining=False
+    model_path='/home/zxk/AI/tensorpack/FRCNN/COCO-R50C4-MaskRCNN-Standard.npz'
+    service=FRCnnService(cfg,model_path)
+    imagelist=['/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg']
+    result=service.predict_imagelist(imagelist)
+
+    im=cv2.imread(imagelist[0])
+    for r in result:
+        # print(r['boxes'].shape,r['labels'].shape,r['scores'].shape)
+        # print(r['scores'])
+
+        labels=['%s:%.2f'%(names[ll-1],round(ss,2)) for ll,ss in zip(r['labels'],r['scores'])]
+        print(r['labels'])
+        print(labels)
+        im=viz.draw_boxes(im,r['boxes'],labels)
+        viz.interactive_imshow(im)

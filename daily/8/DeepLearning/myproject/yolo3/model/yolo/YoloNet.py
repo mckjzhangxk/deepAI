@@ -3,7 +3,7 @@ import numpy  as np
 import tensorflow as tf
 from model.yolo.DarkNet import darknet53
 from tqdm import tqdm
-
+import cv2
 from model.yolo.utils import cpu_nms
 
 slim = tf.contrib.slim
@@ -400,7 +400,22 @@ class YoLoService():
                 ret.append(obj)
         return ret
     def predict(self,I,score_thresh=0.3, iou_thresh=0.5):
-        ret=self.predict_416(np.expand_dims(I,0),1,score_thresh, iou_thresh)
+        # H,W,_=I.shape
+        # scaleH, scaleW = H / 416, W / 416
+        # Z,_=common.processImage(I)
+        # ret=self.predict_416(np.expand_dims(Z,0),1,score_thresh, iou_thresh)[0]
+        #
+        # boxes=ret['boxes']
+        #
+        #
+        # boxes[:, [0, 2]] = np.maximum(boxes[:, [0, 2]], 0)
+        # boxes[:, [1, 3]] = np.maximum(boxes[:, [1, 3]], 0)
+        # boxes[:, [0, 2]] = np.minimum(boxes[:, [0, 2]], W)
+        # boxes[:, [1, 3]] = np.minimum(boxes[:, [1, 3]], H)
+        # boxes[:, :] = boxes / np.expand_dims([scaleW, scaleH, scaleW, scaleH], 0)
+        #
+        # ret['boxes'] = boxes
+        ret=self.predict_imagelist([I],1,score_thresh,iou_thresh)
         return ret[0]
     def predict_imagelist(self,imagelist,batchSize=128,score_thresh=0.3, iou_thresh=0.5):
         images_and_shape=list(map(common.processImage, imagelist))
@@ -419,11 +434,18 @@ class YoLoService():
             bb[:, [1, 3]] = np.minimum(bb[:, [1, 3]], h)
             r['boxes']=bb
         return result
-if __name__ == '__main__':
-    model_path='/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt'
-    service=YoLoService(model_path)
-    imagelist=['/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg']
-    result=service.predict_imagelist(imagelist)
 
-    for r in result:
-        print(r['boxes'].shape,r['labels'].shape,r['scores'].shape)
+# import tensorpack.utils.viz as viz
+# if __name__ == '__main__':
+#     model_path='/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt'
+#     service=YoLoService(model_path)
+#     imagelist=['/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg']
+#     result=service.predict_imagelist(imagelist)
+#
+#     # for r in result:
+#     #     print(r['boxes'].shape,r['labels'].shape,r['scores'].shape)
+#         # print(r['boxes'])
+#     img=cv2.imread('/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg')
+#     bbox=service.predict(img)
+#     img=viz.draw_boxes(img,bbox['boxes'])
+#     viz.interactive_imshow(img)

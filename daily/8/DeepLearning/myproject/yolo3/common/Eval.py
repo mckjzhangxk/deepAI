@@ -29,6 +29,7 @@ if __name__ == '__main__':
 
     coco=COCODataset(gt_json_file)
     imagelist=coco.getImageList()#image_id,file_name
+    imagelist=imagelist[:10]
     filelist=[os.path.join(basepath,x['file_name']) for x in imagelist]
     result = doEval(model_name, model_path)
 

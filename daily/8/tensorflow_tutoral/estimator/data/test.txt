@@ -1,0 +1,7 @@
+41,Self-emp-inc,445382,Assoc-acdm,12,Married-civ-spouse,Craft-repair,Husband,White,Male,15024,0,60,United-States,>50K
+19,Private,105460,Some-college,10,Never-married,Other-service,Own-child,White,Male,0,0,20,United-States,<=50K
+46,Private,170338,HS-grad,9,Separated,Transport-moving,Not-in-family,White,Male,0,0,40,United-States,<=50K
+43,Private,102606,HS-grad,9,Married-civ-spouse,Sales,Husband,White,Male,0,0,48,United-States,<=50K
+55,Private,323887,Some-college,10,Married-civ-spouse,Exec-managerial,Husband,White,Male,15024,0,45,United-States,>50K
+46,Private,175622,Assoc-voc,11,Married-civ-spouse,Tech-support,Husband,White,Male,0,0,40,United-States,<=50K
+30,Private,229636,HS-grad,9,Married-civ-spouse,Machine-op-inspct,Husband,White,Male,0,0,40,Mexico,<=50K

@@ -4,7 +4,10 @@ import cv2
 slim = tf.contrib.slim
 
 def processImage(impath,newshape=(416,416)):
-    im=cv2.imread(impath)
+    if isinstance(impath,str):
+        im=cv2.imread(impath)
+    else:im=impath
+
     oldH,oldW=im.shape[:2]
     im=cv2.cvtColor(im,cv2.COLOR_BGR2RGB)
     im=cv2.resize(im,(newshape[1],newshape[0]))
