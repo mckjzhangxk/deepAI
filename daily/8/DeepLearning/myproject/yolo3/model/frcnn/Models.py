@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorpack import regularize_cost,l2_regularizer,GlobalAvgPooling
 from tensorpack.tfutils.tower import TowerContext
-from tensorpack.dataflow import DataFromList,MapData
+import multiprocessing
 from model.frcnn.basemodel import image_preprocess,resnet_c4_backbone,resnet_conv5
 from model.frcnn.model_rpn import rpn_head,RPNAnchors,generate_rpn_proposals,rpn_losses
 from model.frcnn.model_roi import sample_fast_rcnn_targets,roi_align,fastrcnn_outputs,fastrcnn_losses,fastrcnn_predictions
@@ -20,7 +20,8 @@ class DetectionModel():
         :param image: 
         :return: 
         '''
-        image = tf.expand_dims(image, 0)
+        if len(image.get_shape())==3:
+            image = tf.expand_dims(image, 0)
         image = image_preprocess(image, bgr=True)
         return tf.transpose(image, [0, 3, 1, 2])
 
@@ -166,40 +167,52 @@ class FRCnnService():
     def __init__(self,configure=None,model_path=None):
         if configure is None:
             configure=cfg
-
-        model = ResNet50_C4(configure,False)
-        self.X=tf.placeholder(tf.float32,shape=(None,None,3))
-        model.forward(self.X, False)
-        self.box, self.score, self.label = model.predict()
-        self.session=tf.Session()
-        if model_path:self.restore(model_path)
+        self.config=configure
+        self.model_path=model_path
+    def init(self, inpfunc=None):
+        tf.reset_default_graph()
+        self.model = ResNet50_C4(self.config, False)
+        self.X =inpfunc() if inpfunc else tf.placeholder(tf.float32, shape=(None, None, 3))
+        self.model.forward(self.X, False)
+        self.box, self.score, self.label = self.model.predict()
+        self.session = tf.Session()
+        if model_path: self.restore(model_path)
     def restore(self,path):
         restore_from_npz(self.session,path)
-
     def predict_imagelist(self,imagelist,**kwargs):
-        ds =DataFromList(imagelist,False)
-        def f(fname):
-            im = cv2.imread(fname)
-            assert im is not None, fname
-            return im
-        ds = MapData(ds, f)
-        ds.reset_state()
+        def _readImage(path):
+            file = tf.read_file(path)
+            image = tf.image.decode_jpeg(file, channels=3)
+            return image[:, :, ::-1]
+        def _buildInputFromList():
+            ds = tf.data.Dataset.from_tensor_slices(imagelist)
+            ds = ds.map(_readImage, num_parallel_calls=multiprocessing.cpu_count())
+            ds = ds.batch(1)
+            ds.prefetch(32)
+            iterator = ds.make_one_shot_iterator()
+            X = iterator.get_next()
+            return X
+        self.init(_buildInputFromList)
         ret=[]
-        for img in tqdm(ds,'Doing Predictions:'):
-            _b,_s,_l=self.session.run([self.box,self.score,self.label],feed_dict={self.X:img})
-            obj = {'boxes': _b, 'labels': _l, 'scores': _s}
-            ret.append(obj)
+        for _ in tqdm(range(len(imagelist)),'Doing Predictions:'):
+            try:
+                _b,_s,_l=self.session.run([self.box,self.score,self.label])
+                obj = {'boxes': _b, 'labels': _l, 'scores': _s}
+                ret.append(obj)
+            except tf.errors.OutOfRangeError:
+                break
         return ret
 import tensorpack.utils.viz as viz
 if __name__ == '__main__':
 
-    with open('/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/coco.names') as fs:
+    with open('../../data/coco.names') as fs:
         names=fs.readlines()
     print(names[0])
     istraining=False
-    model_path='/home/zxk/AI/tensorpack/FRCNN/COCO-R50C4-MaskRCNN-Standard.npz'
+    model_path='/home/zhangxk/AIProject/tensorpack/weight/COCO-R50C4-MaskRCNN-Standard.npz'
     service=FRCnnService(cfg,model_path)
-    imagelist=['/home/zxk/AI/coco/val2017/000000533958.jpg']
+
+    imagelist=['../../data/demo_data/611.jpg']
     result=service.predict_imagelist(imagelist)
 
     im=cv2.imread(imagelist[0])
