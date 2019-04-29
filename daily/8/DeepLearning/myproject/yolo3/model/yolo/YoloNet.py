@@ -435,17 +435,17 @@ class YoLoService():
             r['boxes']=bb
         return result
 
-# import tensorpack.utils.viz as viz
-# if __name__ == '__main__':
-#     model_path='/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt'
-#     service=YoLoService(model_path)
-#     imagelist=['/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg']
-#     result=service.predict_imagelist(imagelist)
-#
-#     # for r in result:
-#     #     print(r['boxes'].shape,r['labels'].shape,r['scores'].shape)
-#         # print(r['boxes'])
-#     img=cv2.imread('/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg')
-#     bbox=service.predict(img)
-#     img=viz.draw_boxes(img,bbox['boxes'])
-#     viz.interactive_imshow(img)
+import tensorpack.utils.viz as viz
+if __name__ == '__main__':
+    model_path='/home/zxk/AI/tensorflow-yolov3/checkpoint/yolov3.ckpt'
+    service=YoLoService(model_path)
+    imagelist=['/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg']
+    result=service.predict_imagelist(imagelist)
+
+    # for r in result:
+    #     print(r['boxes'].shape,r['labels'].shape,r['scores'].shape)
+        # print(r['boxes'])
+    img=cv2.imread('/home/zxk/AI/coco/val2017/000000579893.jpg')
+    bbox=service.predict(img)
+    img=viz.draw_boxes(img,bbox['boxes'])
+    viz.interactive_imshow(img)

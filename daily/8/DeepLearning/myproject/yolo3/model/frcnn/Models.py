@@ -177,7 +177,7 @@ class FRCnnService():
         restore_from_npz(self.session,path)
 
     def predict_imagelist(self,imagelist,**kwargs):
-        ds =DataFromList(imagelist)
+        ds =DataFromList(imagelist,False)
         def f(fname):
             im = cv2.imread(fname)
             assert im is not None, fname
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     istraining=False
     model_path='/home/zxk/AI/tensorpack/FRCNN/COCO-R50C4-MaskRCNN-Standard.npz'
     service=FRCnnService(cfg,model_path)
-    imagelist=['/home/zxk/PycharmProjects/deepAI1/daily/8/DeepLearning/myproject/yolo3/data/demo_data/611.jpg']
+    imagelist=['/home/zxk/AI/coco/val2017/000000533958.jpg']
     result=service.predict_imagelist(imagelist)
 
     im=cv2.imread(imagelist[0])
