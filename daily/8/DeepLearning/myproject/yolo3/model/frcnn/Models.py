@@ -176,7 +176,7 @@ class FRCnnService():
         self.model.forward(self.X, False)
         self.box, self.score, self.label = self.model.predict()
         self.session = tf.Session()
-        if model_path: self.restore(model_path)
+        if self.model_path: self.restore(self.model_path)
     def restore(self,path):
         restore_from_npz(self.session,path)
     def predict_imagelist(self,imagelist,**kwargs):
@@ -209,7 +209,7 @@ if __name__ == '__main__':
         names=fs.readlines()
     print(names[0])
     istraining=False
-    model_path='/home/zhangxk/AIProject/tensorpack/weight/COCO-R50C4-MaskRCNN-Standard.npz'
+    model_path='/home/zxk/AI/tensorpack/FRCNN/COCO-R50C4-MaskRCNN-Standard.npz'
     service=FRCnnService(cfg,model_path)
 
     imagelist=['../../data/demo_data/611.jpg']
