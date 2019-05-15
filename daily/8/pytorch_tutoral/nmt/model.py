@@ -336,6 +336,8 @@ class ComputeLoss():
             x:(N,T,V)
             y:(N,T)
             normalizer:
+
+            return:average loss 
         '''
         V=x.size(-1)
         loss=self.generator(x.contiguous().view(-1,V),y.contiguous().view(-1),normalizer)
@@ -366,7 +368,14 @@ def run_train_epoch(data_iter,model,loss_func,epoch,display=10):
         out=model(batch.x,batch.yin,batch.xmask,batch.ymask)
         loss=loss_func(out,batch.yout,batch.ntoken)
         if i %display==0:
-            print('Epoch %d,step:%d,loss:%.4f'%(epoch,i,loss/batch.ntoken))
+            print('Epoch %d,step:%d,loss:%.4f'%(epoch,i,loss))
+    return {
+            'model':model.state_dict(),
+            'step':i,
+            'epoch':epoch,
+            'loss':loss
+            }
+    
 def run_eval(data_iter,model,decoder=greedyDecoder):
     for i,batch in enumerate(data_iter):
         y=decoder(batch.x,batch.xmask,model)

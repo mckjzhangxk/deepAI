@@ -6,7 +6,7 @@ def subseqenceMask(x):
         (1,T,T)
     '''
     T=x.size(-1)
-    return torch.tril(torch.ones((T,T))).unsqueeze(0).byte()
+    return torch.tril(torch.ones((T,T))).to(x.device).unsqueeze(0).byte()
 def standardMask(x,paddingidx):
     '''
     x:(N,T)
