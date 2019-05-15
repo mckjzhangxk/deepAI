@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import copy
 import math
 import numpy as np
+from utils import subseqenceMask,standardMask 
 def clones(module, N):
     "Produce N identical layers."
     return nn.ModuleList([copy.deepcopy(module) for _ in range(N)])
@@ -227,7 +228,7 @@ class Generator(nn.Module):
         self.d=d
         self.V=V
     def forward(self,x):
-        return self.proj(x)
+        return F.log_softmax(self.proj(x),dim=-1)
 
 class EncoderDecoder(nn.Module):
     def __init__(self,src_emb,tgt_emb,encoder,decoder,proj):
@@ -238,7 +239,10 @@ class EncoderDecoder(nn.Module):
         self.encoder=encoder
         self.decoder=decoder
         self.proj=proj
-
+    def encode(self,x,xmask):
+        return self.encoder(self.src_emb(x),xmask)
+    def decode(self,x,memory,xmask,memory_mask):
+        return self.decoder(self.tgt_emb(x),memory,xmask,memory_mask)
     def forward(self,x,y,xmask,ymask):
         memory=self.encoder(self.src_emb(x),xmask)
         out=self.decoder(self.tgt_emb(y),memory,ymask,xmask)
@@ -294,7 +298,7 @@ class LabelSmoothingLoss(nn.Module):
         self.size=size
         self.paddingidx=paddingidx
 
-    def forward(self,x,y): 
+    def forward(self,x,y,normalizer): 
         '''
         x:(N,size):
         y:(N,):sparse encoding
@@ -320,8 +324,9 @@ class LabelSmoothingLoss(nn.Module):
             mask=mask.squeeze()
             #true_dist[mask]=0
             true_dist.index_fill_(0,mask,0)
-        return self.criterion(x,true_dist)
-class computeLoss():
+        return self.criterion(x,true_dist)/normalizer
+
+class ComputeLoss():
     def __init__(self,generator,optimizer):
         self.generator=generator
         self.optimizer=optimizer
@@ -333,80 +338,39 @@ class computeLoss():
             normalizer:
         '''
         V=x.size(-1)
-        loss=self.generator(x.view(-1,V),y.view(-1))
-        loss=loss/normalizer
-
+        loss=self.generator(x.contiguous().view(-1,V),y.contiguous().view(-1),normalizer)
         if self.optimizer:
             with torch.no_grad():
-                optimizer.zero_grad()
+                self.optimizer.zero_grad()
                 loss.backward()
-                optimizer.step()
-        return loss.item()*normalizer
-def run_train_epoch(data_iter,model,loss_func,epoch):
+                self.optimizer.step()
+        return loss.item()
+def greedyDecoder(x,xmask,model,maxlen=10,startidx=1,unk=0):
+    '''
+    x:(N,T)
+    mask:(N,T,T) or (N,T,T)
+    '''
+    N=x.size(0)
+    y=torch.zeros(N,1).long().fill_(startidx)
+    memory=model.encode(x,xmask)
+    for i in range(maxlen):
+        ymask=subseqenceMask(y)&standardMask(y,unk)
+        out=model.proj(model.decode(y,memory,ymask,xmask))  #(N,T,V)
+        out=torch.argmax(out,-1)[:,-1:]   #(N,T)
+        y=torch.cat((y,out.long()),-1)
+    return y.numpy()
+
+def run_train_epoch(data_iter,model,loss_func,epoch,display=10):
+    model.train()
     for i,batch in enumerate(data_iter):
         out=model(batch.x,batch.yin,batch.xmask,batch.ymask)
-        loss=loss_func(out,batch.yout,batch.ntokens)
-        if i %100==0:
-            print('Epoch %d,step:%d,loss:%.4f'%(epoch,i,loss))
+        loss=loss_func(out,batch.yout,batch.ntoken)
+        if i %display==0:
+            print('Epoch %d,step:%d,loss:%.4f'%(epoch,i,loss/batch.ntoken))
+def run_eval(data_iter,model,decoder=greedyDecoder):
+    for i,batch in enumerate(data_iter):
+        y=decoder(batch.x,batch.xmask,model)
+        print(y)
+
 if __name__=='__main__':
-    N,T,D=32,22,64
-    T1=33
-
-    x=torch.rand(N,T,D)
-    y=torch.rand(N,T1,D)
-
-
-    mask=torch.randint(0,2,(N,1,T)).byte()
-    mask1=torch.randint(0,2,(N,T1,T1)).byte()
-    
-    attn1=MultiAttentionLayer(D,4)
-    ffn1=FFN(D,D*4)
-
-    encoderlayer=EncoderLayer(attn1,ffn1,0.5)
-    encoder=Encoder(encoderlayer,3)
-    print(encoder)
-    encoderX=encoder(x,mask)
-    
-    assert encoderX.shape==(N,T,D)
-
-    attn2=MultiAttentionLayer(D,8,0.4)
-    attn3=MultiAttentionLayer(D,4,0.123)
-    ffn2=FFN(D,D*4,0.77)
-    decoderlayer=DecoderLayer(attn2,attn3,ffn2,0.7)
-
-    decoder=Decoder(decoderlayer,4)
-    print(decoder)
-
-    decoderY=decoder(y,encoderX,mask1,mask)
-    assert decoderY.shape==(N,T1,D)
-
-    print('emb')
-    Tmax=100
-    V=1000
-    X=torch.randint(0,V,(N,T))
-    emb=EmbedingLayer(V,D)
-    print(emb)
-    X=emb(X)
-    assert X.size()==(N,T,D)
-    pplayer=PositionEncoding(Tmax,D,0.7)
-    print(pplayer)
-    X=pplayer(X)
-    assert X.size()==(N,T,D)
-
-    #test for PE
-#    Tmax=1000
-#    T,D=100,20
-#    X=torch.zeros((1,T,D))
-#    PE=PositionEncoding(Tmax,D,0)
-#    Y=PE(X)
-#    sin=Y[0][:,0].numpy()
-#    cos=Y[0][:,1].numpy()
-#    import matplotlib.pyplot as plt
-#    
-#    for k in range(4,8):
-#        oj=Y[0,:,k].numpy()
-#        plt.plot(oj)
-#    plt.legend(['dim %d'%i for i in range(4,8)])
-#    plt.show()
-    model=makeModel(1000,1500,dropout=0.2)
-    #print(model)
+    pass

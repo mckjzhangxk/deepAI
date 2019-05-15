@@ -15,6 +15,10 @@ def standardMask(x,paddingidx):
     return:(N,1,T)
     '''
     return (x!=paddingidx).unsqueeze(1).byte()
+def makeMask(x,y,paddingidx):
+    xmask=standardMask(x,paddingidx)
+    ymask=standardMask(y,paddingidx)&subseqenceMask(y)
+    return xmask,ymask
 
 if __name__=='__main__':
     import matplotlib.pyplot as plt
