@@ -328,6 +328,10 @@ class LabelSmoothingLoss(nn.Module):
 
 class ComputeLoss():
     def __init__(self,generator,optimizer):
+        '''
+        generator:a softLable Layer that to conmute loss
+        optimizer: optimize loss create by generator
+        '''
         self.generator=generator
         self.optimizer=optimizer
 
