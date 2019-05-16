@@ -58,6 +58,7 @@ def myParseArgument():
     parser.add_argument('--trainset',type=str,help='train dataset')
     parser.add_argument('--testset',type=str,help='test dataset')
     parser.add_argument('--epoch',type=int)
+    parser.add_argument('--batch_size',type=int)
 
     return parser.parse_args()
 
@@ -74,6 +75,7 @@ if __name__=='__main__':
     testpath=args.testset
     modelpath=args.modelpath
     epoch=args.epoch
+    batch_size=args.batch_size
 
 
     device=torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -81,10 +83,10 @@ if __name__=='__main__':
 
     #prepare dataset
     ds=MyDataSet(trainpath)
-    train_data_iter=MyDataLoader(ds,batch_size=4000,shuffle=True,device=device)
+    train_data_iter=MyDataLoader(ds,batch_size=batch_size,shuffle=True,device=device)
     
     ds=MyDataSet(testpath)
-    test_data_iter=MyDataLoader(ds,batch_size=4000,shuffle=False,device=device)
+    test_data_iter=MyDataLoader(ds,batch_size=batch_size,shuffle=False,device=device)
     #prepare model
     model=makeModel(ds.srcV(),ds.tgtV())
     model=model.to(device)
