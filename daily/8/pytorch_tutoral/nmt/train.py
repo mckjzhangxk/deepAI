@@ -3,6 +3,7 @@ import torch.optim as optim
 from model import makeModel,LabelSmoothingLoss,ComputeLoss,run_train_epoch,run_eval 
 from dataset import MyDataSet,MyDataLoader
 import os
+import argparse
 
 class CustomOptimizer():
     def __init__(self,dmodel,factor,warmup,optimizer):
@@ -50,17 +51,40 @@ def restore(model,optimizer,path):
     return (epoch,lastloss)
 
 
+def myParseArgument():
+    parser=argparse.ArgumentParser()
+
+    parser.add_argument('--modelpath',type=str,help='use to save and recover model')
+    parser.add_argument('--trainset',type=str,help='train dataset')
+    parser.add_argument('--testset',type=str,help='test dataset')
+    parser.add_argument('--epoch',type=int)
+
+    return parser.parse_args()
+
 if __name__=='__main__':
-    path='../.data/iwslt/de-en/test'
-    modelpath='./model'
-    epoch=1000
+#    trainpath='../.data/iwslt/de-en/test'
+#    testpath='../.data/iwslt/de-en/test'
+#
+#    modelpath='./model'
+#    epoch=50
+#
+    #python3 train.py --trainset=../.data/iwslt/de-en/test --testset=../.data/iwslt/de-en/test --modelpath=./model --epoch=50
+    args=myParseArgument()
+    trainpath=args.trainset
+    testpath=args.testset
+    modelpath=args.modelpath
+    epoch=args.epoch
+
 
     device=torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     print('using device:',device)
 
     #prepare dataset
-    ds=MyDataSet(path)
-    data_iter=MyDataLoader(ds,batch_size=4000,shuffle=True,device=device)
+    ds=MyDataSet(trainpath)
+    train_data_iter=MyDataLoader(ds,batch_size=4000,shuffle=True,device=device)
+    
+    ds=MyDataSet(testpath)
+    test_data_iter=MyDataLoader(ds,batch_size=4000,shuffle=False,device=device)
     #prepare model
     model=makeModel(ds.srcV(),ds.tgtV())
     model=model.to(device)
@@ -71,10 +95,12 @@ if __name__=='__main__':
     
     start,_=restore(model,optimizer,modelpath)
     for i in range(start,epoch):
-        state=run_train_epoch(data_iter,model,loss_func,i,display=2)
+        state=run_train_epoch(train_data_iter,model,loss_func,i,display=2)
         state['optimizer']=optimizer.state_dict()
 
         savepath=os.path.join(modelpath,'E%d.pt'%i)
         torch.save(state,os.path.join(modelpath,'E%d.pt'%(i)))
         print('save in path:',savepath)
+        print('Running Eval:')
+        run_eval(test_data_iter,model)
     #run_eval(data_iter,model)

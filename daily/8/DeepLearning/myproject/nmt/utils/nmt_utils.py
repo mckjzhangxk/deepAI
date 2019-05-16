@@ -12,7 +12,7 @@ def get_translation(nmt_output,sen_id,eos,subword_option):
     :param nmt_output: nmt的输出,shape[N,?],type=byte,numpy类型
     :param sen_id: sentence id
     :param eos: 
-    :return: 
+    :return: a string without padding
     '''
     eos=eos.encode('utf-8')
     sentence=list(nmt_output[sen_id])

@@ -19,7 +19,19 @@ def makeMask(x,y,paddingidx):
     xmask=standardMask(x,paddingidx)
     ymask=standardMask(y,paddingidx)&subseqenceMask(y)
     return xmask,ymask
-
+def translation(x,parser,eos):
+    '''
+    x:(N)
+    '''
+    ret=[]
+    N=x.shape[0]
+    for line in x:
+        wordlist=[parser.vocab.itos[w] for w in line]
+        if eos in wordlist:
+            wordlist=wordlist[:wordlist.index(eos)]
+        l=' '.join(wordlist)
+        ret.append(l)
+    return ret
 if __name__=='__main__':
     import matplotlib.pyplot as plt
 

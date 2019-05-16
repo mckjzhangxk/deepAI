@@ -1,4 +1,3 @@
-import tensorflow as tf
 import codecs
 import re
 from metrics.bleu import compute_bleu
@@ -28,21 +27,6 @@ def _clean(sentence,subword_option):
     if subword_option=='bpe':
         sentence=re.sub('@@ ','',sentence)
     return sentence
-
-def load_file(file_path,subword_option=False):
-    '''
-    返回list of string
-    :param file_path: 
-    :param subword_option: 
-    :return: 
-    '''
-    with codecs.getreader('utf-8')(tf.gfile.GFile(file_path,mode='rb')) as fs:
-        lines=fs.readlines()
-        lines=[l.strip() for l in lines]
-    if subword_option:
-        return [_clean(l,subword_option) for l in lines]
-    else:
-        return lines
 
 
 if __name__=='__main__':

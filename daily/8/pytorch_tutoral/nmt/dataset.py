@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from utils import makeMask
+from utils import makeMask,translation
 import torchtext.data as data
 import torchtext.datasets as datasets
 
@@ -53,6 +53,13 @@ class MyDataSet:
         self.SRC=SRC
         self.TGT=TGT
         self.padding_idx=self.SRC.vocab.stoi[UNK]
+        self.sos=SOS
+        self.unk=UNK
+        self.eos=EOS
+        
+        self.sos_idx=self.TGT.vocab.stoi[SOS]
+        self.eos_idx=self.TGT.vocab.stoi[EOS]
+
         print('src_padding:',self.padding_idx)
         self.padding_idx=self.TGT.vocab.stoi[UNK]
         print('tgt_padding:',self.padding_idx)
@@ -84,8 +91,12 @@ class MyDataLoader:
         self.shuffle=shuffle 
         self.ds=ds
     def rebatch(self,data_iter):
-            for d in data_iter:
-                yield (d.src.transpose(0,1),d.trg.transpose(0,1))
+        for d in data_iter:
+            yield (d.src.transpose(0,1),d.trg.transpose(0,1))
+    def translate_src(self,x):
+        return translation(x,self.ds.SRC,self.ds.eos)
+    def translate_tgt(self,y):
+        return translation(y,self.ds.TGT,self.ds.eos)
     def __iter__(self):
         for data in self.rebatch(self.iters):
             yield Batch(*data,self.ds.padding_idx)

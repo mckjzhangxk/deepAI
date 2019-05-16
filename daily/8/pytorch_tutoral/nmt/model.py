@@ -5,6 +5,7 @@ import copy
 import math
 import numpy as np
 from utils import subseqenceMask,standardMask 
+from metrics.evaluation_utils import blue
 def clones(module, N):
     "Produce N identical layers."
     return nn.ModuleList([copy.deepcopy(module) for _ in range(N)])
@@ -281,7 +282,7 @@ def makeModel(Vsrc,Vtgt,Tmax=100,d=512,dropout=0.1):
     for p in model.parameters():
         cn+=np.prod(p.size())
         if p.dim()>1:
-            nn.init.xavier_uniform(p)
+            nn.init.xavier_uniform_(p)
     print('Total # of trainable %d'%(cn))
     return model
 class LabelSmoothingLoss(nn.Module):
@@ -351,20 +352,20 @@ class ComputeLoss():
                 loss.backward()
                 self.optimizer.step()
         return loss.item()
-def greedyDecoder(x,xmask,model,maxlen=10,startidx=1,unk=0):
+def greedyDecoder(x,xmask,model,maxlen=100,startidx=1,unk=0):
     '''
     x:(N,T)
     mask:(N,T,T) or (N,T,T)
     '''
     N=x.size(0)
-    y=torch.zeros(N,1).long().fill_(startidx)
+    y=torch.zeros(N,1).to(x.device).long().fill_(startidx)
     memory=model.encode(x,xmask)
     for i in range(maxlen):
         ymask=subseqenceMask(y)&standardMask(y,unk)
         out=model.proj(model.decode(y,memory,ymask,xmask))  #(N,T,V)
         out=torch.argmax(out,-1)[:,-1:]   #(N,T)
         y=torch.cat((y,out.long()),-1)
-    return y.numpy()
+    return y[:,1:].cpu().numpy()
 
 def run_train_epoch(data_iter,model,loss_func,epoch,display=10):
     model.train()
@@ -380,10 +381,25 @@ def run_train_epoch(data_iter,model,loss_func,epoch,display=10):
             'loss':loss
             }
     
-def run_eval(data_iter,model,decoder=greedyDecoder):
+def run_eval(data_iter,model,decoder=None):
+    ref=[]
+    my=[]
+    model.eval()
+    if decoder==None:
+        decoder=lambda x,xmask,m:greedyDecoder(x,xmask,m,maxlen=100,startidx=data_iter.ds.sos_idx,unk=data_iter.ds.padding_idx)
     for i,batch in enumerate(data_iter):
         y=decoder(batch.x,batch.xmask,model)
-        print(y)
-
+        
+        _ref=data_iter.translate_tgt(batch.yout)
+        _my=data_iter.translate_tgt(y)
+        print(_ref[0])
+        print('-----------------------')
+        print(_my[0])
+        print('-----------------------')
+        ref.extend(_ref)
+        my.extend(_my)
+    score=blue(my,ref)
+    print('Blue score:{}'.format(score))
+    return score
 if __name__=='__main__':
     pass
