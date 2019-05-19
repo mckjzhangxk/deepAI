@@ -25,7 +25,7 @@ class Batch:
         self.ntoken=torch.sum(y!=padding_idx)
 
 class MyDataSet:
-    def __init__(self,path,exts=('.de','.en'),UNK='<unk>',SOS='<s>',EOS='</s>',TMAX=100):
+    def __init__(self,path,exts=('.de','.en'),UNK='<unk>',SOS='<s>',EOS='</s>',TMAX=100,MIN_FREQ=2):
         '''
 
         '''
@@ -48,8 +48,8 @@ class MyDataSet:
             exts=exts,
             fields=(SRC, TGT),
             filter_pred=lambda x:len(x.src)<TMAX and len(x.trg)<TMAX)
-        SRC.build_vocab(self.ds.src)
-        TGT.build_vocab(self.ds.trg)
+        SRC.build_vocab(self.ds.src,min_freq=MIN_FREQ)
+        TGT.build_vocab(self.ds.trg,min_freq=MIN_FREQ)
         self.SRC=SRC
         self.TGT=TGT
         self.padding_idx=self.SRC.vocab.stoi[UNK]

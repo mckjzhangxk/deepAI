@@ -82,17 +82,18 @@ if __name__=='__main__':
     print('using device:',device)
 
     #prepare dataset
-    ds=MyDataSet(trainpath)
-    train_data_iter=MyDataLoader(ds,batch_size=batch_size,shuffle=True,device=device)
+    train_ds=MyDataSet(trainpath)
+    train_data_iter=MyDataLoader(train_ds,batch_size=batch_size,shuffle=True,device=device)
     
-    ds=MyDataSet(testpath)
-    test_data_iter=MyDataLoader(ds,batch_size=batch_size,shuffle=False,device=device)
+    test_ds=MyDataSet(testpath)
+    test_data_iter=MyDataLoader(test_ds,batch_size=batch_size,shuffle=False,device=device)
     #prepare model
-    model=makeModel(ds.srcV(),ds.tgtV())
+    print('word: src:%d,tgt:%d'%(train_ds.srcV(),train_ds.tgtV()))
+    model=makeModel(train_ds.srcV(),train_ds.tgtV())
     model=model.to(device)
     
     optimizer=get_std_opt(model)
-    generator=LabelSmoothingLoss(ds.tgtV(),paddingidx=ds.padding_idx,smooth=0.1)
+    generator=LabelSmoothingLoss(train_ds.tgtV(),paddingidx=train_ds.padding_idx,smooth=0.1)
     loss_func=ComputeLoss(generator,optimizer)
     
     start,_=restore(model,optimizer,modelpath)
