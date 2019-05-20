@@ -29,8 +29,8 @@ class CustomOptimizer():
         return self.optimizer.state_dict()
     def load_state_dict(self,state):
         self.optimizer.load_state_dict(state)
-def get_std_opt(model):
-    return CustomOptimizer(model.src_emb[0].d,2,100,optim.Adam(model.parameters(),lr=0.0,betas=(0.9,0.98),eps=1e-9))
+def get_std_opt(model,warmup=4000):
+    return CustomOptimizer(model.src_emb[0].d,2,warmup,optim.Adam(model.parameters(),lr=0.0,betas=(0.9,0.98),eps=1e-9))
 def restore(model,optimizer,path):
     import glob
 
@@ -59,6 +59,7 @@ def myParseArgument():
     parser.add_argument('--testset',type=str,help='test dataset')
     parser.add_argument('--epoch',type=int)
     parser.add_argument('--batch_size',type=int)
+    parser.add_argument('--warmup',type=int)
 
     return parser.parse_args()
 
@@ -69,31 +70,33 @@ if __name__=='__main__':
 #    modelpath='./model'
 #    epoch=50
 #
-    #python3 train.py --trainset=../.data/iwslt/de-en/test --testset=../.data/iwslt/de-en/test --modelpath=./model --epoch=50
+    #python3 train.py --trainset=../.data/iwslt/de-en/test --testset=../.data/iwslt/de-en/test --modelpath=./model --epoch=50 --batch_size=1200 --warmup=100
     args=myParseArgument()
     trainpath=args.trainset
     testpath=args.testset
     modelpath=args.modelpath
     epoch=args.epoch
     batch_size=args.batch_size
+    warmup=args.warmup
+
 
 
     device=torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     print('using device:',device)
 
     #prepare dataset
-    train_ds=MyDataSet(trainpath)
-    train_data_iter=MyDataLoader(train_ds,batch_size=batch_size,shuffle=True,device=device)
-    
-    test_ds=MyDataSet(testpath)
-    test_data_iter=MyDataLoader(test_ds,batch_size=batch_size,shuffle=False,device=device)
+    trainset,testset=MyDataSet.getDataSet(trainpath,testpath)
+    train_data_iter=MyDataLoader(trainset,batch_size=batch_size,shuffle=True,device=device) 
+    test_data_iter=MyDataLoader(testset,batch_size=batch_size,shuffle=False,device=device)
+    print('srcV,tgtV:',trainset.srcV(),trainset.tgtV())
+
     #prepare model
-    print('word: src:%d,tgt:%d'%(train_ds.srcV(),train_ds.tgtV()))
-    model=makeModel(train_ds.srcV(),train_ds.tgtV())
+    
+    model=makeModel(trainset.srcV(),trainset.tgtV())
     model=model.to(device)
     
-    optimizer=get_std_opt(model)
-    generator=LabelSmoothingLoss(train_ds.tgtV(),paddingidx=train_ds.padding_idx,smooth=0.1)
+    optimizer=get_std_opt(model,warmup)
+    generator=LabelSmoothingLoss(trainset.tgtV(),paddingidx=trainset.padding_idx,smooth=0.1)
     loss_func=ComputeLoss(generator,optimizer)
     
     start,_=restore(model,optimizer,modelpath)

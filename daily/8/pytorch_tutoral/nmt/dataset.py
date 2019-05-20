@@ -23,14 +23,45 @@ class Batch:
         self.yout=y[:,1:]
         self.xmask,self.ymask=makeMask(self.x,self.yin,padding_idx)
         self.ntoken=torch.sum(y!=padding_idx)
-
 class MyDataSet:
-    def __init__(self,path,exts=('.de','.en'),UNK='<unk>',SOS='<s>',EOS='</s>',TMAX=100,MIN_FREQ=2):
+    def __init__(self,path,SRC,TGT,exts=('.de','.en'),UNK='<unk>',SOS='<s>',EOS='</s>',TMAX=100):
         '''
 
         '''
+        self.ds=datasets.TranslationDataset(
+            path=path, 
+            exts=exts,
+            fields=(SRC, TGT),
+            filter_pred=lambda x:len(x.src)<TMAX and len(x.trg)<TMAX)
+        
+        self.src=self.ds.src
+        self.tgt=self.ds.trg
+
+        self.SRC=SRC
+        self.TGT=TGT
+        
+        self.sos=SOS
+        self.unk=UNK
+        self.eos=EOS
+        
+    def build_special_word_idx(self):
+        self.sos_idx=self.TGT.vocab.stoi[self.sos]
+        self.eos_idx=self.TGT.vocab.stoi[self.eos]
+        self.padding_idx=self.SRC.vocab.stoi[self.unk]
+        print('src_padding:',self.padding_idx)
+        self.padding_idx=self.TGT.vocab.stoi[self.unk]
+        print('tgt_padding:',self.padding_idx)
+    def srcV(self):
+            return len(self.SRC.vocab.itos)
+    def tgtV(self):
+         return len(self.TGT.vocab.itos)
+    def __len__(self):
+        return len(self.ds)
+    
+
+    @staticmethod
+    def getDataSet(trainfile,testfile,exts=('.de','.en'),UNK='<unk>',SOS='<s>',EOS='</s>',TMAX=100,MIN_FREQ=2):
         import spacy
-
         spacy_x=spacy.load(exts[0][1:])
         spacy_y=spacy.load(exts[1][1:])
 
@@ -42,33 +73,18 @@ class MyDataSet:
 
         SRC = data.Field(tokenize=split_x,unk_token=UNK,pad_token=UNK)
         TGT = data.Field(tokenize=split_y,init_token=SOS,eos_token=EOS,unk_token=UNK,pad_token=UNK)
+         
+        train=MyDataSet(trainfile,SRC,TGT,exts=exts,UNK=UNK,SOS=SOS,EOS=EOS,TMAX=TMAX)
+        test= MyDataSet(testfile,SRC,TGT,exts=exts,UNK=UNK,SOS=SOS,EOS=EOS,TMAX=TMAX)
         
-        self.ds=datasets.TranslationDataset(
-            path=path, 
-            exts=exts,
-            fields=(SRC, TGT),
-            filter_pred=lambda x:len(x.src)<TMAX and len(x.trg)<TMAX)
-        SRC.build_vocab(self.ds.src,min_freq=MIN_FREQ)
-        TGT.build_vocab(self.ds.trg,min_freq=MIN_FREQ)
-        self.SRC=SRC
-        self.TGT=TGT
-        self.padding_idx=self.SRC.vocab.stoi[UNK]
-        self.sos=SOS
-        self.unk=UNK
-        self.eos=EOS
+        SRC.build_vocab(train.src)
+        TGT.build_vocab(train.tgt)
         
-        self.sos_idx=self.TGT.vocab.stoi[SOS]
-        self.eos_idx=self.TGT.vocab.stoi[EOS]
+        train.build_special_word_idx()
+        test.build_special_word_idx()
 
-        print('src_padding:',self.padding_idx)
-        self.padding_idx=self.TGT.vocab.stoi[UNK]
-        print('tgt_padding:',self.padding_idx)
-    def srcV(self):
-            return len(self.SRC.vocab.itos)
-    def tgtV(self):
-         return len(self.TGT.vocab.itos)
-    def __len__(self):
-        return len(self.ds)
+        return train,test
+
 class MyDataLoader:
     def __init__(self,ds,batch_size,shuffle=False,device='cpu'):
         self.maxSeqlen=0
