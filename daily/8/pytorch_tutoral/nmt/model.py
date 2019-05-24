@@ -326,7 +326,7 @@ class LabelSmoothingLoss(nn.Module):
             mask=mask.squeeze()
             #true_dist[mask]=0
             true_dist.index_fill_(0,mask,0)
-        return self.criterion(x,true_dist)/normalizer
+        return self.criterion(x,true_dist.requires_grad_())/normalizer
 
 class ComputeLoss():
     def __init__(self,generator,optimizer):
@@ -347,11 +347,11 @@ class ComputeLoss():
         '''
         V=x.size(-1)
         loss=self.generator(x.contiguous().view(-1,V),y.contiguous().view(-1),normalizer)
+        loss.backward()
         if self.optimizer:
             with torch.no_grad():
-                self.optimizer.zero_grad()
-                loss.backward()
                 self.optimizer.step()
+                self.optimizer.zero_grad()
         return loss.item()
 def greedyDecoder(x,xmask,model,maxlen=100,startidx=1,unk=0):
     '''
@@ -377,7 +377,6 @@ def run_train_epoch(data_iter,model,loss_func,epoch,display=10):
             print('Epoch %d,step:%d,loss:%.4f'%(epoch,i,loss))
     return {
             'model':model.state_dict(),
-            'step':i,
             'epoch':epoch,
             'loss':loss
             }

@@ -30,7 +30,7 @@ class CustomOptimizer():
     def load_state_dict(self,state):
         self.optimizer.load_state_dict(state)
 def get_std_opt(model,warmup=4000):
-    return CustomOptimizer(model.src_emb[0].d,2,warmup,optim.Adam(model.parameters(),lr=0.0,betas=(0.9,0.98),eps=1e-9))
+    return CustomOptimizer(model.src_emb[0].d,2/(3**0.5),warmup,optim.Adam(model.parameters(),lr=0.0,betas=(0.9,0.98),eps=1e-9))
 def restore(model,optimizer,path):
     import glob
 
@@ -57,9 +57,11 @@ def myParseArgument():
     parser.add_argument('--modelpath',type=str,help='use to save and recover model')
     parser.add_argument('--trainset',type=str,help='train dataset')
     parser.add_argument('--testset',type=str,help='test dataset')
-    parser.add_argument('--epoch',type=int)
-    parser.add_argument('--batch_size',type=int)
-    parser.add_argument('--warmup',type=int)
+    parser.add_argument('--epoch',type=int,default=15)
+    parser.add_argument('--batch_size',type=int,default=12000)
+    parser.add_argument('--warmup',type=int,default=4000)
+    parser.add_argument('--Tmax',type=int,default=100)
+    parser.add_argument('--minfreq',type=int,default=2)
 
     return parser.parse_args()
 
@@ -78,14 +80,18 @@ if __name__=='__main__':
     epoch=args.epoch
     batch_size=args.batch_size
     warmup=args.warmup
+    min_freq=args.minfreq
+    Tmax=args.Tmax
 
+    
+    print(args)
 
 
     device=torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     print('using device:',device)
 
     #prepare dataset
-    trainset,testset=MyDataSet.getDataSet(trainpath,testpath)
+    trainset,testset=MyDataSet.getDataSet(trainpath,testpath,TMAX=Tmax,MIN_FREQ=min_freq)
     train_data_iter=MyDataLoader(trainset,batch_size=batch_size,shuffle=True,device=device) 
     test_data_iter=MyDataLoader(testset,batch_size=batch_size,shuffle=False,device=device)
     print('srcV,tgtV:',trainset.srcV(),trainset.tgtV())
@@ -100,9 +106,11 @@ if __name__=='__main__':
     loss_func=ComputeLoss(generator,optimizer)
     
     start,_=restore(model,optimizer,modelpath)
-    for i in range(start,epoch):
+    for i in range(start+1,epoch):
         state=run_train_epoch(train_data_iter,model,loss_func,i,display=2)
         state['optimizer']=optimizer.state_dict()
+        state['step']=optimizer._step
+
 
         savepath=os.path.join(modelpath,'E%d.pt'%i)
         torch.save(state,os.path.join(modelpath,'E%d.pt'%(i)))

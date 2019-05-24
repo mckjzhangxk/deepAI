@@ -77,8 +77,8 @@ class MyDataSet:
         train=MyDataSet(trainfile,SRC,TGT,exts=exts,UNK=UNK,SOS=SOS,EOS=EOS,TMAX=TMAX)
         test= MyDataSet(testfile,SRC,TGT,exts=exts,UNK=UNK,SOS=SOS,EOS=EOS,TMAX=TMAX)
         
-        SRC.build_vocab(train.src)
-        TGT.build_vocab(train.tgt)
+        SRC.build_vocab(train.src,min_freq=MIN_FREQ)
+        TGT.build_vocab(train.tgt,min_freq=MIN_FREQ)
         
         train.build_special_word_idx()
         test.build_special_word_idx()
@@ -117,16 +117,17 @@ class MyDataLoader:
         for data in self.rebatch(self.iters):
             yield Batch(*data,self.ds.padding_idx)
         return self
-    def __next__(self):
-        for data in self.iters:
-            yield Batch(data.src,data.trg,self.ds.padding_idx)
 if __name__=='__main__':
 
-    ds=MyDataSet('../.data/iwslt/de-en/IWSLT16.TED.dev2010.de-en')
-    print('Examples:',len(ds))
-    print('Vs:',ds.srcV())
-    print('Vt:',ds.tgtV())
-    loader=MyDataLoader(ds,12000,shuffle=False)
-    for i in range(2):
+    train,test=MyDataSet.getDataSet('../.data/iwslt/de-en/IWSLT16.TED.dev2010.de-en','../.data/iwslt/de-en/IWSLT16.TED.tst2012.de-en',TMAX=1000,MIN_FREQ=1)
+    print('Examples:',len(train))
+    print('Vs:',train.srcV())
+    print('Vt:',train.tgtV())
+
+
+    loader=MyDataLoader(train,400,shuffle=False)
+    for i in range(1):
         for d in loader:
             print(d.x.size(),d.yin.size(),d.yout.size(),d.xmask.size(),d.ymask.size(),d.ntoken)
+            print(loader.translate_tgt(d.yout))
+            break
