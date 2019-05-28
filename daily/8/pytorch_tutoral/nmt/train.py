@@ -41,13 +41,15 @@ def restore(model,optimizer=None,path=None,tocpu=False):
     path=paths[-1]
     checkpoint=torch.load(path) if torch.cuda.is_available() else torch.load(path,map_location='cpu')
     model.load_state_dict(checkpoint['model'])
-    if optimizer:
-        optimizer.load_state_dict(checkpoint['optimizer'])
+    step=checkpoint['step']
     epoch=checkpoint['epoch']
-    optimizer._step=checkpoint['step']
     lastloss=checkpoint['loss']
 
-    print('recover model from path:{},epoch {},step {},last loss {}'.format(path,epoch,optimizer._step,lastloss) )
+    if optimizer:
+        optimizer.load_state_dict(checkpoint['optimizer'])
+        optimizer._step = step
+
+    print('recover model from path:{},epoch {},step {},last loss {}'.format(path,epoch,step,lastloss) )
     return (epoch,lastloss)
 
 
