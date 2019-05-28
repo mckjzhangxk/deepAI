@@ -162,18 +162,17 @@ def parse():
 
 
 if __name__=='__main__':
-    #python3 dataset.py -d ../.data/iwslt/de-en/train --minfreq=2 -o=vocab
+    # python3 dataset.py -d ../.data/iwslt/de-en/train --minfreq=2 -o=vocab
     parser=parse()
     print(parser)
-
     createVocab(parser.datafile,MIN_FREQ=parser.minfreq,output=parser.output)
-#    train,test=MyDataSet.getDataSet('../.data/iwslt/de-en/IWSLT16.TED.dev2010.de-en','../.data/iwslt/de-en/IWSLT16.TED.tst2012.de-en',TMAX=1000,MIN_FREQ=1)
-#    print('Examples:',len(train))
-#    print('Vs:',train.srcV())
-#    print('Vt:',train.tgtV())
+   # train,test=MyDataSet.getDataSet('../.data/iwslt/de-en/train.de-en','../.data/iwslt/de-en/IWSLT16.TED.tst2012.de-en',TMAX=1000,MIN_FREQ=2)
+   # print('Examples:',len(train))
+   # print('Vs:',train.srcV())
+   # print('Vt:',train.tgtV())
 #
     
-
+# 58782,36316, MyDataset59346,36625
 #    loader=MyDataLoader(train,400,shuffle=False)
 #    for i in range(1):
 #        for d in loader:

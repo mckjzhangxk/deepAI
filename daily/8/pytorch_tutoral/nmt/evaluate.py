@@ -58,7 +58,7 @@ def myEvaluate(model,src,tgt,vocab_src,vocab_tgt,exts=('.de','.en'),UNK='<unk>',
     return score
 
 if __name__=='__main__':
-    vocab_path='vocab'
+    # --model_path=models --datafile=../.data/iwslt/de-en/IWSLT16.TED.tst2014.de-en --vocab=vocab
 
     parser=parse()
     src_vocab,tgt_vocab=loadVocab(parser.vocab)
@@ -68,7 +68,6 @@ if __name__=='__main__':
 
     model=makeModel(len(src_vocab),len(tgt_vocab))
     model=model.to(device)
-    #restore(model,path=parser.model_path,tocpu=True)
-    myscore=myEvaluate(model,src,tgt,src_vocab,tgt_vocab)
-
-    print('score:',myscore)
+    restore(model,path=parser.model_path,tocpu=False)
+    # myscore=myEvaluate(model,src,tgt,src_vocab,tgt_vocab)
+    # print('score:',myscore)

@@ -1,6 +1,6 @@
 import torch
 import torch.optim as optim
-from models import makeModel,LabelSmoothingLoss,ComputeLoss,run_train_epoch,run_eval
+from model import makeModel,LabelSmoothingLoss,ComputeLoss,run_train_epoch,run_eval
 from dataset import MyDataSet,MyDataLoader
 import os
 import argparse
