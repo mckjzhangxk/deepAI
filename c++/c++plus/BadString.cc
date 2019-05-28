@@ -2,7 +2,6 @@
 #include <cstring>
 #include <iostream>
 
-
 using namespace std;
 
 int BadString::count=0;

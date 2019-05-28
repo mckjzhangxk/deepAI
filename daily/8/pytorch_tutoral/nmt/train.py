@@ -1,6 +1,6 @@
 import torch
 import torch.optim as optim
-from model import makeModel,LabelSmoothingLoss,ComputeLoss,run_train_epoch,run_eval 
+from models import makeModel,LabelSmoothingLoss,ComputeLoss,run_train_epoch,run_eval
 from dataset import MyDataSet,MyDataLoader
 import os
 import argparse
@@ -31,7 +31,7 @@ class CustomOptimizer():
         self.optimizer.load_state_dict(state)
 def get_std_opt(model,warmup=4000):
     return CustomOptimizer(model.src_emb[0].d,2/(3**0.5),warmup,optim.Adam(model.parameters(),lr=0.0,betas=(0.9,0.98),eps=1e-9))
-def restore(model,optimizer,path):
+def restore(model,optimizer=None,path=None,tocpu=False):
     import glob
 
 
@@ -39,15 +39,15 @@ def restore(model,optimizer,path):
     if len(paths)==0:return (0,0)
     paths=sorted(paths,key=lambda x:int(x[x.rfind('E')+1:x.rfind('.')]))
     path=paths[-1]
-    checkpoint=torch.load(path)
+    checkpoint=torch.load(path) if torch.cuda.is_available() else torch.load(path,map_location='cpu')
     model.load_state_dict(checkpoint['model'])
-    optimizer.load_state_dict(checkpoint['optimizer'])
+    if optimizer:
+        optimizer.load_state_dict(checkpoint['optimizer'])
     epoch=checkpoint['epoch']
     optimizer._step=checkpoint['step']
     lastloss=checkpoint['loss']
 
     print('recover model from path:{},epoch {},step {},last loss {}'.format(path,epoch,optimizer._step,lastloss) )
-
     return (epoch,lastloss)
 
 

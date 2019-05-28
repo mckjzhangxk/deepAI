@@ -3,6 +3,7 @@ import torch
 from utils import makeMask,translation
 import torchtext.data as data
 import torchtext.datasets as datasets
+import argparse
 
 
 def dataGen(batch,T,V,unk=0):
@@ -117,17 +118,65 @@ class MyDataLoader:
         for data in self.rebatch(self.iters):
             yield Batch(*data,self.ds.padding_idx)
         return self
+
+def createVocab(datafile,output,exts=('.de','.en'),UNK='<unk>',SOS='<s>',EOS='</s>',MIN_FREQ=2,TMAX=100):
+    import spacy
+    spacy_x=spacy.load(exts[0][1:])
+    spacy_y=spacy.load(exts[1][1:])
+
+
+    def split_x(text):
+        return [tok.text for tok in spacy_x.tokenizer(text)]
+    def split_y(text):
+        return [tok.text for tok in spacy_y.tokenizer(text)]
+
+    SRC = data.Field(tokenize=split_x,unk_token=UNK,pad_token=UNK)
+    TGT = data.Field(tokenize=split_y,init_token=SOS,eos_token=EOS,unk_token=UNK,pad_token=UNK)
+    ds=datasets.TranslationDataset(
+        path=datafile, 
+        exts=exts,
+        fields=(SRC, TGT),
+        filter_pred=lambda x:len(x.src)<TMAX and len(x.trg)<TMAX)
+    SRC.build_vocab(ds.src,min_freq=MIN_FREQ)
+    TGT.build_vocab(ds.trg,min_freq=MIN_FREQ)
+
+    vocab_src=SRC.vocab.stoi
+    vocab_tgt=TGT.vocab.stoi
+
+    print('src have length',len(vocab_src))
+    print('tgt have length',len(vocab_tgt))
+    
+    save_dict={'src':vocab_src,'tgt':vocab_tgt}
+
+    import pickle
+    with open(output,'wb') as fs:
+        pickle.dump(save_dict,fs)
+
+def parse():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--datafile','-d',type=str,help='datafile path')
+    parser.add_argument('--minfreq',type=int)
+    parser.add_argument('--output','-o',type=str)
+    return parser.parse_args()
+
+
+
 if __name__=='__main__':
+    #python3 dataset.py -d ../.data/iwslt/de-en/train --minfreq=2 -o=vocab
+    parser=parse()
+    print(parser)
 
-    train,test=MyDataSet.getDataSet('../.data/iwslt/de-en/IWSLT16.TED.dev2010.de-en','../.data/iwslt/de-en/IWSLT16.TED.tst2012.de-en',TMAX=1000,MIN_FREQ=1)
-    print('Examples:',len(train))
-    print('Vs:',train.srcV())
-    print('Vt:',train.tgtV())
+    createVocab(parser.datafile,MIN_FREQ=parser.minfreq,output=parser.output)
+#    train,test=MyDataSet.getDataSet('../.data/iwslt/de-en/IWSLT16.TED.dev2010.de-en','../.data/iwslt/de-en/IWSLT16.TED.tst2012.de-en',TMAX=1000,MIN_FREQ=1)
+#    print('Examples:',len(train))
+#    print('Vs:',train.srcV())
+#    print('Vt:',train.tgtV())
+#
+    
 
-
-    loader=MyDataLoader(train,400,shuffle=False)
-    for i in range(1):
-        for d in loader:
-            print(d.x.size(),d.yin.size(),d.yout.size(),d.xmask.size(),d.ymask.size(),d.ntoken)
-            print(loader.translate_tgt(d.yout))
-            break
+#    loader=MyDataLoader(train,400,shuffle=False)
+#    for i in range(1):
+#        for d in loader:
+#            print(d.x.size(),d.yin.size(),d.yout.size(),d.xmask.size(),d.ymask.size(),d.ntoken)
+#            print(loader.translate_tgt(d.yout))
+#            break
