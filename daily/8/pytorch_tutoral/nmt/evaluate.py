@@ -100,7 +100,7 @@ def myEvaluate(model,src,tgt,vocab_src,vocab_tgt,
 
 if __name__=='__main__':
     # --model_path=models --datafile=../.data/iwslt/de-en/IWSLT16.TED.tst2014.de-en --vocab=vocab
-
+    #29.15,30.8,24.98
     parser=parse()
     src_vocab,tgt_vocab=loadVocab(parser.vocab)
     src,tgt=readFile(parser.datafile)
