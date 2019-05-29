@@ -21,16 +21,22 @@ def parse():
 
     return parser.parse_args()
 
-def readFile(datafile,exts=('.de','.en'),Tmax=100):
+def readFile(datafile,exts=('.de','.en'),maxLen=100):
     with open(datafile+exts[0]) as fs:
         src=fs.readlines()
     with open(datafile+exts[1]) as fs:
         tgt=fs.readlines()
+    import spacy
+    spacy_x=spacy.load(exts[0][1:])
+    spacy_y = spacy.load(exts[1][1:])
+
     retsrc,rettgt=[],[]
     for s,t in zip(src,tgt):
-        if len(s)<Tmax and len(t)<Tmax:
-            retsrc.append(s)
-            rettgt.append(t)
+        _s=[tok.text for tok in spacy_x.tokenizer(s.strip())]
+        _t=[tok.text for tok in spacy_y.tokenizer(t.strip())]
+        if len(_s)>maxLen or len(_t)>maxLen:continue
+        retsrc.append(_s)
+        rettgt.append(_t)
 
     assert len(retsrc)==len(rettgt)
     return retsrc,rettgt
@@ -47,13 +53,10 @@ def myEvaluate(model,src,tgt,vocab_src,vocab_tgt,
     '''
 
 
-    import spacy
     model.eval()
 
     inv_vocab_tgt={v:k for k,v in vocab_tgt.items()}
 
-    spacy_x=spacy.load(exts[0][1:])
-    spacy_y = spacy.load(exts[1][1:])
 
     pad_idx=vocab_src[UNK]
     sos_idx=vocab_tgt[SOS]
@@ -61,13 +64,11 @@ def myEvaluate(model,src,tgt,vocab_src,vocab_tgt,
 
     ypred=[]
 
-    def batch(sentence_list,tokenizer,vocab,padidx,Tmax,eos_idx=None):
+    def batch(sentence_list,vocab,padidx,eos_idx=None):
         maxlen=max(len(x) for x in sentence_list)
         ret=[]
         for s in sentence_list:
-            s=s.strip()
-            src_tokens = [tok.text for tok in tokenizer(s)]
-            src_encode = [vocab[tok] for tok in src_tokens]
+            src_encode = [vocab[tok] for tok in s]
             if eos_idx is not None:src_encode.append(eos_idx)
             src_encode.extend([padidx]*(maxlen-len(src_encode)))
             ret.append(src_encode)
@@ -87,15 +88,12 @@ def myEvaluate(model,src,tgt,vocab_src,vocab_tgt,
     bs=16
     ytrue=[]
     for i in tqdm(range(0,len(src),bs)):
-        X=batch(src[i:i+bs],spacy_x.tokenizer,vocab_src,pad_idx,TMax)
+        X=batch(src[i:i+bs],vocab=vocab_src,padidx=pad_idx)
         X=torch.from_numpy(X).to(device)
         Y=greedyDecoder(X,standardMask(X,pad_idx),model,startidx=sos_idx,unk=pad_idx)
         ypred.extend(translateBack(Y,inv_vocab_tgt,EOS))
-        ytrue.extend(translateBack(
-            batch(tgt[i:i+bs],spacy_y.tokenizer,vocab_tgt,pad_idx,TMax,eos_idx),
-            inv_vocab_tgt,EOS))
+        ytrue.extend([' '.join(s) for s in tgt[i:i+bs]])
 
-    # score=blue([s.lower() for s in ypred],[s.lower() for s in tgt])
     score=blue([s.lower() for s in ypred],[s.lower() for s in ytrue])
 
     return score
@@ -105,7 +103,7 @@ if __name__=='__main__':
 
     parser=parse()
     src_vocab,tgt_vocab=loadVocab(parser.vocab)
-    src,tgt=readFile(parser.datafile,Tmax=100)
+    src,tgt=readFile(parser.datafile)
 
     device=torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
