@@ -73,12 +73,12 @@ def compute_loss(Yhat,Y):
     
     loss=[0,0,0,0,0,0,0]
     for i,(y,yhat) in enumerate(zip(Ys,Yhats)):
-        loss[i]+=nn.CrossEntropyLoss()(yhat,y[:,0])
+        loss[i]+=nn.CrossEntropyLoss(reduction='sum')(yhat,y[:,0])
     total_loss=0
     for l in loss:total_loss+=l
     batch_size=Yhat.size(0)
     
-    return loss,total_loss/batch_size
+    return loss,total_loss/batch_size/7
 
 
 if __name__ == '__main__':
