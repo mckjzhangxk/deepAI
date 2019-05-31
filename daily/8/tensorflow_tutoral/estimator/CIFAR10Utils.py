@@ -61,3 +61,5 @@ def load_dataset(flaten=False,one_hot=True,filename='../../AI_database/cifar/CIF
     classes=[]
     return X_train,Y_train,X_test,Y_test,classes
 # load_dataset(flaten=False)
+if __name__ == '__main__':
+    load_dataset(flaten=True,one_hot=False,filename='/home/zhangxk/AIProject/数据集与模型/cifar-10-batches-py')
