@@ -1,0 +1,11 @@
+{
+ "train_batch_size": 1024,
+ "tpu_name": null,
+ "model_dir": null,
+ "predict_batch_size": 10000,
+ "tpu_iterations": 1000,
+ "tpu_zone": null,
+ "use_tpu": false,
+ "tpu_master": null,
+ "eval_batch_size": 10000
+}

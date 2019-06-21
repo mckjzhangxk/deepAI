@@ -16,9 +16,8 @@ class Policy(nn.Module):
         self.n_states=n_states
         self.n_actions=n_actions
 
-        self.fc1=nn.Linear(self.n_states,32)
-        self.fc2=nn.Linear(32,64)
-        self.fc3=nn.Linear(64,self.n_actions)
+        self.fc1=nn.Linear(4,64)
+        self.fc2=nn.Linear(64,self.n_actions)
     def forward(self,x):
         '''
         计算policy,保存到self.policy_prob:(N,A)
@@ -27,13 +26,12 @@ class Policy(nn.Module):
         :return: 
         '''
         x=F.relu(self.fc1(x))
-        x=F.relu(self.fc2(x))
-        x=F.relu(self.fc3(x))  #logit (N,action)
+        x=self.fc2(x)  #logit (N,action)
 
-        prob=F.softmax(x,1)
+
+        prob=F.softmax(x,-1)
         self.policy_prob=prob.data.cpu().numpy()
         return x
-
 
 def update_policy(states,actions,Gs,policy_model,optimizer):
     '''
@@ -47,23 +45,28 @@ def update_policy(states,actions,Gs,policy_model,optimizer):
     # 计算loss=avg -(Gs-bs)logPr(a|s)
 
     #(N,A)
-    log_policy=F.log_softmax(policy_model(states))
+    logit=policy_model(states)
+    log_policy=F.log_softmax(logit,-1)
+    policy=F.softmax(logit,-1)
     #评估当前(s,a)
     N=log_policy.size(0)
-    log_action=log_policy[torch.arange(N),actions]
+    ii=torch.arange(N)
+    log_action=log_policy[ii,actions]
+    prob=policy[ii,actions]
 
-    #回报越大,越是应该关注这组(a,s),bs这里给出0.1
+    #回报越大,越是应该关注这组(a,s),bs这里给出0.1,error in here!
     weights=Gs-0.1
+    J=torch.mean(Gs*log_action)
+    entropy=-torch.mean(prob*log_action)
+    loss=-J-0.1*entropy
 
-    loss=-weights*log_action
-    loss=torch.mean(loss)
 
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
 def tensor(x,type=np.float32):return torch.tensor(type(x))
 
-def reward2Return(rewards,gamma=0.9):
+def reward2Return(rewards,gamma=0.99):
     '''
     本函数复制把reward转成 return
         
@@ -95,8 +98,9 @@ def lanch_session(env,Tmax=1000,policy_model=None,optimizer=None,device='cuda'):
     s=env.reset()
     for _ in range(Tmax):
         #根据policy_model,选择一个动作
-        policy_model(tensor([s]))
-        p=policy_model.policy_prob
+        policy_model(tensor([s]).to(device))
+        p=policy_model.policy_prob[0]
+
         a=np.random.choice(policy_model.n_actions,p=p)
 
         news,r,done,_=env.step(a)
@@ -109,10 +113,10 @@ def lanch_session(env,Tmax=1000,policy_model=None,optimizer=None,device='cuda'):
     total_reward = sum(rewards)
     #更新policy_model
     states=tensor(states).to(device)
-    actions=tensor(actions,np.int32).to(device)
+    actions=tensor(actions,np.int32).to(device).long()
     Gs=tensor(reward2Return(rewards)).to(device)
 
-    update_policy(states,actions,Gs,optimizer)
+    update_policy(states,actions,Gs,policy_model,optimizer)
     return total_reward
 
 def save_model(modelpath,model,optimizer):
@@ -126,20 +130,20 @@ if __name__ == '__main__':
 
     device='cuda'
     taskname='CartPole-v0'
-    modelpath='policy_models/policy_%d.pt'%taskname
+    modelpath='policy_models/policy_%s.pt'%taskname
 
-    env=gym.make(taskname)
+    env=gym.make(taskname).env #stupid error,figure out the different bewteen make and make.env
     n_states,n_actions=env.observation_space.shape[0],env.action_space.n
 
     policy_model=Policy(n_states,n_actions).to(device)
-    optimizer=optim.Adam(policy_model.parameters())
+    optimizer=optim.Adam(policy_model.parameters(),lr=1e-3)
 
 
     bestreward=-1
     for i in range(1000):
         reward_episode=[lanch_session(env,policy_model=policy_model,optimizer=optimizer)
-        for _ in range(1000)]
-        avg_reward=np.mean(avg_reward)
+        for _ in range(100)]
+        avg_reward=np.mean(reward_episode)
 
         print('step {},avg reward {:.2f}'.format(i,avg_reward))
         if bestreward<avg_reward:

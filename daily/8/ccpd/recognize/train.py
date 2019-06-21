@@ -1,8 +1,8 @@
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from model import CNet,compute_loss
-from dataset import CCPD_Dataset
+from recognize.model import CNet,compute_loss
+from recognize.dataset import CCPD_Dataset
 import os
 import argparse
 
