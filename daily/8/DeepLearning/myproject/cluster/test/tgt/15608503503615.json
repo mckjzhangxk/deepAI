@@ -1,0 +1,30 @@
+{
+ "edges": [],
+ "nodes": [
+  {
+   "color": "#E25D68",
+   "name": "\u5f20\u4e09",
+   "phone": "13333333333",
+   "id": "13333333333",
+   "rank": 0,
+   "size": 3,
+   "x": 918,
+   "y": 1458,
+   "type": "star"
+  },
+  {
+   "color": "#E25D68",
+   "name": "\u674e\u56db",
+   "phone": "13895652541",
+   "id": "13895652541",
+   "rank": 0,
+   "size": 3,
+   "x": 1849,
+   "y": 261,
+   "type": "star"
+  }
+ ],
+ "success": false,
+ "info": "index -1 is out of bounds for axis 0 with size 0",
+ "file": "test/src/15608503503615.json"
+}

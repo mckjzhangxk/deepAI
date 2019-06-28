@@ -1,0 +1,30 @@
+{
+ "source": "test/src/*.json",
+ "target": "test/tgt",
+ "colors": [
+  "#E25D68",
+  "#8BC34A",
+  "#03A9F4",
+  "#AB47BC",
+  "#ff9800",
+  "#3f51b5",
+  "#EC407A",
+  "#009688",
+  "#8D6E63",
+  "#FF7043",
+  "#FFCA28",
+  "#4CAF50",
+  "#5C6BCD",
+  "#827717",
+  "#00695C",
+  "#7E57C2",
+  "#015798",
+  "#FFEB3B"
+ ],
+ "refresh_interval": 1,
+ "proposal_eps": 0.5,
+ "pagerank_eps": 0.01,
+ "pagerank_alpha": 0.85,
+ "pagerank_topk": -1,
+ "pagerank_matiters": 300
+}

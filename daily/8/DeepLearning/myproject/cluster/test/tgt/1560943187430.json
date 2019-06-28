@@ -1,0 +1,19 @@
+{
+ "edges": [],
+ "nodes": [
+  {
+   "color": "#E25D68",
+   "name": "\u5f20\u4e09",
+   "phone": "13881274666",
+   "id": "13881274666",
+   "rank": 0,
+   "size": 3,
+   "x": 1719,
+   "y": 1702,
+   "type": "star"
+  }
+ ],
+ "success": false,
+ "info": "index -1 is out of bounds for axis 0 with size 0",
+ "file": "test/src/1560943187430.json"
+}
