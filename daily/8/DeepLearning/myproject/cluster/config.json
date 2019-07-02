@@ -26,5 +26,12 @@
  "pagerank_eps": 0.01,
  "pagerank_alpha": 0.85,
  "pagerank_topk": -1,
- "pagerank_matiters": 300
+ "pagerank_maxiters": 300,
+ "canvas_pos": false,
+ "canvas_width": 1024,
+ "canvas_height": 768,
+ "canvas_seed": 0,
+ "canvas_pad": 0,
+ "eig_maxtry": 5,
+ "eig_supportDim": 500
 }

@@ -13,7 +13,17 @@ def defaultConfig():
     d['pagerank_eps']=1e-2
     d['pagerank_alpha']=0.85
     d['pagerank_topk']=-1
-    d['pagerank_matiters']=300
+    d['pagerank_maxiters']=300
+
+    d['canvas_pos']=False
+    d['canvas_width']=1024
+    d['canvas_height']=768
+    d['canvas_seed'] = 0
+    d['canvas_pad']=0
+
+    d['eig_maxtry']=5
+    d['eig_supportDim']=500
+
     with open('config.json','w') as fs:
         json.dump(d,fs,indent=1)
 if __name__ == '__main__':
