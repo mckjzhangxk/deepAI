@@ -1,0 +1,4 @@
+sudo apt-get install graphviz libgraphviz-dev pkg-config
+Create and activate virtualenv if needed. The commands looks something like sudo apt-get install python-pip python-virtualenv
+Run pip install pygraphviz
+Run terminal and check by importing and see if it works

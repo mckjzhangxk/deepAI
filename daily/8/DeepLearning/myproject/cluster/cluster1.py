@@ -45,15 +45,15 @@ def response(jsonobj,src_file,tgt_dir,labels,cluster_rank,id2Index,colors,pos=No
             index=id2Index[nodeId]
             c=labels[index]
             #本类的topK
-            tokKids=cluster_rank[c]['top']
-            tokKvalues=cluster_rank[c]['value']
+            tokKids=cluster_rank[c]['top'] if c in cluster_rank else [0]
+            tokKvalues=cluster_rank[c]['value'] if c in cluster_rank else [100.]
             if nodeId in tokKids:
                 rank=tokKids.index(nodeId)
                 node['topk']=rank
-                node['topk-value']=tokKvalues[rank]
+                node['topk_value']=tokKvalues[rank]
             else:
                 node['topk']=-1
-                node['topk-value']=-1
+                node['topk_value']=-1
             color=colors[c]
             node['color']=color
 
@@ -64,8 +64,9 @@ def response(jsonobj,src_file,tgt_dir,labels,cluster_rank,id2Index,colors,pos=No
         else:
             node['no_edge']=True
             node['topk']=0
-            node['topk-value']=100.
+            node['topk_value']=100.
             print('节点%s,是孤立节点'%nodeId)
+
     ############同步文件,删除源文件,输出目标文件##################
     if os.path.exists(src_file):
         os.remove(src_file)
@@ -136,9 +137,10 @@ def calcRelation(filename,config):
     try:
         G, Id2Index, Index2Id, jsonObj = makeChengfGraph(filename)
         #############根据临界矩阵进行谱分类######################
-        L = LaplacianMatrix(graph2Matrix(G))
+        L = LaplacianMatrix(graph2Matrix(G,norm=False))
         S, V = eig(L,maxK=config['eig_maxtry'],supportDim=config['eig_supportDim'])
         K = proposalCluster(S, config['proposal_eps'])
+        if K>=len(config['colors']):K=len(config['colors'])
         labels = getCluster(K, V)
 
         #######################生成子图后,Page rank###########
@@ -166,6 +168,7 @@ def calcRelation(filename,config):
                  id2Index=Id2Index,
                  colors=config['colors'])
     except Exception as e:
+        raise e
         saveError(filename, config['target'], e)
 
 if __name__ == '__main__':

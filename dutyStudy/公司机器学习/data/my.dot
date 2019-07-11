@@ -1,0 +1,28 @@
+ digraph "Classification tree for dt_golf" {         
+          subgraph "cluster0"{                       
+          label=""                                   
+ "g0_0" [label="outside <= overcast", shape=ellipse];
+ "g0_0" -> "g0_1"[label="yes"];                      
+ "g0_1" [label="Play",shape=box];                    
+ "g0_0" -> "g0_2"[label="no"];                       
+ "g0_2" [label="temperature <= 75", shape=ellipse];  
+ "g0_2" -> "g0_5"[label="yes"];                      
+ "g0_2" -> "g0_6"[label="no"];                       
+ "g0_6" [label="Don't Play",shape=box];              
+ "g0_5" [label="temperature <= 65", shape=ellipse];  
+ "g0_5" -> "g0_11"[label="yes"];                     
+ "g0_11" [label="Don't Play",shape=box];            
+ "g0_5" -> "g0_12"[label="no"];                      
+ "g0_12" [label="temperature <= 70", shape=ellipse]; 
+ "g0_12" -> "g0_25"[label="yes"];                    
+ "g0_25" [label="Play",shape=box];                   
+ "g0_12" -> "g0_26"[label="no"];                     
+ "g0_26" [label="temperature <= 72", shape=ellipse]; 
+ "g0_26" -> "g0_53"[label="yes"];                    
+ "g0_53" [label="Don't Play",shape=box];             
+ "g0_26" -> "g0_54"[label="no"];                     
+ "g0_54" [label="Play",shape=box];                   
+                                                     
+          } //--- end of subgraph------------        
+ } //---end of digraph--------- 
+

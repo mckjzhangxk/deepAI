@@ -1,0 +1,37 @@
+https://www.postgresql.org/download/linux/ubuntu/
+https://www.youtube.com/watch?v=qw--VYLpxG4
+https://www.youtube.com/watch?v=-LwI4HMR_Eg #ubuntu
+#编译 安装 
+https://www.postgresql.org/download/
+#初始化数据库
+initdb -D /home/zhangxk/data
+启动服务
+pg_ctl -D /home/zhangxk/data -l logfile stop/start
+
+启动服务
+service postgresql start
+#链接
+psql
+psql -U zhangxk -p5433 -d "jncf" -h 127.0.0.1
+psql --help
+\c dbname #切换数据库 
+#显示数据库\l
+#显示用户\du
+
+alter user postgres with password '123';
+create user zxk with password '123';
+drop user zxk;
+alter user zxk with superuser;
+
+#https://www.postgresql.org/docs/11/datatype.html数据类型
+create table iris(
+ id bigserial not null primary key,
+ sepals_width float8,
+ sepals_height float8,
+ petals_width float8,
+ petals_height float8,
+ label int
+);
+\d dbname #显示数据表
+
+\i sqlfile 执行命令脚本

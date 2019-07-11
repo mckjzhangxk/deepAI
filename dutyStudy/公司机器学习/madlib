@@ -1,0 +1,26 @@
+安装https://cwiki.apache.org/confluence/display/MADLIB/Installation+Guide#InstallationGuide-Prerequisites
+
+/usr/local/madlib/bin/madpack -s madlib -p postgres -c [user[/password]@][host][:port][/database] install
+
+
+测试/usr/local/madlib/bin/madpack -p postgres install-check -c postgres/123@127.0.0.1:5432/postgres
+
+
+1)
+create table array_tb1(
+id integer,
+array1 integer[],
+array2 integer[]
+);
+
+insert into array_tb1 values(1,'{1,2,3,4,5,6,7,8,9}','{9,8,7,6,5,4,3,2,1}');
+insert into array_tb2 values(1,'{1,1,0,0,1,2,3,99,8}','{0,0,0,-5,4,1,1,7,6}');
+
+select madlib.array_min(array1),
+       madlib.array_max(array1),
+       madlib.array_min_index(array1),
+       madlib.array_max_index(array1),
+       madlib.array_mean(array1),
+       madlib.array_stddev(array1)
+from array_tb1;
+
