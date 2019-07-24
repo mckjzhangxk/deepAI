@@ -1,0 +1,2 @@
+from facenet_pytorch.models.inception_resnet_v1 import InceptionResnetV1
+from facenet_pytorch.models.mtcnn import MTCNN
