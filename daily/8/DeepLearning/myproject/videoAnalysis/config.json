@@ -1,0 +1,30 @@
+{
+ "debug": true,
+ "device": "cpu",
+ "skipRate": 10,
+ "job1_input": "tmp/input/input_job1/*.avi",
+ "yolo_conf": "yolov3/cfg/yolov-obj.cfg",
+ "yolo_weight": "yolov3/cfg/yolov-obj_final.weights",
+ "yolo_objs_name": "yolov3/cfg/coco.names",
+ "yolo_img_size": [
+  416,
+  416
+ ],
+ "yolo_refresh_interval": 10,
+ "job1_output": "tmp/input/input_job2/",
+ "face_detector": "mtcnn",
+ "mtcnn": {
+  "thresholds": [
+   0.6,
+   0.7,
+   0.7
+  ],
+  "out_image_size": 160,
+  "prewhiten": true,
+  "factor": 0.709,
+  "min_face_size": 20,
+  "keep_all": true,
+  "select_largest": true
+ },
+ "face_detector_output": "tmp/pipline2"
+}

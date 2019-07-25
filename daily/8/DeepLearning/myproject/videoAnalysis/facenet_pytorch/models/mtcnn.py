@@ -241,7 +241,7 @@ class MTCNN(nn.Module):
                 if return_prob:
                     return None, [None] if self.keep_all else None
                 else:
-                    return None
+                    return None,None
 
             if not self.keep_all:
                 boxes = boxes[[0]]
@@ -267,7 +267,7 @@ class MTCNN(nn.Module):
             if return_prob:
                 return faces, probs
             else:
-                return faces
+                return faces,boxes
 
     def detect(self, img):
         """Detect all faces in PIL image and return bounding boxes.
