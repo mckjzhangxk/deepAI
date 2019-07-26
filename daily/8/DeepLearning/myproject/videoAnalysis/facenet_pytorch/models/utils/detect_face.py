@@ -20,7 +20,7 @@ def detect_face(img, minsize, pnet, rnet, onet, threshold, factor, device):
     minl = min(h, w)
     minl = minl * m
     img = np.uint8(img)
-
+    img=img[:,:,::-1]
     # First stage
     # Create scale pyramid
     total_boxes = np.empty((0, 9))

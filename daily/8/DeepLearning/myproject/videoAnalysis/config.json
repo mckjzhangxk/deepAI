@@ -14,17 +14,19 @@
  "job1_output": "tmp/input/input_job2/",
  "face_detector": "mtcnn",
  "mtcnn": {
+  "prewhiten": true,
   "thresholds": [
    0.6,
    0.7,
    0.7
   ],
-  "out_image_size": 160,
-  "prewhiten": true,
-  "factor": 0.709,
   "min_face_size": 20,
-  "keep_all": true,
-  "select_largest": true
+  "factor": 0.709,
+  "out_image_size": 160
  },
- "face_detector_output": "tmp/pipline2"
+ "job2_output": "tmp/input/input_job3/",
+ "facenet_pretained_model": "casia-webface",
+ "facenet_image_size": 160,
+ "facenet_batch_size": 4,
+ "job3_output": "tmp/input/final"
 }

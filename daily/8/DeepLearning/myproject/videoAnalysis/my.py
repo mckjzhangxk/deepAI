@@ -17,7 +17,6 @@ if __name__ == '__main__':
 
     img = Image.open('data/multiface.jpg')
     img=cv2.imread('data/multiface.jpg')
-    img=img[:,:,::-1]
 
     faces=mtcnn(img,save_path='11')
     model=InceptionResnetV1(pretrained='casia-webface').eval()

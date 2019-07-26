@@ -24,12 +24,14 @@ def createDefaultConfig():
         'thresholds':[0.6, 0.7, 0.7],
         'factor':0.709,
         'prewhiten':True,
-        'select_largest':True,
-        'keep_all':True,
         'out_image_size':160
     }
-    d['face_detector_output']='tmp/pipline2'
+    d['job2_output']='tmp/input/input_job3/'
 
+    d['facenet_pretained_model']='casia-webface'
+    d['facenet_image_size']=160
+    d['facenet_batch_size']=4
+    d['job3_output']='tmp/input/final'
     with open('config.json','w') as fs:
         json.dump(d,fs,indent=1)
 def loadConfig():
