@@ -49,7 +49,9 @@ def ioa(A,B):
     yleft=np.maximum(A[...,1],B[...,1])
     yright=np.minimum(A[...,3],B[...,3])
 
-    union=np.maximum(0,(xright-xleft)*(yright-yleft))
+    W=np.maximum(xright-xleft,0)
+    H=np.maximum(yright-yleft,0)
+    union=W*H
     areaA=np.maximum(0.1,(A[...,2]-A[...,0])*(A[...,3]-A[...,1]))
     r=union/areaA
 

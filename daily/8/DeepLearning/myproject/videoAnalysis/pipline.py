@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 import torch
 from config import loadConfig
-
+from tqdm import tqdm
 def getId(filename):
     bs=os.path.basename(filename)
     ii=bs.index('.')
@@ -100,29 +100,30 @@ class ObjDetectionService(BaseService):
             final['job2_video']=outputfile
 
             frames=videoinfo['frames']
-            for t in range(frames):
+            for t in tqdm(range(0,frames,self.skip)):
+                stream.set(1,t)
                 retval, frame = stream.read()
                 if not retval: break
                 
-                if t % self.skip==0:
-                    result = self.det.predict(frame)
-                    objs_at_t=[]
-                    for x1, y1, x2, y2, conf, label in result: 
-                        obj={
+                # if t % self.skip==0:
+                result = self.det.predict(frame)
+                objs_at_t=[]
+                for x1, y1, x2, y2, conf, label in result:
+                    obj={
                             'id':str(uuid.uuid1()).replace('-',''),
                             'type':self.cls[label],
                             'confident':conf,
                             'box':[int(x1),int(y1),int(x2),int(y2)]
                         }
-                        objs_at_t.append(obj)
+                    objs_at_t.append(obj)
                     ####################计算object 之间的关系##############################
-                    self._relation_between_object(objs_at_t)
+                self._relation_between_object(objs_at_t)
 
-                    # ###############################################
-                    if len(objs_at_t)>0:
-                        final['track']['ts'].append(t)                    
-                        final['track']['objs'].append(objs_at_t)
-                        writer.write(frame)
+                # ###############################################
+                if len(objs_at_t)>0:
+                    final['track']['ts'].append(t)
+                    final['track']['objs'].append(objs_at_t)
+                    writer.write(frame)
             print('任务1:%s完成'%videofile)
         except Exception as e:
             final['status']='fail'
@@ -147,7 +148,7 @@ class FaceDetectionService(BaseService):
             min_face_size=config['mtcnn']['min_face_size'],
             thresholds=config['mtcnn']['thresholds'],
             factor=config['mtcnn']['factor'],
-            prewhiten=config['mtcnn']['prewhiten'],
+            prewhiten=False,
             select_largest=True,#True,boxes按照面积的大小降序排列
             keep_all=True,
             device=device
@@ -158,7 +159,7 @@ class FaceDetectionService(BaseService):
         self.outputpath=config['job2_output']
         print('完成了人脸检测的初始化')
     def _insertFace(self,objs,faceboxes):
-        if faceboxes is None:
+        if faceboxes is None or len(faceboxes)==0:
             return
         indexes=[]
         personboxes=[]
@@ -167,12 +168,21 @@ class FaceDetectionService(BaseService):
             if obj['type']=='person':
                 indexes.append(ii)
                 personboxes.append(obj['box'])
-        
-        face_person=ioa(faceboxes,personboxes).argmax(axis=1)
-        for faceindex,person_index in enumerate(face_person):
-            obj_index=indexes[person_index]
-            objs[obj_index]['face_box']=list(faceboxes[faceindex])
-
+        if len(personboxes)>0:
+            face_person=ioa(faceboxes,personboxes).argmax(axis=1)
+            for faceindex,person_index in enumerate(face_person):
+                obj_index=indexes[person_index]
+                objs[obj_index]['face_box']=list(faceboxes[faceindex])
+        else:
+            for face in faceboxes:
+                newperson = {
+                    'id': str(uuid.uuid1()).replace('-', ''),
+                    'type': 'person',
+                    'confident': 0.0,
+                    'box': list(face),
+                    'face_box': list(face)
+                }
+                objs.append(newperson)
 
     def _process(self,filename):
         '''
@@ -194,7 +204,7 @@ class FaceDetectionService(BaseService):
                 stream,videoinfo=readVideo(videofile)
                 frames=videoinfo['frames']
 
-                for t in range(frames):
+                for t in tqdm(range(frames)):
                     retval, frame = stream.read()
                     if not retval: break
                     _,faceboxes = self.det(frame)
@@ -251,6 +261,7 @@ class FaceFeatureService(BaseService):
         y2 = max(y2, 0)
 
         I=frame[y1:y2,x1:x2]
+        I=I[:,:,::-1]
         I=cv2.resize(I,(self.imagesize,self.imagesize))
         I=np.transpose(I,(2,0,1))
 
@@ -258,9 +269,8 @@ class FaceFeatureService(BaseService):
 
         return (obj,I)
     def _handle(self,queue):
-        print('xxxxxxxxxxxxxxxxxxxxxxx')
         Iin=torch.stack([img for obj,img in queue],0).to(self.device)
-        faceids=self.model(Iin).data.numpy().tolist()
+        faceids=self.model(Iin).cpu().data.numpy().tolist()
         for (obj,img),faceid in zip(queue,faceids):
             del img
             obj['face_id']=faceid
@@ -294,7 +304,7 @@ class FaceFeatureService(BaseService):
                 stream,videoinfo=readVideo(videofile)
                 frames=videoinfo['frames']
 
-                for t in range(frames):
+                for t in tqdm(range(frames)):
                     retval, frame = stream.read()
                     if not retval: break
                     objs_at_t=final['track']['objs'][t]
@@ -320,13 +330,32 @@ class FaceFeatureService(BaseService):
                 stream.release()
         print('任务3:%s完成' % filename)
 
+from threading import Thread,currentThread
+class MyWorker(Thread):
+    def __init__(self,service):
+        super().__init__()
+        self.service=service
+    def run(self):
+        self.service.start()
+
 if __name__ == "__main__":
+    threads=[]
+
     config=loadConfig()
-    # service=ObjDetectionService(config)
-    # service.start()
-    # service=FaceDetectionService(config)
-    # service.start()
-    service=FaceFeatureService(config)
-    service.start()
+    service1=ObjDetectionService(config)
+    threads.append(MyWorker(service1))
+
+    service2=FaceDetectionService(config)
+    threads.append(MyWorker(service2))
+
+    service3=FaceFeatureService(config)
+    threads.append(MyWorker(service3))
+
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+
 
 

@@ -1,6 +1,6 @@
 {
  "debug": true,
- "device": "cpu",
+ "device": "cuda",
  "skipRate": 10,
  "job1_input": "tmp/input/input_job1/*.avi",
  "yolo_conf": "yolov3/cfg/yolov-obj.cfg",
