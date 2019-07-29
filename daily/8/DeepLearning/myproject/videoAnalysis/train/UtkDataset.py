@@ -36,16 +36,16 @@ class UTK_Dataset(Dataset):
         self.model=model
 
         flist=glob.glob(filepath)
-        for filename in tqdm(flist):
+        for filename in tqdm.tqdm(flist):
             id=os.path.basename(filename)
             # [age]_[gender]_[race]_[date&time].jpg
             sps=id.split('_')
-            if len(sps==4):
+            if len(sps)==4:
                 age,gender,race,_=sps
             else:
                 print(id)
                 age, gender, race = sps[0],sps[1],4
-            self._db.append((filename,getAgeLabel(age),gender,race))
+            self._db.append((filename,getAgeLabel(age),int(gender),int(race)))
 
         #统一一下
         agestat=[0]*len(ageLabels)
@@ -54,8 +54,8 @@ class UTK_Dataset(Dataset):
         for p in self._db:
             age,gender,race=p[1:4]
             agestat[age]+=1
-            genderstat[gender] += 1
-            racestat[race] += 1
+            genderstat[int(gender)] += 1
+            racestat[int(race)] += 1
         ##show result
         for r,cnt in zip(ageLabels,agestat):
             print('%s:%s'%(str(r),str(cnt)))
@@ -66,7 +66,7 @@ class UTK_Dataset(Dataset):
             print('%s:%s'%(str(r),str(cnt)))
 
     def __getitem__(self,k):
-        filename,age,gender=self._db[k]
+        filename,age,gender,race=self._db[k]
 
         I=cv2.imread(filename)
         I = I[:, :, ::-1]
@@ -74,7 +74,17 @@ class UTK_Dataset(Dataset):
         I = I[None]
         I=np.transpose(I,(0,3,1,2))
         X = prewhiten(I)
+        with torch.no_grad():
+            X=self.model(X)[0]
+
         return X,torch.tensor(age),torch.tensor(gender)
     def __len__(self):
         return len(self._db)
-trainset=UTK_Dataset(None,'/home/zhangxk/AIProject/数据集与模型/UTKFace/*.jpg')
+if __name__ == '__main__':
+    model = InceptionResnetV1(pretrained='casia-webface').eval()
+    trainset=UTK_Dataset(model,'/home/zxk/AI/data/UTKFace/*.jpg')
+
+    batch_size=32
+    trainloader=DataLoader(trainset,batch_size,shuffle=True,num_workers=4)
+    for x in trainloader:
+        print(x[0].shape)

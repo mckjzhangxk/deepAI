@@ -66,14 +66,29 @@ def _getModel():
     return RetModel()
 sess=tf.Session()
 # #detection network
-pnet_fun, rnet_fun, onet_fun = create_mtcnn(sess,None)
+# pnet_fun, rnet_fun, onet_fun = create_mtcnn(sess,None)
 # #recognition network
 
 model=_getModel()
 # writer=tf.summary.FileWriter('model',sess.graph)
 # writer.flush()
 
-# if __name__ == '__main__':
+import cv2
+if __name__ == '__main__':
+    def prewhiten(x):
+        mean = np.mean(x)
+        std = np.std(x)
+        std_adj = np.maximum(std, 1.0 / np.sqrt(x.size))
+        y = np.multiply(np.subtract(x, mean), 1 / std_adj)
+        return y
+    I=cv2.imread('/home/zxk/PycharmProjects/deepAI1/daily/8/mysite/webapp/facedb1/4.png')
+    I = I[:, :, ::-1]
+    I=cv2.resize(I,(160,160))
+    I = I[None]
+
+    I = prewhiten(I)
+    xx=model.predict(I)
+    print(xx[0])
 #     num=0
 #     for v in tf.trainable_variables():
 #         num+=np.product(v.get_shape())

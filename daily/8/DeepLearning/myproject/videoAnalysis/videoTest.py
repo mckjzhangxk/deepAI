@@ -1,7 +1,7 @@
 import cv2
 import json
 import random
-from utils import ioa
+from utils import ioa,videoWriter
 from facenet_pytorch.models.inception_resnet_v1 import InceptionResnetV1
 from utils import prewhiten
 import numpy as np
@@ -9,7 +9,7 @@ import glob
 import os
 import torch
 from PIL import ImageFont,ImageDraw,Image
-
+import tqdm
 
 def findSomeBody(model,detectpath,imagesize=160):
     names=[]
@@ -29,7 +29,7 @@ def findSomeBody(model,detectpath,imagesize=160):
 
 
 def dist(a,b):
-    r=(a*b).sum(axis=1)
+    r=np.abs((a*b).sum(axis=1))
     a=np.linalg.norm(a,axis=1)
     b =np.linalg.norm(b)
     return r/a/b
@@ -89,6 +89,7 @@ def resize(img,screen=(1440,900)):
     return cv2.resize(img,(int(w),int(h)))
 def debug(videopath,jsonpath):
     cap = cv2.VideoCapture(videopath)
+    
     with open(jsonpath,'r') as fs:
         d=json.load(fs)
 
@@ -96,7 +97,9 @@ def debug(videopath,jsonpath):
     objs=d['track']['objs']
 
     step=0
-    while True:
+    writer=videoWriter('output.avi',videoformat='XVID',scale=(int(cap.get(3)),int(cap.get(4))),fps=3)
+
+    for step in tqdm.tqdm(range(len(ts))):
     # for t,objts in zip(ts,objs):
         t=ts[step]
         objts=objs[step]
@@ -106,24 +109,23 @@ def debug(videopath,jsonpath):
 
         for obj in objts:
             plotImage(obj,img)
-        img=resize(img)
-        cv2.imshow("input", img)
-        #cv2.imshow("thresholded", imgray*thresh2)
-
-        key = cv2.waitKey()
-        if key == ord('q'):
-            break
-        elif key==83:
-            step=min(step+1,len(ts)-1)
-        elif key==81:
-            step=max(step-1,0)
-
-
+        # img=resize(img)
+        # cv2.imshow("input", img)
+        # key = cv2.waitKey()
+        # if key == ord('q'):
+        #     break
+        # elif key==83:
+        #     step=min(step+1,len(ts)-1)
+        # elif key==81:
+        #     step=max(step-1,0)
+        writer.write(img)
+    writer.release()
     cap.release()
 
 
 model=InceptionResnetV1(pretrained='casia-webface').eval()
 name,feature=findSomeBody(model,'data/infinitywar/*.png')
+# name,feature=findSomeBody(model,'data/spiderman/*.png')
 if __name__ == '__main__':
     # debug('data/spman.avi','tmp/input/final/spman.json')
     debug('data/war.avi', 'tmp/input/final/war.json')
