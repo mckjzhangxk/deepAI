@@ -124,8 +124,12 @@ def debug(videopath,jsonpath):
 
 
 model=InceptionResnetV1(pretrained='casia-webface').eval()
-name,feature=findSomeBody(model,'data/infinitywar/*.png')
-# name,feature=findSomeBody(model,'data/spiderman/*.png')
-if __name__ == '__main__':
-    # debug('data/spman.avi','tmp/input/final/spman.json')
-    debug('data/war.avi', 'tmp/input/final/war.json')
+# name,feature=findSomeBody(model,'data/infinitywar/*.png')
+# # name,feature=findSomeBody(model,'data/spiderman/*.png')
+# if __name__ == '__main__':
+#     # debug('data/spman.avi','tmp/input/final/spman.json')
+#     debug('data/war.avi', 'tmp/input/final/war.json')
+
+name,feature=findSomeBody(model,'wang/*.png')
+for n,f in zip(name,feature):
+    print(n,f.tolist())

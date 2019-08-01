@@ -1,6 +1,6 @@
 {
- "source": "test/src/*.json",
- "target": "test/tgt",
+ "source": "/cfai/cluster/pre/*.json",
+ "target": "/cfai/cluster/tgt",
  "colors": [
   "#E25D68",
   "#8BC34A",
@@ -22,7 +22,7 @@
   "#FFEB3B"
  ],
  "refresh_interval": 1,
- "proposal_eps": 0.5,
+ "proposal_eps": 0.3,
  "pagerank_eps": 0.01,
  "pagerank_alpha": 0.85,
  "pagerank_topk": -1,

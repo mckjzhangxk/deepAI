@@ -9,7 +9,8 @@ from collections import defaultdict
 
 def isSparse(A):
     return (np.count_nonzero(A)/A.size)<0.1
-
+def isSysmetric(A):
+    return np.all(A==A.T)
 def makeChengfGraph(filepath):
 
     '''
@@ -41,7 +42,9 @@ def makeChengfGraph(filepath):
         s = edge['source']
         t = edge['target']
         weight=edge['size'] if 'size' in edge else 1.0
- 
+        weight=weight if weight>0 else 1.0
+        weight=1.0
+        # print('xxxxxxxxxxxxxxxx',weight)
         sid = Id2Index[s]
         tid = Id2Index[t]
         G.add_edge(sid, tid, weight=weight)
@@ -51,22 +54,25 @@ def makeChengfGraph(filepath):
 
     return G, Id2Index, Index2Id,jsonObj
 
-def graph2Matrix(G,indexFunc=None,norm=False):
+def graph2Matrix(G,indexFunc=None,norm=True,supportSparse=False):
     '''
     根据G,返回一个邻接矩阵,A[i][j]表示从node i 到 node j的weight
     indexFunc:索引转换函数,把图G的 "节点名字" 转成 矩阵的 "下标索引"
     如果为None,"节点名字" 就必须是 矩阵的 "下标索引"
     
-    如果norm=True,矩阵的一行之和 是1
+    如果norm=True,矩阵的一行之和 是1,
+    
+    如果G是稀疏图,那么会返回稀疏矩阵
     '''
     n=len(G.nodes)
     A=np.zeros((n,n))
     for nodeIdx,adj in G.adjacency():
         for adjIdx,w in adj.items():
             s,t= (indexFunc[nodeIdx],indexFunc[adjIdx]) if indexFunc else (nodeIdx,adjIdx)    
-            A[s,t]=w['weight'] if 'weight' in w else 1
-    A=A/np.sum(A,axis=1,keepdims=True)
-    if isSparse(A):
+            A[s,t]=1 #w['weight'] if 'weight' in w else 1
+    if norm:
+        A=A/np.sum(A,axis=1,keepdims=True)
+    if supportSparse and isSparse(A):
         A=sparse.csr_matrix(A)
         print('使用稀疏表示法')
     return A
@@ -74,6 +80,8 @@ def LaplacianMatrix(A):
     '''
     传入邻接矩阵,A[i][j]表示从node i 到 node j的权重
     计算degress D,返回L=D-A
+    
+    传入的A可以是dense or sparse,传出不改变矩阵类型
     '''
     if isinstance(A,np.ndarray):
         D=np.diag(A.sum(axis=1))
@@ -84,25 +92,36 @@ def LaplacianMatrix(A):
         return D-A
 def eig(L,maxK=30,maxTry=5,supportDim=500):
     '''
-    计算L的特征值和特征向量,并按照升序排列
+    计算L的 "头maxK个" 特征值和特征向量,并按照升序排列,
+    计算eig时候,需要给定ncv
+        ncv越大,算法越慢,但是成功率越高
+        ncv小,算法快,但可能失败,所有要有重试maxTry
+        对于dim(L)<=supportDim的矩阵,ncv就是dim(L)
+        否则是自动设在(:
+    
     返回S:r特征值
        V:n,r特征向量
     '''
     n=L.shape[0]
 
     ncv=None if n>supportDim else n
-
-    for i in range(maxTry):
-        try:
-            S,V=sparse.linalg.eigs(L,k=min(maxK,n),which='SM',ncv=ncv)
-            break
-        except sparse.linalg.ArpackError as e:
-            print(i,e)
-            if i==maxTry-1:
-                raise e
-    
+    ###########老方法###########################################
+#     for i in range(maxTry):
+#         try:
+# #             S,V=sparse.linalg.eigs(L,k=min(maxK,n-2),which='SM',ncv=ncv)
+# #             S,V=np.linalg.eig(L)
+#             break
+#         except sparse.linalg.ArpackError as e:
+#             print(i,e)
+#             if i==maxTry-1:
+#                 raise e
+    ######################################################
+    V,S,_=np.linalg.svd(L,full_matrices=False)
     S=S.real
     V=V.real
+    ii=np.argsort(S)
+    S=S[ii]
+    V=V[:,ii]
     return S,V
 def proposalCluster(S,eps=0.2):
     '''
@@ -123,8 +142,9 @@ def getCluster(K,eigValues):
     '''
     提取特征eigValues[:,1:K],然后运行分类算法
     '''
+    if K==1:K=2
     features=eigValues[:,1:K]
-    model=KMeans(n_clusters=K)
+    model=KMeans(n_clusters=K,n_jobs=-1)
     model.fit(features)
     return model.labels_
 
@@ -226,7 +246,7 @@ def SubGraphPageRank(subgraphs,global_name_fn,topK=3,alpha=0.85,maxiters=300,eps
     for c,graphobj in subgraphs.items():
         g,g_2index,g_index2=graphobj['graph'],graphobj['2index'],graphobj['index2']
         
-        adjM=graph2Matrix(g,g_2index,norm=True)
+        adjM=graph2Matrix(g,g_2index,supportSparse=True)
         ###临接矩阵 转化 概率 转化 矩阵###################
         #注意1 要对 "一行" 归一化,因为一行表示 到 其他 的转换
         #注意2 要 "转置" adjcent Matrix(如果是非对称),因为adjcent Matrix "一行" 表示  到其他 节点

@@ -28,14 +28,31 @@ def createDefaultConfig():
     }
     d['job2_output']='tmp/input/input_job3/'
 
+    #for face identify
+    d['face_iditify']='facenet'
+
     d['facenet_pretained_model']='casia-webface'
     d['facenet_image_size']=160
     d['facenet_batch_size']=4
+
+
+    d['arcface_arch']='resnet' #或者mobilefacenet
+    d['arcface_modelpath']='arcface_pytorch/weights/model_ir_se50.pth'
+    d['arcface_net_depth'] = 50
+    d['arcface_drop_ratio']=0.6
+    d['arcface_net_mode']='ir_se'
+    d['arcface_image_size']=112
+
+
     d['job3_output']='tmp/input/final'
     with open('config.json','w') as fs:
         json.dump(d,fs,indent=1)
 def loadConfig():
-    with open('config.json','r') as fs:
+    import os
+
+    path=os.path.join((os.path.dirname(__file__)),'config.json')
+
+    with open(path,'r') as fs:
         config=json.load(fs)
         config['yolo_img_size']=tuple(config['yolo_img_size'])
 
