@@ -1,6 +1,7 @@
 {
- "source": "/cfai/cluster/pre/*.json",
- "target": "/cfai/cluster/tgt",
+ "debug": true,
+ "source": "test/src/*.json",
+ "target": "test/tgt",
  "colors": [
   "#E25D68",
   "#8BC34A",
@@ -22,7 +23,7 @@
   "#FFEB3B"
  ],
  "refresh_interval": 1,
- "proposal_eps": 0.3,
+ "proposal_eps": 0.5,
  "pagerank_eps": 0.01,
  "pagerank_alpha": 0.85,
  "pagerank_topk": -1,
@@ -33,5 +34,8 @@
  "canvas_seed": 0,
  "canvas_pad": 0,
  "eig_maxtry": 5,
- "eig_supportDim": 500
+ "eig_supportDim": 500,
+ "max_clusters": 18,
+ "minNode": 10,
+ "max_complex": 1.8
 }

@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from yolov3 import CCPD_YOLO_Detector
-from facenet_pytorch import MTCNN,InceptionResnetV1
+from facenet_pytorch import InceptionResnetV1
+from mtcnn_pytorch import MTCNN
 from time import sleep
 import glob
 from utils import readVideo,ioa,videoWriter,prewhiten
@@ -14,6 +15,8 @@ import numpy as np
 import torch
 from config import loadConfig
 from tqdm import tqdm
+from PIL import Image
+
 def getId(filename):
     bs=os.path.basename(filename)
     ii=bs.index('.')
@@ -141,24 +144,14 @@ class ObjDetectionService(BaseService):
 class FaceDetectionService(BaseService):
 
     def __init__(self,config):
-        device=config['device']
-        self.det=MTCNN(
-            image_size=config['mtcnn']['out_image_size'],
-            margin=0,
-            min_face_size=config['mtcnn']['min_face_size'],
-            thresholds=config['mtcnn']['thresholds'],
-            factor=config['mtcnn']['factor'],
-            prewhiten=False,
-            select_largest=True,#True,boxes按照面积的大小降序排列
-            keep_all=True,
-            device=device
-        )
+        self.device=config['device']
+        self.det=MTCNN(self.device)
         self.refresh_interval=config['yolo_refresh_interval']
         self.inputpath=os.path.join(config['job1_output'],'*.json')
         self.config=config
         self.outputpath=config['job2_output']
         print('完成了人脸检测的初始化')
-    def _insertFace(self,objs,faceboxes):
+    def _insertFace(self,objs,faceboxes,landmarks):
         if faceboxes is None or len(faceboxes)==0:
             return
         indexes=[]
@@ -172,17 +165,18 @@ class FaceDetectionService(BaseService):
             face_person=ioa(faceboxes,personboxes).argmax(axis=1)
             for faceindex,person_index in enumerate(face_person):
                 obj_index=indexes[person_index]
-                objs[obj_index]['face_box']=list(faceboxes[faceindex])
-        else:
-            for face in faceboxes:
-                newperson = {
-                    'id': str(uuid.uuid1()).replace('-', ''),
-                    'type': 'person',
-                    'confident': 0.0,
-                    'box': list(face),
-                    'face_box': list(face)
-                }
-                objs.append(newperson)
+                objs[obj_index]['face_box']=faceboxes[faceindex].tolist()
+                objs[obj_index]['landmark']=landmarks[faceindex].ravel().tolist()
+        # else:
+        #     for face in faceboxes:
+        #         newperson = {
+        #             'id': str(uuid.uuid1()).replace('-', ''),
+        #             'type': 'person',
+        #             'confident': 0.0,
+        #             'box': list(face),
+        #             'face_box': list(face)
+        #         }
+        #         objs.append(newperson)
 
     def _process(self,filename):
         '''
@@ -207,9 +201,14 @@ class FaceDetectionService(BaseService):
                 for t in tqdm(range(frames)):
                     retval, frame = stream.read()
                     if not retval: break
-                    _,faceboxes = self.det(frame)
+                    frame=frame[:,:,::-1]
+
+                    faceboxes,landmarks=self.det.detect_faces(Image.fromarray(frame),
+                                          self.config['mtcnn']['min_face_size'],
+                                          self.config['mtcnn']['thresholds'])
+
                     objs_at_t=final['track']['objs'][t]
-                    self._insertFace(objs_at_t,faceboxes)
+                    self._insertFace(objs_at_t,faceboxes,landmarks)
                 self._after_precessing(final,videofile,filename)
                 print('任务2:%s完成'%videofile)
         except Exception as e:
@@ -342,14 +341,14 @@ if __name__ == "__main__":
     threads=[]
 
     config=loadConfig()
-    service1=ObjDetectionService(config)
-    threads.append(MyWorker(service1))
+    # service1=ObjDetectionService(config)
+    # threads.append(MyWorker(service1))
 
     service2=FaceDetectionService(config)
     threads.append(MyWorker(service2))
-
-    service3=FaceFeatureService(config)
-    threads.append(MyWorker(service3))
+    #
+    # service3=FaceFeatureService(config)
+    # threads.append(MyWorker(service3))
 
     for t in threads:
         t.start()

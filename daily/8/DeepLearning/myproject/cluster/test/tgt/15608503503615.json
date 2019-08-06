@@ -1,0 +1,34 @@
+{
+ "edges": [],
+ "success": true,
+ "nodes": [
+  {
+   "size": 3,
+   "name": "\u5f20\u4e09",
+   "y": 1458,
+   "topk_value": 100.0,
+   "x": 918,
+   "topk": 10,
+   "phone": "13333333333",
+   "id": "13333333333",
+   "rank": 0,
+   "type": "star",
+   "color": "#E25D68",
+   "no_edge": true
+  },
+  {
+   "size": 3,
+   "name": "\u674e\u56db",
+   "y": 261,
+   "topk_value": 100.0,
+   "x": 1849,
+   "topk": 10,
+   "phone": "13895652541",
+   "id": "13895652541",
+   "rank": 0,
+   "type": "star",
+   "color": "#E25D68",
+   "no_edge": true
+  }
+ ]
+}

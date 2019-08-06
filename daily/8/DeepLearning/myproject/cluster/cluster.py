@@ -7,7 +7,7 @@ import glob
 import os
 from collections import OrderedDict
 from utils import *
-
+from utilsHelper import clusterHelper
 
 
 def printProcess(fn):
@@ -138,10 +138,14 @@ def calcRelation(filename,config):
         G, Id2Index, Index2Id, jsonObj = makeChengfGraph(filename)
         #############根据临界矩阵进行谱分类######################
         L = LaplacianMatrix(graph2Matrix(G,norm=False))
-        S, V = eig(L,maxK=config['eig_maxtry'],supportDim=config['eig_supportDim'])
-        K = proposalCluster(S, config['proposal_eps'])
-        if K>=len(config['colors']):K=len(config['colors'])
-        labels = getCluster(K, V)
+
+        ########################老方法#############################################
+        # S, V = eig(L,maxK=config['eig_maxtry'],supportDim=config['eig_supportDim'])
+        # K = proposalCluster(S, config['proposal_eps'])
+        # if K>=len(config['colors']):K=len(config['colors'])
+        # labels = getCluster(K, V)
+        ########################新方法#############################################
+        labels=clusterHelper(L,makK=config['max_clusters'],minNode=config['minNode'],complex=config['max_complex'])
 
         #######################生成子图后,Page rank###########
         graphs=get_subGraph(G, labels)
@@ -168,7 +172,8 @@ def calcRelation(filename,config):
                  id2Index=Id2Index,
                  colors=config['colors'])
     except Exception as e:
-        # raise e
+        if config['debug']:
+            raise e
         saveError(filename, config['target'], e)
 
 if __name__ == '__main__':

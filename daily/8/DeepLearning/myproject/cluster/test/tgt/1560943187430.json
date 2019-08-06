@@ -1,0 +1,20 @@
+{
+ "edges": [],
+ "success": true,
+ "nodes": [
+  {
+   "size": 3,
+   "name": "\u5f20\u4e09",
+   "y": 1702,
+   "topk_value": 100.0,
+   "x": 1719,
+   "topk": 10,
+   "phone": "13881274666",
+   "id": "13881274666",
+   "rank": 0,
+   "type": "star",
+   "color": "#E25D68",
+   "no_edge": true
+  }
+ ]
+}

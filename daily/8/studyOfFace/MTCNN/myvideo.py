@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 from detect import Detector_tf,drawDectectBox,drawLandMarks
-frame=cv2.resize(frame,(320,480))
+#frame=cv2.resize(frame,(320,480))
 def bigPicture(a,b,c,d,h=None,w=None):
     if h:
         a=cv2.resize(a, (w, h), interpolation=cv2.INTER_AREA)
@@ -45,7 +45,7 @@ while True:
     # ret=True
     if ret:
         stage_box=df.detect_face(frame)
-
+        print(frame.dtype)
         pImage=drawDectectBox(frame, stage_box[0], scores=stage_box[0][:, 4])
         if len(stage_box)>1:
             rImage=drawDectectBox(frame, stage_box[1], scores=stage_box[1][:, 4])

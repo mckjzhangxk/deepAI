@@ -1,0 +1,1 @@
+from mtcnn_pytorch.mtcnn import MTCNN

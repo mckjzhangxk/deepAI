@@ -30,6 +30,7 @@ def makeChengfGraph(filepath):
     for edge in jsonObj['edges']:
         s = edge['source']
         t = edge['target']
+
         nodename.add(s)
         nodename.add(t)
 
@@ -43,7 +44,9 @@ def makeChengfGraph(filepath):
         t = edge['target']
         weight=edge['size'] if 'size' in edge else 1.0
         weight=weight if weight>0 else 1.0
+
         weight=1.0
+
         # print('xxxxxxxxxxxxxxxx',weight)
         sid = Id2Index[s]
         tid = Id2Index[t]

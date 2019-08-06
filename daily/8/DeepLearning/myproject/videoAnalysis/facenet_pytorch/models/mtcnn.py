@@ -318,7 +318,7 @@ class MTCNN(nn.Module):
                 )[::-1]
             ]
         
-        return boxes[:, 0:4].astype(np.int).tolist(), boxes[:, 4].tolist()
+        return boxes.astype(np.int).tolist(), boxes.tolist()
 
 
 def prewhiten(x):
