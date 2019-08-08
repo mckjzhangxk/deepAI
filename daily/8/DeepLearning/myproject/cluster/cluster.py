@@ -1,8 +1,4 @@
-from sklearn.cluster import KMeans
-import numpy as np
-import networkx as nx
 from time import  sleep
-import json
 import glob
 import os
 from collections import OrderedDict
@@ -58,9 +54,10 @@ def response(jsonobj,src_file,tgt_dir,labels,cluster_rank,id2Index,colors,pos=No
             node['color']=color
 
             if pos is not None:
+
                 x,y=pos[index]
-                node['x']=config['pad']+int(x)
-                node['y']=config['pad']+int(y)
+                node['x']=int(x)
+                node['y']=int(y)
         else:
             node['no_edge']=True
             node['topk']=len(nodeId)-1
@@ -102,25 +99,7 @@ def saveError(src, tgt_dir, err):
     if os.path.exists(src):
         os.remove(src)
 
-def computeSpringPosition(G, w=1024, h=768, seed=0):
-    '''
-    传入图,传出的是numpy 数组
-    pos[i]=表示G的节点i的坐标
-    :param G: 
-    :param w: 
-    :param h: 
-    :param seed: 
-    :return: 
-    '''
-    pos = nx.spring_layout(G, seed=seed)
-    _pos = []
-    for p, v in pos.items():
-        _pos.append(v)
-    pos = np.array(_pos)
-    pos_min = np.min(pos, axis=0, keepdims=True)
-    pos_max = np.max(pos, axis=0, keepdims=True)
-    pos = (pos - pos_min) / (pos_max - pos_min)
-    return pos * np.array([[w, h]])
+
 
 @printProcess
 def calcRelation(filename,config):
@@ -155,10 +134,12 @@ def calcRelation(filename,config):
                          maxiters=config['pagerank_maxiters'],
                          eps=config['pagerank_eps'])
         #####################################################
-        if config['canvas_pos']==True:
-            pos=computeSpringPosition(G,w=config['canvas_width'],
-                                        h=config['canvas_height'],
-                                        seed=config['canvas_seed'])
+        if config['canvas_pos']==True and len(G.edges())>0:
+            pos=computeSpringPosition(graphs,
+                                      jdata=jsonObj,
+                                      seed=config['canvas_seed'],
+                                      label=labels,
+                                      layout_iters=config['canvas_iters'])
         else:
             pos=None
         #####################################################

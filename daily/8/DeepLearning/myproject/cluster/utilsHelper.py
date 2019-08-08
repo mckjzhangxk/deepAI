@@ -1,19 +1,55 @@
 from utils import *
 import numpy as np
 
-def pickBest(queue):
+
+def compute_complex(L):
+    '''
+    计算edge/node
+    :param L: 
+    :return: 
+    '''
+    return np.diag(L).sum()/2/len(L)
+
+def pickBest(queue,maxComplex,minNode):
+    '''
+    每次选择分割,选择 的 图 应该是 节点数最多的，
+    
+    但是进行选择的 图要满足一下条件：
+    1.图足够复杂：complex>maxComplex
+    2.图不能太小:num(node)>minNode
+    
+    
+    如果这样的集合不是空，在这个集合中
+    选择节点最大的那个图返回，进行分割
+    
+    否则返回none
+    
+    :param queue: 
+    :return: 
+    '''
     maxsofar=-1
     popindex=-1
     for i,(L,indexes), in enumerate(queue):
-        cm=np.diag(L).sum()/2/len(L)
-        if cm>maxsofar:
-            popindex=i
-            maxsofar=cm
-            # maxsofar=len(indexes)
+        cm=compute_complex(L)
 
-    return queue.pop(popindex)
+        if cm <maxComplex or len(L)<=minNode:
+            continue
+
+        if len(indexes)>maxsofar:
+            popindex=i
+            maxsofar=len(indexes)
+
+    if popindex>-1:
+        return queue.pop(popindex)
+    else:return None
 def getPairCluster(L):
+
     def updateDiag(l):
+        '''
+        对子图进行修正
+        :param l: 
+        :return: 
+        '''
         lsum=l.sum(axis=1)
         i1,i2=np.diag_indices_from(l)
         l[i1,i2]-=lsum
@@ -51,13 +87,24 @@ def clusterHelper(L,makK=16,minNode=5,complex=1.8):
     initLen=len(queue)
 
     for k in range(makK-initLen):
-        L,sp=pickBest(queue)
-        cm=np.diag(L).sum()/2/len(L)
-        print(len(L),cm)
+
+
+        best=pickBest(queue,maxComplex=complex,minNode=minNode)
+        if best is None:
+            break
+        L, sp=best
+
+        cm=compute_complex(L)
+        print('分割的节点数:',len(L),'复杂度:',cm)
         if cm<complex:
+            raise ValueError('should not happened')
             queue.append((L,sp))
             break
-        if len(sp)<minNode:break
+
+        if len(sp)<minNode:
+            raise ValueError('should not happened')
+            queue.append((L, sp))
+            break
 
         L1,L2,c1,c2=getPairCluster(L)
         if len(c1)>0:
@@ -70,12 +117,12 @@ def clusterHelper(L,makK=16,minNode=5,complex=1.8):
         labels[lab]=i
     return labels.astype(np.int32)
 # import numpy as np
-# if __name__ == '__main__':
-#     # a=np.random.rand(10,10)
-#     # getPairCluster(a)
-#     G, Id2Index, Index2Id, _ = makeChengfGraph('resbak/15644536933815.json')
-#     L = LaplacianMatrix(graph2Matrix(G, norm=False))
-#     labels = clusterHelper(L)
-#
-#     # print(np.histogram(labels))
-#     print(np.unique(labels))
+if __name__ == '__main__':
+    # a=np.random.rand(10,10)
+    # getPairCluster(a)
+    G, Id2Index, Index2Id, _ = makeChengfGraph('mydata/15649923023463.json')
+    L = LaplacianMatrix(graph2Matrix(G, norm=False))
+    labels = clusterHelper(L,makK=25)
+
+    # print(np.histogram(labels))
+    print(np.unique(labels))

@@ -151,6 +151,15 @@ def get_reference_facial_points(output_size=None,
 
 
 def cropBox(img, cropbox, resizebox=(112, 112), margin=0):
+    '''
+    从img给出的区域cropbox,切割出图片，然后缩放resizebox,
+     返回（切割后的图片，切割的区域）
+    :param img: 
+    :param cropbox: 
+    :param resizebox: 
+    :param margin: 
+    :return: 
+    '''
     imgW, imgH = img.size
 
     x1, y1, x2, y2 = cropbox[0], cropbox[1], cropbox[2], cropbox[3]
@@ -167,7 +176,6 @@ def cropBox(img, cropbox, resizebox=(112, 112), margin=0):
 
 
     r = img.crop((x1, y1, x2, y2)).resize(resizebox)
-    r.show('xxx')
     return r, cropBox
 
 
@@ -211,10 +219,20 @@ def flipLandMark(landmark,W=112):
 
 class AlignFace():
     def __init__(self,img_size=(112,112)):
-        self.ref=get_reference_facial_points(default_square=True)
+        self.ref=get_reference_facial_points(output_size=img_size,inner_padding_factor=1e-4,default_square=True)
         self.img_size=img_size
 
     def align(self,img,bbox,landmark,margin,flag=0):
+        '''
+        返回对齐后的图片，图片被缩放到了相应的"尺寸"了
+        
+        :param img: 
+        :param bbox: 
+        :param landmark: 
+        :param margin: 
+        :param flag: 
+        :return: 
+        '''
         img,bbox,landmark=self._crop_(img,bbox,landmark,margin)
 
         if flag==0:
@@ -228,6 +246,15 @@ class AlignFace():
         return Image.fromarray(I)
 
     def _crop_(self,img,bbox,landmark,margin):
+        '''
+        切割出 给定的 “bbox”,调整相应的landmark,
+        返回新的 (图片,切割后的bbox,五官landmark)
+        :param img: 
+        :param bbox: 
+        :param landmark: 
+        :param margin: 
+        :return: 
+        '''
         img,bbox=cropBox(img,bbox,self.img_size,margin)
         landmark=scaleLandmark(bbox,landmark,self.img_size)
         return img,bbox,landmark

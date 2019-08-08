@@ -5,7 +5,11 @@ def defaultConfig():
     d['debug']=True
     d['source']='test/src/*.json'
     d['target']='test/tgt'
-    d['colors']=["#E25D68","#8BC34A","#03A9F4","#AB47BC","#ff9800","#3f51b5", "#EC407A", "#009688", "#8D6E63",  "#FF7043","#FFCA28", "#4CAF50", "#5C6BCD", "#827717", "#00695C", "#7E57C2", "#015798", "#FFEB3B"]
+    d['colors']=["#E25D68","#8BC34A","#03A9F4","#AB47BC","#ff9800","#3f51b5", "#EC407A",
+                 "#009688", "#8D6E63",  "#FF7043","#FFCA28", "#4CAF50",
+                 "#5C6BCD", "#827717", "#00695C", "#7E57C2", "#015798", "#FFEB3B",
+                 "#89BEB2","#823935","#C9BA83","#DED38C","#DE9C53",
+                 "#B2C8BB","#75794A","#458994","#725334","#F9CDAD"]
     d['refresh_interval']=1
 
 
@@ -15,18 +19,16 @@ def defaultConfig():
     d['pagerank_topk']=-1
     d['pagerank_maxiters']=300
 
-    d['canvas_pos']=False
-    d['canvas_width']=1024
-    d['canvas_height']=768
+    d['canvas_pos']=True
     d['canvas_seed'] = 0
-    d['canvas_pad']=0
+    d['canvas_iters']=100
 
     d['eig_maxtry']=5
     d['eig_supportDim']=500
 
 
     d['max_clusters']=len(d['colors'])
-    d['minNode']=10
+    d['minNode']=30
     d['max_complex']=1.8
 
     with open('config.json','w') as fs:

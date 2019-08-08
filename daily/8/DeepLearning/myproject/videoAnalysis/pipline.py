@@ -16,6 +16,7 @@ import torch
 from config import loadConfig
 from tqdm import tqdm
 from PIL import Image
+from utils import AlignFace
 
 def getId(filename):
     bs=os.path.basename(filename)
@@ -249,21 +250,28 @@ class FaceFeatureService(BaseService):
         self.batchsize=config['facenet_batch_size']
         self.imagesize=config['facenet_image_size']
 
+        self.alignUtils=AlignFace((self.imagesize,self.imagesize))
         self.model = InceptionResnetV1(pretrained=config['facenet_pretained_model']).to(self.device).eval()
         print('完成了人脸特征提取的初始化')
 
     def _get_input(self,frame, obj):
+        frame = frame[:, :, ::-1]
         x1,y1,x2,y2=obj['face_box']
         x1=max(x1,0)
         x2 = max(x2, 0)
         y1 = max(y1, 0)
         y2 = max(y2, 0)
 
-        I=frame[y1:y2,x1:x2]
-        I=I[:,:,::-1]
-        I=cv2.resize(I,(self.imagesize,self.imagesize))
-        I=np.transpose(I,(2,0,1))
 
+        landmark=np.array(obj['landmark']).reshape((5,2))
+        frame=self.alignUtils.align(Image.fromarray(frame),
+                              (x1,y1,x2,y2),landmark,
+                              self.config['face_align_margin'],
+                              self.config['face_align_type'])
+
+        #一下是针对facenet的操作。。。。。
+        I=np.array(frame)
+        I=np.transpose(I,(2,0,1))
         I=prewhiten(I)
 
         return (obj,I)
@@ -344,11 +352,11 @@ if __name__ == "__main__":
     # service1=ObjDetectionService(config)
     # threads.append(MyWorker(service1))
 
-    service2=FaceDetectionService(config)
-    threads.append(MyWorker(service2))
+    # service2=FaceDetectionService(config)
+    # threads.append(MyWorker(service2))
     #
-    # service3=FaceFeatureService(config)
-    # threads.append(MyWorker(service3))
+    service3=FaceFeatureService(config)
+    threads.append(MyWorker(service3))
 
     for t in threads:
         t.start()

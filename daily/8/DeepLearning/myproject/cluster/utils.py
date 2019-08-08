@@ -72,7 +72,8 @@ def graph2Matrix(G,indexFunc=None,norm=True,supportSparse=False):
     for nodeIdx,adj in G.adjacency():
         for adjIdx,w in adj.items():
             s,t= (indexFunc[nodeIdx],indexFunc[adjIdx]) if indexFunc else (nodeIdx,adjIdx)    
-            A[s,t]=1 #w['weight'] if 'weight' in w else 1
+            if s!=t:
+                A[s,t]=1 #w['weight'] if 'weight' in w else 1
     if norm:
         A=A/np.sum(A,axis=1,keepdims=True)
     if supportSparse and isSparse(A):
@@ -268,3 +269,72 @@ def SubGraphPageRank(subgraphs,global_name_fn,topK=3,alpha=0.85,maxiters=300,eps
                          'top_index':top_gloabl_index,
                          'value':top_value}
     return cluster_rank
+
+
+def computeLayout(subgraph, seed, iterations=100):
+    H = nx.Graph()
+    for c, sub in subgraph.items():
+        H.add_edges_from(sub['graph'].edges())
+    pos = nx.spring_layout(H, seed=seed, iterations=iterations)
+    pos = np.array([pos[i] for i in range(len(pos))])
+
+    pos_min = np.min(pos, axis=0, keepdims=True)
+    pos_max = np.max(pos, axis=0, keepdims=True)
+    pos = (pos - pos_min) / (pos_max - pos_min)
+
+    return pos
+
+
+def basicLayout(jsondata):
+    allnodes = [[node['x'], node['y']] for node in jsondata['nodes']]
+    allnodes = np.array(allnodes)
+    return allnodes
+
+def scalePosition(pos, label, factor=1.0):
+    def aa(P):
+        center = P.mean(axis=0, keepdims=True)
+        P_center = P - center
+        M = P_center.T.dot(P_center)
+        U, S, V = np.linalg.svd(M, False)
+        u1, u2 = U[:, 0], U[:, 1]
+        Q = np.array([u1, u2])
+
+        #         diag=factor*np.diag([S[0],S[1]])
+        diag = np.eye(2)
+        diag[0, 0] = S[1] / S[0]
+
+        r = P_center.dot(Q).dot(factor * diag).dot(Q.T)
+        r = r + center
+        return r
+
+    pos = np.array([pos[i] for i in range(len(pos))])
+    pos = pos.copy()
+    clusters = np.unique(label)
+    for k in clusters:
+        mask = (label == k)
+        cls_k = pos[mask]
+
+        pos[mask] = aa(cls_k)
+    return pos
+def convert(pos, ref):
+    '''
+    pos:0,1 scale (N',2)
+    ref:unknown scale (N,2)
+    '''
+
+    ref_min = np.min(ref, axis=0, keepdims=True)
+    ref_max = np.max(ref, axis=0, keepdims=True)
+    ref_wh = ref_max - ref_min
+
+    # r = pos * 1000 + ref_min
+    minxy=pos.min(axis=0)
+    r=(pos-minxy+0.1)*5000
+    return r
+
+
+def computeSpringPosition(subgraph,jdata, label,seed=0, layout_iters=100):
+    refs = basicLayout(jdata)
+    pos = computeLayout(subgraph, seed, layout_iters)
+    pos=scalePosition(pos,label,factor=4.0)
+    pos = convert(pos, refs)
+    return pos

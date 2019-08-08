@@ -28,9 +28,13 @@ def createDefaultConfig():
     }
     d['job2_output']='tmp/input/input_job3/'
 
+    #for face align
+    d['face_align_margin']=40
+    d['face_align_type']=0
+
+
     #for face identify
     d['face_iditify']='facenet'
-
     d['facenet_pretained_model']='casia-webface'
     d['facenet_image_size']=160
     d['facenet_batch_size']=4

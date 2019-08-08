@@ -14,23 +14,25 @@
  "job1_output": "tmp/input/input_job2/",
  "face_detector": "mtcnn",
  "mtcnn": {
-  "factor": 0.709,
+  "out_image_size": 160,
+  "prewhiten": true,
+  "min_face_size": 20,
   "thresholds": [
    0.6,
    0.7,
    0.7
   ],
-  "out_image_size": 160,
-  "min_face_size": 20,
-  "prewhiten": true
+  "factor": 0.709
  },
  "job2_output": "tmp/input/input_job3/",
+ "face_align_margin": 40,
+ "face_align_type": 0,
  "face_iditify": "facenet",
  "facenet_pretained_model": "casia-webface",
  "facenet_image_size": 160,
  "facenet_batch_size": 4,
  "arcface_arch": "resnet",
- "arcface_modelpath": "/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/videoAnalysis/arcface_pytorch/weights/model_ir_se50.pth",
+ "arcface_modelpath": "arcface_pytorch/weights/model_ir_se50.pth",
  "arcface_net_depth": 50,
  "arcface_drop_ratio": 0.6,
  "arcface_net_mode": "ir_se",
