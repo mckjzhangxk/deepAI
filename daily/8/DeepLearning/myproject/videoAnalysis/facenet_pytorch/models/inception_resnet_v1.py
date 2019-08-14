@@ -4,8 +4,8 @@ from torch.nn import functional as F
 import requests
 from requests.adapters import HTTPAdapter
 import os
-
-
+import numpy as np
+from utils import prewhiten
 class BasicConv2d(nn.Module):
     '''
     conv+bn+relu
@@ -333,6 +333,17 @@ class InceptionResnetV1(nn.Module):
             x = self.softmax(x)
         return x
 
+    def _preprocessing(self,frame):
+        #一下是针对facenet的操作。。。。。
+        I=np.array(frame)
+        I = I[:, :, ::-1]
+        I=np.transpose(I,(2,0,1))
+        I=prewhiten(I)
+        return I
+    def extractFeature(self,queue,device):
+        Iin = torch.stack(queue, 0).to(device)
+        faceids = self.forward(Iin).cpu().data.numpy().tolist()
+        return faceids
 
 def load_weights(mdl, name):
     """Download pretrained state_dict and load into model.

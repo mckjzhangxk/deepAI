@@ -1,6 +1,6 @@
 {
  "debug": true,
- "device": "cpu",
+ "device": "cuda",
  "skipRate": 10,
  "job1_input": "tmp/input/input_job1/*.avi",
  "yolo_conf": "yolov3/cfg/yolov-obj.cfg",
@@ -14,28 +14,29 @@
  "job1_output": "tmp/input/input_job2/",
  "face_detector": "mtcnn",
  "mtcnn": {
-  "out_image_size": 160,
-  "prewhiten": true,
-  "min_face_size": 20,
   "thresholds": [
    0.6,
    0.7,
    0.7
   ],
-  "factor": 0.709
+  "min_face_size": 20,
+  "out_image_size": 160,
+  "factor": 0.709,
+  "prewhiten": true
  },
  "job2_output": "tmp/input/input_job3/",
  "face_align_margin": 40,
  "face_align_type": 0,
- "face_iditify": "facenet",
+ "face_iditify": "arcface",
  "facenet_pretained_model": "casia-webface",
  "facenet_image_size": 160,
  "facenet_batch_size": 4,
  "arcface_arch": "resnet",
- "arcface_modelpath": "arcface_pytorch/weights/model_ir_se50.pth",
+ "arcface_modelpath": "arcface/models/model",
  "arcface_net_depth": 50,
  "arcface_drop_ratio": 0.6,
  "arcface_net_mode": "ir_se",
  "arcface_image_size": 112,
+ "arcface_batch_size": 8,
  "job3_output": "tmp/input/final"
 }

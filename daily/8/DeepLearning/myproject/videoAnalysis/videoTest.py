@@ -4,32 +4,38 @@ import random
 from utils import ioa,videoWriter
 from facenet_pytorch.models.inception_resnet_v1 import InceptionResnetV1
 from utils import prewhiten
+from mtcnn_pytorch import MTCNN
 import numpy as np
 import glob
 import os
 import torch
 from PIL import ImageFont,ImageDraw,Image
 import tqdm
-
+from arcface import ArcFace
+from utils.alignUtils import AlignFace
 def findSomeBody(model,detectpath,imagesize=160):
     names=[]
     features=[]
     for f in glob.glob(detectpath):
         I = cv2.imread(f)
-        I=I[:,:,::-1]
-        I = cv2.resize(I, (imagesize, imagesize))
-        I = np.transpose(I, (2, 0, 1))
-        # I=np.expand_dims(I,0)
-        I = prewhiten(I)
+        import PIL
+        faceboxes, landmarks = det.detect_faces(PIL.Image.fromarray(I[:,:,::-1]))
+
+        frame=alignutils.align(Image.fromarray(I),
+                              faceboxes[0][:4],landmarks[0],
+                              40,
+                              0)
+
+        I = cv2.resize(np.array(frame), (imagesize, imagesize))
+
         names.append(os.path.basename(f)[0:-4])
-        features.append(I)
-    I=torch.stack(features,0)
-    faceids = model(I).cpu().data.numpy()
+        features.append(model._preprocessing(I))
+    faceids = model.extractFeature(features,device=device)
     return names,faceids
 
 
 def dist(a,b):
-    r=np.abs((a*b).sum(axis=1))
+    r=((a*b).sum(axis=1))
     a=np.linalg.norm(a,axis=1)
     b =np.linalg.norm(b)
     return r/a/b
@@ -122,14 +128,19 @@ def debug(videopath,jsonpath):
     writer.release()
     cap.release()
 
+device='cuda'
+imgsize=112
+det=MTCNN(device)
+alignutils=AlignFace((imgsize,imgsize))
+# model=InceptionResnetV1(pretrained='casia-webface').to(device).eval()
+model=ArcFace('arcface/models/model',device,imgsize)
+# name,feature=findSomeBody(model,'data/infinitywar/*.png',imgsize)
+name,feature=findSomeBody(model,'data/spiderman/*.png',imgsize)
 
-model=InceptionResnetV1(pretrained='casia-webface').eval()
-# name,feature=findSomeBody(model,'data/infinitywar/*.png')
-# # name,feature=findSomeBody(model,'data/spiderman/*.png')
-# if __name__ == '__main__':
-#     # debug('data/spman.avi','tmp/input/final/spman.json')
-#     debug('data/war.avi', 'tmp/input/final/war.json')
+if __name__ == '__main__':
+    debug('data/spman.avi','tmp/input/final/spman.json')
+    # debug('data/war.avi', 'tmp/input/final/war.json')
 
-name,feature=findSomeBody(model,'wang/*.png')
-for n,f in zip(name,feature):
-    print(n,f.tolist())
+# name,feature=findSomeBody(model,'wang/*.png')
+# for n,f in zip(name,feature):
+#     print(n,f.tolist())

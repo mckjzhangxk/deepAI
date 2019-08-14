@@ -1,0 +1,1 @@
+from arcface.model import ArcFace

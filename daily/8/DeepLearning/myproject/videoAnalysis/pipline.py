@@ -247,37 +247,46 @@ class FaceFeatureService(BaseService):
 
         self.config = config
         self.outputpath = config['job3_output']
-        self.batchsize=config['facenet_batch_size']
-        self.imagesize=config['facenet_image_size']
 
-        self.alignUtils=AlignFace((self.imagesize,self.imagesize))
-        self.model = InceptionResnetV1(pretrained=config['facenet_pretained_model']).to(self.device).eval()
+
+
+        if config['face_iditify']=='facenet':
+            self.model = InceptionResnetV1(pretrained=config['facenet_pretained_model']).to(self.device).eval()
+            self.batchsize=config['facenet_batch_size']
+            self.imagesize=config['facenet_image_size']
+        elif config['face_iditify']=='arcface':
+            from arcface import ArcFace
+            self.model=ArcFace(config['arcface_modelpath'],self.device,112)
+            self.imagesize=112
+            self.batchsize = config['arcface_batch_size']
+        self.alignUtils = AlignFace((self.imagesize, self.imagesize))
         print('完成了人脸特征提取的初始化')
 
     def _get_input(self,frame, obj):
-        frame = frame[:, :, ::-1]
+        '''
+        frame is a numpy array,have channel BGR
+        :param frame:
+        :param obj:
+        :return:
+        '''
         x1,y1,x2,y2=obj['face_box']
         x1=max(x1,0)
         x2 = max(x2, 0)
         y1 = max(y1, 0)
         y2 = max(y2, 0)
 
-
+        #########################ALIGN FACE####################################
         landmark=np.array(obj['landmark']).reshape((5,2))
         frame=self.alignUtils.align(Image.fromarray(frame),
                               (x1,y1,x2,y2),landmark,
                               self.config['face_align_margin'],
                               self.config['face_align_type'])
-
-        #一下是针对facenet的操作。。。。。
-        I=np.array(frame)
-        I=np.transpose(I,(2,0,1))
-        I=prewhiten(I)
-
+        #############################################################
+        #now frame is a PIL image.channel order did not change
+        I=self.model._preprocessing(frame)
         return (obj,I)
     def _handle(self,queue):
-        Iin=torch.stack([img for obj,img in queue],0).to(self.device)
-        faceids=self.model(Iin).cpu().data.numpy().tolist()
+        faceids=self.model.extractFeature([img for obj, img in queue],self.device)
         for (obj,img),faceid in zip(queue,faceids):
             del img
             obj['face_id']=faceid
@@ -349,11 +358,11 @@ if __name__ == "__main__":
     threads=[]
 
     config=loadConfig()
-    # service1=ObjDetectionService(config)
-    # threads.append(MyWorker(service1))
+    service1=ObjDetectionService(config)
+    threads.append(MyWorker(service1))
 
-    # service2=FaceDetectionService(config)
-    # threads.append(MyWorker(service2))
+    service2=FaceDetectionService(config)
+    threads.append(MyWorker(service2))
     #
     service3=FaceFeatureService(config)
     threads.append(MyWorker(service3))

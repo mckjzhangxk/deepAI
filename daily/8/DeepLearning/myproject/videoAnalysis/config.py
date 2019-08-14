@@ -4,7 +4,7 @@ def createDefaultConfig():
     d=OrderedDict()
     
     d['debug']=True
-    d['device']='cpu'
+    d['device']='cuda'
     d['skipRate']=10
     #for object detection
     d['job1_input']='tmp/input/input_job1/*.avi'
@@ -34,19 +34,19 @@ def createDefaultConfig():
 
 
     #for face identify
-    d['face_iditify']='facenet'
+    d['face_iditify']='arcface'
     d['facenet_pretained_model']='casia-webface'
     d['facenet_image_size']=160
     d['facenet_batch_size']=4
 
 
     d['arcface_arch']='resnet' #或者mobilefacenet
-    d['arcface_modelpath']='arcface_pytorch/weights/model_ir_se50.pth'
+    d['arcface_modelpath']='arcface/models/model'
     d['arcface_net_depth'] = 50
     d['arcface_drop_ratio']=0.6
     d['arcface_net_mode']='ir_se'
     d['arcface_image_size']=112
-
+    d['arcface_batch_size']=8
 
     d['job3_output']='tmp/input/final'
     with open('config.json','w') as fs:
