@@ -294,16 +294,17 @@ def scalePosition(pos, label, factor=1.0):
     def aa(P):
         center = P.mean(axis=0, keepdims=True)
         P_center = P - center
-        M = P_center.T.dot(P_center)
-        U, S, V = np.linalg.svd(M, False)
-        u1, u2 = U[:, 0], U[:, 1]
-        Q = np.array([u1, u2])
+
+        U, S, VT = np.linalg.svd(P_center, False)
+
 
         #         diag=factor*np.diag([S[0],S[1]])
-        diag = np.eye(2)
-        diag[0, 0] = S[1] / S[0]
+        diag=np.linalg.pinv(np.diag(S))
 
-        r = P_center.dot(Q).dot(factor * diag).dot(Q.T)
+        diag=diag*factor*S[0]
+
+
+        r = P_center.dot(VT.T).dot(diag).dot(VT)
         r = r + center
         return r
 
@@ -335,6 +336,6 @@ def convert(pos, ref):
 def computeSpringPosition(subgraph,jdata, label,seed=0, layout_iters=100):
     refs = basicLayout(jdata)
     pos = computeLayout(subgraph, seed, layout_iters)
-    pos=scalePosition(pos,label,factor=4.0)
+    pos=scalePosition(pos,label,factor=3.0)
     pos = convert(pos, refs)
     return pos
