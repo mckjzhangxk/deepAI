@@ -33,9 +33,10 @@ def findSomeBody(model,detectpath,imagesize=160):
     faceids = model.extractFeature(features,device=device)
     return names,faceids
 
-
+aa=[]
 def dist(a,b):
     r=((a*b).sum(axis=1))
+    aa.append(np.mean(r))
     a=np.linalg.norm(a,axis=1)
     b =np.linalg.norm(b)
     return r/a/b
@@ -134,13 +135,16 @@ det=MTCNN(device)
 alignutils=AlignFace((imgsize,imgsize))
 # model=InceptionResnetV1(pretrained='casia-webface').to(device).eval()
 model=ArcFace('arcface/models/model',device,imgsize)
-# name,feature=findSomeBody(model,'data/infinitywar/*.png',imgsize)
-name,feature=findSomeBody(model,'data/spiderman/*.png',imgsize)
+name,feature=findSomeBody(model,'data/infinitywar/*.png',imgsize)
+# name,feature=findSomeBody(model,'data/spiderman/*.png',imgsize)
 
 if __name__ == '__main__':
-    debug('data/spman.avi','tmp/input/final/spman.json')
-    # debug('data/war.avi', 'tmp/input/final/war.json')
+    # debug('data/spman.avi','tmp/input/final/spman.json')
+    debug('data/war.avi', 'tmp/input/final/war.json')
+    import matplotlib.pyplot as plt
 
+    plt.hist(aa)
+    plt.show()
 # name,feature=findSomeBody(model,'wang/*.png')
 # for n,f in zip(name,feature):
 #     print(n,f.tolist())
