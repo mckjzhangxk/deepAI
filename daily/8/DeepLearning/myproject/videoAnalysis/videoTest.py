@@ -39,8 +39,11 @@ def dist(a,b):
     aa.append(np.mean(r))
     a=np.linalg.norm(a,axis=1)
     b =np.linalg.norm(b)
-    return r/a/b
+    rt= r/a/b
 
+    if np.mean(r)<0.05 and np.max(rt)>0.4:
+        print(np.mean(r),np.max(rt))
+    return rt
 def colorSchme(s):
     random.seed(hash(s) % 100000)
     return [random.randint(0, 255) for _ in range(3)]
@@ -78,7 +81,7 @@ def plotImage(obj,img):
     if 'face_box' in obj:
         h=label+str(obj['face_box'])
     color=colorSchme(h)
-    plot_one_box(boxes, img, color, label)
+    # plot_one_box(boxes, img, color, label)
     if 'face_box' in obj:
         face_box=obj['face_box']
         d=dist(feature,np.array(obj['face_id']))
@@ -141,6 +144,7 @@ name,feature=findSomeBody(model,'data/infinitywar/*.png',imgsize)
 if __name__ == '__main__':
     # debug('data/spman.avi','tmp/input/final/spman.json')
     debug('data/war.avi', 'tmp/input/final/war.json')
+    # debug('data/my.avi', 'tmp/input/final/my.json')
     import matplotlib.pyplot as plt
 
     plt.hist(aa)

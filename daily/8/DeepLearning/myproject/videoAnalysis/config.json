@@ -12,17 +12,26 @@
  ],
  "yolo_refresh_interval": 10,
  "job1_output": "tmp/input/input_job2/",
- "face_detector": "mtcnn",
+ "face_detector": "retinaface",
  "mtcnn": {
+  "prewhiten": true,
   "thresholds": [
    0.6,
    0.7,
    0.7
   ],
-  "min_face_size": 20,
   "out_image_size": 160,
-  "factor": 0.709,
-  "prewhiten": true
+  "min_face_size": 20,
+  "factor": 0.709
+ },
+ "retinaface": {
+  "thresh": 0.8,
+  "scale": [
+   1024,
+   1980
+  ],
+  "device": "cuda",
+  "model_path": "RetinaFace/model/R50"
  },
  "job2_output": "tmp/input/input_job3/",
  "face_align_margin": 40,

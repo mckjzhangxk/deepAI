@@ -28,6 +28,8 @@ def dumpFeature(prefix,model,outdir,batch=64,chucksize=1000):
     queue=[]
     features=[]
     chuckidx=0
+
+    ##########extract feature of every image##############
     for imgidxs in imgs:
         for id in imgidxs:
             s=reader.read_idx(id)
@@ -37,8 +39,8 @@ def dumpFeature(prefix,model,outdir,batch=64,chucksize=1000):
 
             if len(queue)==batch:
                 ########################
-
-                # features.append(model())
+                f=model.handle(queue)
+                features.append(f)
                 ########################
                 del queue
                 queue=[]
@@ -57,7 +59,7 @@ class Model():
         # self.model=InceptionResnetV1(pretrained='casia-webface').to(device).eval()
         self.model = ArcFace('arcface/models/model', device, imgsize)
         self.imgsize=imgsize
-
+        self.device=device
     def processInput(self,img):
         '''
         
@@ -74,7 +76,8 @@ class Model():
         I = cv2.resize(np.array(frame), (self.imgsize, self.imgsize))
         return self.model._preprocessing(I)
     def handle(self,queue):
-        pass
+        r=self.model.extractFeature(queue,self.device)
+        return np.array(r)
 
 if __name__ == '__main__':
     # device = 'cuda'

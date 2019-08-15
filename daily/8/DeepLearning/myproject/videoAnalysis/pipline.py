@@ -146,7 +146,15 @@ class FaceDetectionService(BaseService):
 
     def __init__(self,config):
         self.device=config['device']
-        self.det=MTCNN(self.device)
+        if config['face_detector']=='mtcnn':
+            self.det=MTCNN(self.device)
+        elif config['face_detector']=='retinaface':
+            from RetinaFace import RetinaFaceDetector
+            self.det = RetinaFaceDetector(config['retinaface']['model_path'],
+                                          device=config['retinaface']['device'],
+                                          scale=config['retinaface']['scale'],
+                                          thresh=config['retinaface']['thresh'])
+
         self.refresh_interval=config['yolo_refresh_interval']
         self.inputpath=os.path.join(config['job1_output'],'*.json')
         self.config=config

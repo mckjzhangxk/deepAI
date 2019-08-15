@@ -17,7 +17,7 @@ def createDefaultConfig():
     d['job1_output']='tmp/input/input_job2/'
 
     #for face detection
-    d['face_detector']='mtcnn'
+    d['face_detector']='retinaface'
 
     d['mtcnn']={
         'min_face_size':20,
@@ -25,6 +25,12 @@ def createDefaultConfig():
         'factor':0.709,
         'prewhiten':True,
         'out_image_size':160
+    }
+    d['retinaface']={
+        'model_path':'RetinaFace/model/R50',
+        'device':'cuda',
+        'scale':[1024,1980],
+        'thresh':0.8
     }
     d['job2_output']='tmp/input/input_job3/'
 
