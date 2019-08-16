@@ -7,10 +7,14 @@ from utils.alignUtils import AlignFace
 from arcface import ArcFace
 
 
-prefix='/home/zhangxk/AIProject/数据集与模型/arcface_dataset/faces_umd/train'
+def dumpFeature(prefix,model,outdir,batch=64,flush=5):
+    from pathlib import Path
+    p=Path(outdir)
+    if p.exists():
+        import shutil
+        shutil.rmtree(outdir)
+        p.mkdir()
 
-
-def dumpFeature(prefix,model,outdir,batch=64,chucksize=1000):
     reader=io.MXIndexedRecordIO(prefix+'.idx',prefix+'.rec','r')
 
     #第0行是全部种类的信息，获得全部种类的索引
@@ -24,18 +28,24 @@ def dumpFeature(prefix,model,outdir,batch=64,chucksize=1000):
         header,_=io.unpack(s)
         a,b=int(header.label[0]),int(header.label[1])
         imgs.append(range(a,b))
-    import tqdm
     queue=[]
-    features=[]
-    chuckidx=0
+    from bcolz import carray
+
+    features_label=carray([],rootdir=os.path.join(outdir,'label'))
+    features=carray(np.empty((0,512)),rootdir=os.path.join(outdir,'feature'))
+
+
 
     ##########extract feature of every image##############
-    for imgidxs in imgs:
-        for id in imgidxs:
+    import tqdm
+    steps=0
+    for imgidxs in tqdm.tqdm(imgs):
+        for id in tqdm.tqdm(imgidxs):
             s=reader.read_idx(id)
             h,img=io.unpack_img(s)
 
-            queue.append(model.processInput(img))
+            queue.append(model.processInput(img[:,:,::-1]))
+            features_label.append(h.label)
 
             if len(queue)==batch:
                 ########################
@@ -44,14 +54,13 @@ def dumpFeature(prefix,model,outdir,batch=64,chucksize=1000):
                 ########################
                 del queue
                 queue=[]
-            if len(features)>=chucksize:
-                outfeature=np.array(features[:chucksize])
-                np.save(os.path.join(outdir,'chunck%d'%chuckidx),outfeature)
-                features=features[chucksize:]
-                chuckidx+=1
-    if len(features)>0:
-        outfeature = np.array(features)
-        np.save(os.path.join(outdir, 'chunck%d' % chuckidx), outfeature)
+            if steps>flush and steps%flush==0:
+                features_label.flush()
+                features.flush()
+            steps+=1
+    features_label.flush()
+    features.flush()
+
 class Model():
     def __init__(self,imgsize = 112,device = 'cuda'):
         self.det = MTCNN(device)
@@ -69,10 +78,13 @@ class Model():
         import PIL
 
         faceboxes, landmarks = self.det.detect_faces(PIL.Image.fromarray(img))
-        frame=self.alignutils.align(PIL.Image.fromarray(img),
-                              faceboxes[0][:4],landmarks[0],
-                              40,
-                              0)
+
+        if len(faceboxes)>0:
+            frame=self.alignutils.align(PIL.Image.fromarray(img),
+                                  faceboxes[0][:4],landmarks[0],
+                                  40,
+                                  0)
+        else:frame=PIL.Image.fromarray(img)
         I = cv2.resize(np.array(frame), (self.imgsize, self.imgsize))
         return self.model._preprocessing(I)
     def handle(self,queue):
@@ -80,10 +92,10 @@ class Model():
         return np.array(r)
 
 if __name__ == '__main__':
-    # device = 'cuda'
-    # imgsize = 112
-    # det = MTCNN(device)
-    # alignutils = AlignFace((imgsize, imgsize))
-    # model=InceptionResnetV1(pretrained='casia-webface').to(device).eval()
-    # model = ArcFace('arcface/models/model', device, imgsize)
-    pass
+    prefix = '/home/zhangxk/AIProject/数据集与模型/arcface_dataset/faces_umd/train'
+    root_dir='dump'
+    device = 'cpu'
+    imgsize = 112
+    model=Model(imgsize=imgsize,device=device)
+    dumpFeature(prefix, model, root_dir, batch=4, flush=5)
+
