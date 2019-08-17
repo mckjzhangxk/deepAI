@@ -40,7 +40,7 @@ def dumpFeature(prefix,model,outdir,batch=64,flush=5):
     import tqdm
     steps=0
     for imgidxs in tqdm.tqdm(imgs):
-        for id in tqdm.tqdm(imgidxs):
+        for id in imgidxs:
             s=reader.read_idx(id)
             h,img=io.unpack_img(s)
 
@@ -58,6 +58,10 @@ def dumpFeature(prefix,model,outdir,batch=64,flush=5):
                 features_label.flush()
                 features.flush()
             steps+=1
+    if len(queue)>0:
+        f = model.handle(queue)
+        features.append(f)
+        del queue
     features_label.flush()
     features.flush()
 
@@ -92,10 +96,10 @@ class Model():
         return np.array(r)
 
 if __name__ == '__main__':
-    prefix = '/home/zhangxk/AIProject/数据集与模型/arcface_dataset/faces_umd/train'
+    prefix = '/home/zxk/AI/data/faces_umd/train'
     root_dir='dump'
-    device = 'cpu'
+    device = 'cuda'
     imgsize = 112
     model=Model(imgsize=imgsize,device=device)
-    dumpFeature(prefix, model, root_dir, batch=4, flush=5)
+    dumpFeature(prefix, model, root_dir, batch=48, flush=1000)
 
