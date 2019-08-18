@@ -48,7 +48,8 @@ def createCodeBook(X,m=64,z=256,outpath='codebook.npy',cpus=1,max_iter=300):
     codebook=[]
 
     for im in tqdm.tqdm(range(m)):
-        model=KMeans(z,n_jobs=cpus,max_iter=max_iter)
+
+        model=KMeans(z,n_jobs=cpus,verbose=1,max_iter=max_iter)
         model.fit(X[:,im,:])
         codebook.append(model.cluster_centers_)
     codebook=np.array(codebook)
@@ -57,18 +58,23 @@ def createCodeBook(X,m=64,z=256,outpath='codebook.npy',cpus=1,max_iter=300):
     np.save(outpath,codebook)
 
 if __name__ == '__main__':
-    N=800
+    N=300
     d=512
     m=64
-    z=128
-
-    x=np.random.rand(N,d)
-    # c=np.random.rand(m,z,d//m)
-    c=np.load('codebook.npy')
-    print(c.shape)
-    r=quanizer(x,c)
-
-    assert r.shape==(N,m)
+    z=256
 
     # x=np.random.rand(N,d)
-    # createCodeBook(x)
+    # # c=np.random.rand(m,z,d//m)
+    # c=np.load('codebook.npy')
+    # print(c.shape)
+    # r=quanizer(x,c)
+    #
+    # assert r.shape==(N,m)
+
+    import bcolz
+
+    x=bcolz.open('/home/zxk/桌面/dump/feature','r')
+    x=x[:]
+    print(x.shape)
+    # x=np.random.rand(N,d)
+    createCodeBook(x,m=m,z=z,cpus=-1)
