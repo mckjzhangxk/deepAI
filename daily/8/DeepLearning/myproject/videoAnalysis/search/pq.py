@@ -43,7 +43,7 @@ def quanizer(X,codebook):
 class MyWorker(Thread):
     def __init__(self,id,data,codebook,maxIters=300):
         super().__init__(name=str(id))
-        self.model=KMeans(z,n_jobs=1,n_init=1,verbose=0,max_iter=maxIters)
+        self.model=KMeans(z,n_jobs=1,n_init=1,verbose=1,max_iter=maxIters)
         self.d=data
         self.id=id
         self.codebook=codebook
@@ -80,24 +80,24 @@ def createCodeBook(X,m=64,z=256,outpath='codebook.npy',cpus=1,max_iter=300,start
     np.save(outpath,codebook)
 
 if __name__ == '__main__':
-    N=3000
+    N=800
     d=512
     m=64
     z=256
 
-    # x=np.random.rand(N,d)
+    x=np.random.rand(N,d)
     # # c=np.random.rand(m,z,d//m)
-    # c=np.load('codebook.npy')
-    # print(c.shape)
-    # r=quanizer(x,c)
+    c=np.load('codebook.npy')
+    print(c.shape)
+    r=quanizer(x,c)
     #
-    # assert r.shape==(N,m)
+    assert r.shape==(N,m)
 
     # import bcolz
-
+    #
     # x=bcolz.open('/home/zxk/桌面/dump/feature','r')
-    # x=x[:]
+    # x=x[:].astype(np.float16)
     # print(x.shape)
-    x=np.random.rand(N,d).astype(np.float16)
-    print(x.dtype)
-    createCodeBook(x,m=m,z=z,cpus=-1)
+    # x=np.random.rand(N,d).astype(np.float16)
+    # print(x.dtype)
+    # createCodeBook(x,m=m,z=z,cpus=-1)
