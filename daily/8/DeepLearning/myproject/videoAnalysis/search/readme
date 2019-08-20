@@ -1,0 +1,4 @@
+1.extractData用于把数据库的压缩文件解压称为
+查询的数据库文件，和查询文件
+2.dump.py用户把数据文件 导出到 features 文件
+3.pq 用于把features文件，使用kmean,编码生成codebook

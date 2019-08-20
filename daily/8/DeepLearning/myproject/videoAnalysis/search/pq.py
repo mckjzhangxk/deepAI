@@ -79,19 +79,19 @@ def createCodeBook(X,m=64,z=256,outpath='codebook.npy',cpus=1,max_iter=300,start
     assert codebook.shape==(m-start,z,dreduce)
     np.save(outpath,codebook)
 
-if __name__ == '__main__':
-    N=800
-    d=512
-    m=64
-    z=256
 
-    x=np.random.rand(N,d)
+def loadCodeBook(path='codebook.npy'):
+    return np.load(path)
+if __name__ == '__main__':
+
+    pass
     # # c=np.random.rand(m,z,d//m)
-    c=np.load('codebook.npy')
-    print(c.shape)
-    r=quanizer(x,c)
-    #
-    assert r.shape==(N,m)
+    # c=np.load('codebook.npy')
+
+    # print(c.shape)
+    # r=quanizer(x,c)
+    # #
+    # assert r.shape==(N,m)
 
     # import bcolz
     #
