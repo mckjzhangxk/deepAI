@@ -1,0 +1,7 @@
+/home/zhangxk/projects/deepAI/c++/opencv/build/CMakeFiles/edit_cache.dir
+/home/zhangxk/projects/deepAI/c++/opencv/build/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/opencv/build/CMakeFiles/matrix.dir
+/home/zhangxk/projects/deepAI/c++/opencv/build/CMakeFiles/displayimage.dir
+/home/zhangxk/projects/deepAI/c++/opencv/build/CMakeFiles/convertimage.dir
+/home/zhangxk/projects/deepAI/c++/opencv/build/CMakeFiles/readimage.dir
+/home/zhangxk/projects/deepAI/c++/opencv/build/CMakeFiles/core.dir
