@@ -1,0 +1,4 @@
+/home/zxk/PycharmProjects/deepAI1/c++/cuda/cuda_tutor/week1/build/CMakeFiles/rebuild_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/cuda/cuda_tutor/week1/build/CMakeFiles/squareCuda.dir
+/home/zxk/PycharmProjects/deepAI1/c++/cuda/cuda_tutor/week1/build/CMakeFiles/edit_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/cuda/cuda_tutor/week1/build/CMakeFiles/square.dir

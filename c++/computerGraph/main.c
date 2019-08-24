@@ -8,7 +8,7 @@
 
 /*
 
-gcc main.c -lGL -lglut
+gcc main.c -lGL -lglut -lGLU
 https://codeday.me/bug/20190124/558943.html
 */
 

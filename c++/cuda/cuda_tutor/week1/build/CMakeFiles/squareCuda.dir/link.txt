@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/squareCuda.dir/squareCuda_generated_square_cuda.cu.o  -o squareCuda -rdynamic /usr/local/cuda/lib64/libcudart_static.a -lpthread -ldl -lrt /usr/local/cuda/lib64/libcudart_static.a -lpthread -ldl -lrt 
