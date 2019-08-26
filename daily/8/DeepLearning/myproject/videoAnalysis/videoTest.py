@@ -87,8 +87,10 @@ def plotImage(obj,img):
         d=dist(feature,np.array(obj['face_id']))
         score=np.max(d)
         score_index=np.argmax(d)
-
-        plot_one_box(face_box, img, color,'%s,%.2f'%(name[score_index],float(score)))
+        if score>0.3:
+            plot_one_box(face_box, img, color,'%s,%.2f'%(name[score_index],float(score)))
+        else:
+            plot_one_box(face_box, img, color, '%s,%.2f' % ('陌生人', 1-float(score)))
 def resize(img,screen=(1440,900)):
     H,W,_=img.shape
     sw,sh=screen
@@ -138,13 +140,15 @@ det=MTCNN(device)
 alignutils=AlignFace((imgsize,imgsize))
 # model=InceptionResnetV1(pretrained='casia-webface').to(device).eval()
 model=ArcFace('arcface/models/model',device,imgsize)
-name,feature=findSomeBody(model,'data/infinitywar/*.png',imgsize)
+# name,feature=findSomeBody(model,'data/infinitywar/*.png',imgsize)
 # name,feature=findSomeBody(model,'data/spiderman/*.png',imgsize)
+name,feature=findSomeBody(model,'data/煎饼侠/*.png',imgsize)
 
 if __name__ == '__main__':
     # debug('data/spman.avi','tmp/input/final/spman.json')
-    debug('data/war.avi', 'tmp/input/final/war.json')
+    # debug('data/war.avi', 'tmp/input/final/war.json')
     # debug('data/my.avi', 'tmp/input/final/my.json')
+    debug('data/jbx.avi', 'tmp/input/final/jbx.json')
     import matplotlib.pyplot as plt
 
     plt.hist(aa)
