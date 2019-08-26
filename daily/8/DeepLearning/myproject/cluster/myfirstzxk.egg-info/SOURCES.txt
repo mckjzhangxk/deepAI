@@ -1,0 +1,13 @@
+README.md
+myai
+setup.py
+cfai/__init__.py
+cfai/cluster.py
+cfai/config.py
+cfai/server.py
+cfai/utils.py
+cfai/utilsHelper.py
+myfirstzxk.egg-info/PKG-INFO
+myfirstzxk.egg-info/SOURCES.txt
+myfirstzxk.egg-info/dependency_links.txt
+myfirstzxk.egg-info/top_level.txt

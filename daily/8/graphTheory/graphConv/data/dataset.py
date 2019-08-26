@@ -85,8 +85,10 @@ class CoraDataSet():
         # print(feature.shape,feature.dtype,feature.device)
         # print(label.shape,label.dtype,label.device)
         # print(A)
-        
-        return feature,label,A
+        idx_train =torch.LongTensor(range(140))
+        idx_val = torch.LongTensor(range(200, 500))
+        idx_test = torch.LongTensor(range(500, 1500))
+        return feature,label,A,idx_train,idx_val,idx_test
 if __name__ == "__main__":
     db=CoraDataSet('data/cora')
     print(db)
