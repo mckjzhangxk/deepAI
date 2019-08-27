@@ -1,5 +1,5 @@
 INCFLAGS  = -I /usr/include/GL
-INCFLAGS += -I /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/zero/include/vecmath
+INCFLAGS += -I include/vecmath
 
 LINKFLAGS  = -lglut -lGL -lGLU
 #LINKFLAGS += -L /mit/6.837/public/lib -lvecmath
@@ -10,7 +10,7 @@ CC        = g++
 SRCS      = main.cpp
 OBJS      = $(SRCS:.cpp=.o)
 PROG      = a0
-VECMATH   = /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/zero/vecmath/*.cpp
+VECMATH   = vecmath/*.cpp
 all: $(SRCS) $(PROG)
 
 $(PROG): $(OBJS)

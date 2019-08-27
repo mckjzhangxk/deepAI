@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "glut.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "string": "cpp",
+        "iostream": "cpp"
     }
 }

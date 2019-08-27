@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "myzxk",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "${file}",
+                "/home/zhangxk/projects/deepAI/c++/computerGraph/zero/vecmath/*.cpp",
+                "-o",
+                "${fileDirname}/build/a0",
+                "-I",
+                "/usr/include/GL",
+                "-I",
+                "/home/zhangxk/projects/deepAI/c++/computerGraph/zero/include/vecmath",
+                "-lglut",
+                "-lGL",
+                "-lGLU"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ]
+}

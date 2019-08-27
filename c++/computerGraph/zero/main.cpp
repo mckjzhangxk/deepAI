@@ -19,7 +19,8 @@ vector<vector<unsigned> > vecf;
 
 
 // You will need more global variables to implement color and position changes
-int count=0;
+int current_step=0;
+const int STEP_PER_COLOR=10;
 const int G_SIZE=4;
 
 GLfloat GPos[2]={1,1};
@@ -52,7 +53,7 @@ void keyboardFunc( unsigned char key, int x, int y )
         break;
     case 'c':
         
-        count=(count+1)%G_SIZE;
+        current_step=(current_step+1)%(G_SIZE*STEP_PER_COLOR);
         
         cout << "Unhandled key press " << key << "." << endl; 
         break;
@@ -123,9 +124,21 @@ void drawScene(void)
                                  {0.9, 0.5, 0.5, 1.0},
                                  {0.5, 0.9, 0.3, 1.0},
                                  {0.3, 0.8, 0.9, 1.0} };
-    
+    //自定义的过度
+    int currentColorIndex=current_step/STEP_PER_COLOR;
+    int nextColorIndex=(currentColorIndex+1)%G_SIZE;
+    double t=((float)current_step/(float)STEP_PER_COLOR-currentColorIndex)/(nextColorIndex-currentColorIndex);
+    GLfloat* c1=diffColors[currentColorIndex];
+    GLfloat* c2=diffColors[nextColorIndex];
+    GLfloat cnew[4];
+    {
+        for(int i=0;i<4;i++){
+            cnew[i]=(1-t)*c1[i]+t*c2[i];
+        }
+    }
+    //
 	// Here we use the first color entry as the diffuse color
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, diffColors[count]);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,cnew);
 
 	// Define specular color and shininess
     GLfloat specColor[] = {1.0, 1.0, 1.0, 1.0};
@@ -158,6 +171,7 @@ void drawScene(void)
         glutSolidTeapot(1.0);
     //////////////////my code///////////////////////////////
     else
+    // https://www.youtube.com/watch?v=Q_kFcRlLTk0
         for(unsigned int j=0;j<vecf.size();j++){
             vector<unsigned> face=vecf[j];
             unsigned int a=face[0]-1,b=face[1]-1,c=face[2]-1;
