@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "clang-x64",
+            "compilerArgs": [
+                "-I",
+                "/usr/include/GL",
+                "-I",
+                "/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/one/one/vecmath/include",
+                "-lglut",
+                "-lGL",
+                "-lGLU",
+                "-L",
+                "/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/one/one/vecmath/lib",
+                "-lvecmath",
+                "-O2",
+                "-Wall",
+                "-ansi",
+                "-DSOLN"
+            ]
+        }
+    ],
+    "version": 4
+}

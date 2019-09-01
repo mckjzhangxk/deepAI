@@ -1,0 +1,42 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "g++ build active file",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "${fileDirname}/*.cpp",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-I",
+                "/usr/include/GL",
+                "-I",
+                "/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/one/one/vecmath/include",
+                "-lglut",
+                "-lGL",
+                "-lGLU",
+                "-L",
+                "/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/one/one/vecmath/lib",
+                "-lvecmath",
+                "-O2",
+                // "-Wall",
+                "-w",
+                "-ansi",
+                "-DSOLN",
+                "-std=c++11"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
