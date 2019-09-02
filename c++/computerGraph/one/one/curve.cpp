@@ -19,23 +19,23 @@ namespace
     }
 
      Vector3f initBiNormal(const vector<Vector3f> &P){
+        return Vector3f(0,0,1);
+        // if(P[0]==Vector3f(0,0,1)){
+        //     return Vector3f(0,0,1);
+        // }
 
-        if(P[0]==Vector3f(0,0,1)){
-            return Vector3f(0,0,1);
-        }
+        // random_device rd;
+        // mt19937 e2(rd());
+        // uniform_real_distribution<float> dist(0,1);
+        // float x,y,z;
 
-        random_device rd;
-        mt19937 e2(rd());
-        uniform_real_distribution<float> dist(0,1);
-        float x,y,z;
-
-        x=dist(e2);
-        y=dist(e2);
-        z=dist(e2);
+        // x=dist(e2);
+        // y=dist(e2);
+        // z=dist(e2);
         
-        Vector3f r(x,y,z);
-        r.normalize();
-        return r;
+        // Vector3f r(x,y,z);
+        // r.normalize();
+        // return r;
     } 
     vector<Vector3f> changeControlPoints(const Vector3f& p0,
                                         const Vector3f& p1,
@@ -176,17 +176,19 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
 
     // Return an empty curve right now.
     vector<Vector3f> Pnew;
-
+    Curve ret;
     for(unsigned i=0;i<P.size()-4+1;i++){
         vector<Vector3f> newpts=changeControlPoints(P[i],P[i+1],P[i+2],P[i+3]);
+        Curve r=evalBezier(newpts,steps);
         
-        for(unsigned j=0;j<4;j++)
-            Pnew.push_back(newpts[j]);
-       
+        int s=ret.size()>0?1:0;
+        for(unsigned j=s;j<r.size();j++){
+            ret.push_back(r[j]);
+        }
     }
-  
-    Curve r=evalBezier(Pnew,steps);
-    return r;
+
+    
+    return ret;
 }
 
 Curve evalCircle( float radius, unsigned steps )
