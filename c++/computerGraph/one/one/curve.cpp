@@ -91,7 +91,7 @@ Curve evalBezier( const vector< Vector3f >& P, unsigned steps )
     for( unsigned i = 0; i < P.size(); ++i )
     {
         // cerr << "\t>>> " << P[i] << endl;
-        P[i].print();
+        // P[i].print();
     }
 
     cerr << "\t>>> Steps (type steps): " << steps << endl;
@@ -172,7 +172,7 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
     }
 
     cerr << "\t>>> Steps (type steps): " << steps << endl;
-    cerr << "\t>>> Returning empty curve." << endl;
+    // cerr << "\t>>> Returning empty curve." << endl;
 
     // Return an empty curve right now.
     vector<Vector3f> Pnew;

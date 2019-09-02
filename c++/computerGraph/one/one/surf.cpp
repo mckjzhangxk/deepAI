@@ -18,6 +18,26 @@ namespace
     
         return true;
     }
+
+    void calcFaces(unsigned Usize,unsigned Vsize,Surface& surf){
+    
+        for(unsigned u=0;u<Usize;u++)
+            for(unsigned v=0;v<Vsize-1;v++){
+                /*
+                a    c
+                
+                b    d
+                 */
+                
+                int a=u*Vsize+v;
+                int b=a+1;
+                int c=((u+1)%Usize)*Vsize+v;
+                int d=c+1;
+
+                surf.VF.push_back(Tup3u(a,b,d));
+                surf.VF.push_back(Tup3u(a,d,c));
+            }
+    }
 }
 
 Surface makeSurfRev(const Curve &profile, unsigned steps)
@@ -56,15 +76,11 @@ Surface makeSurfRev(const Curve &profile, unsigned steps)
             surface.VN.push_back(-N);
             // (i,point_index)
         }
+    
     }
+    
     cout<<"应该有"<<(steps*curveSize)<<"个点，实际有"<<surface.VV.size()<<"个点"<<endl;;
-    for(unsigned u=0;u<steps;u++){
-        for(unsigned v=0;v<curveSize;v++){
-            int a=u*curveSize+v;
-            int b=a+1;
-            int c=((u+1)%steps)*curveSize+v;
-            int d=c+1;
-            //我在这里犯了个错误，误认为图是从上往下建立的，而实际是自下而上，四个点的关系是
+                //我在这里犯了个错误，误认为图是从上往下建立的，而实际是自下而上，四个点的关系是
             /*
             b    d
 
@@ -74,20 +90,23 @@ Surface makeSurfRev(const Curve &profile, unsigned steps)
 
             b    d
             */
+           
+//    for(unsigned u=0;u<steps;u++){
+//         for(unsigned v=0;v<curveSize;v++){
+//             int a=u*curveSize+v;
+//             int b=a+1;
+//             int c=((u+1)%steps)*curveSize+v;
+//             int d=c+1;
 
-            surface.VF.push_back(Tup3u(a,d,c));
-            surface.VF.push_back(Tup3u(a,b,d));
-            // surface.VF.push_back(Tup3u(d,b,c));
-            // surface.VF.push_back(Tup3u(d,a,c));
-            // surface.VF.push_back(Tup3u(b,a,c));
-            // surface.VF.push_back(Tup3u(d,b,a));
-            // surface.VF.push_back(Tup3u(a,d,c));
-            // surface.VF.push_back(Tup3u(a,b,d));
-            // surface.VF.push_back(Tup3u(a,b,c));
-            // surface.VF.push_back(Tup3u(c,b,d));
-        }
-    }
+
+//             surface.VF.push_back(Tup3u(a,d,c));
+//             surface.VF.push_back(Tup3u(a,b,d));
+//         }
+//     }
+
+
     
+    calcFaces(steps,curveSize,surface);
     cout<<"面："<<surface.VF.size()<<endl;
     return surface;
 }
@@ -105,7 +124,21 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep )
     // TODO: Here you should build the surface.  See surf.h for details.
 
     cerr << "\t>>> makeGenCyl called (but not implemented).\n\t>>> Returning empty surface." <<endl;
+    bool sigular;
+    for(CurvePoint cp:sweep){
+        Matrix3f M(cp.N,cp.B,cp.T);
+        Matrix3f MintT=M.inverse(&sigular,1e-4).transposed();
+       
+        for(CurvePoint p:profile){
+            Vector3f vp=M*p.V+cp.V;
+            Vector3f vn=MintT*p.N;
+            surface.VV.push_back(vp);
+            surface.VN.push_back(-vn);
+        }
+    }
+    cout<<"应该有"<<(sweep.size()*profile.size())<<"个点，实际有"<<surface.VV.size()<<"个点"<<endl;
 
+    calcFaces(sweep.size(),profile.size(),surface);
     return surface;
 }
 
