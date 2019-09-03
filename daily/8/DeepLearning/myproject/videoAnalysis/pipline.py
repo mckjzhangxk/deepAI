@@ -393,12 +393,12 @@ if __name__ == "__main__":
     service1=ObjDetectionService(config)
     threads.append(MyWorker(service1))
 
-    # service2=FaceDetectionService(config)
-    # threads.append(MyWorker(service2))
-    # #
-    # service3=FaceFeatureService(config)
-    # threads.append(MyWorker(service3))
+    service2=FaceDetectionService(config)
+    threads.append(MyWorker(service2))
     #
+    service3=FaceFeatureService(config)
+    threads.append(MyWorker(service3))
+
     for t in threads:
         t.start()
     for t in threads:

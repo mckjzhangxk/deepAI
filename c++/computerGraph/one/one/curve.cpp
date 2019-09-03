@@ -196,10 +196,10 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
             };
             //这里需要修改 正确求导数
             float weight_T[4]={
-                -3*pow(1-t,2),
-                3-12*t+9*pow(t,2),
-                6*t-9*pow(t,2),
-                3*pow(t,2)
+                -0.5*pow(1-t,2),
+                0.5*(3*pow(t,2)-4*t),
+                0.5*(-3*pow(t,2)+2*t+1),
+                0.5*pow(t,2)
             };
             struct CurvePoint p;
             p.V=Vector3f();
@@ -213,16 +213,15 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
             p.T.normalize();
 
             //法线是之前的BxT,然后均已化,能不能TxB呢?
-            p.N=Vector3f::cross(B,p.T);
-            p.N.normalize();
+            p.N=Vector3f::cross(B,p.T).normalized();
+            
             
             //新的B 是TxN 
-            B=Vector3f::cross(p.T,p.N);
-            B.normalize();
+            B=Vector3f::cross(p.T,p.N).normalized();
             p.B=B;
             //面貌需要舍弃。。。
-        
-            ret.push_back(p);
+            if(i==0 ||s>0)
+                ret.push_back(p);
         }
     }
     // vector<Vector3f> Pnew;
@@ -236,7 +235,7 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
     //     }
     // }
 
-    
+
     return ret;
 }
 

@@ -1,7 +1,7 @@
 {
  "debug": true,
- "device": "cpu",
- "skipRate": 1,
+ "device": "cuda",
+ "skipRate": 10,
  "job1_input": "tmp/input/input_job1/*.avi",
  "yolo_conf": "yolov3/cfg/yolov-obj.cfg",
  "yolo_weight": "yolov3/cfg/yolov-obj_final.weights",
@@ -11,27 +11,27 @@
   416
  ],
  "yolo_refresh_interval": 10,
- "yolo_batch_size": 4,
+ "yolo_batch_size": 16,
  "job1_output": "tmp/input/input_job2/",
  "face_detector": "retinaface",
  "mtcnn": {
-  "prewhiten": true,
   "min_face_size": 20,
+  "factor": 0.709,
+  "out_image_size": 160,
+  "prewhiten": true,
   "thresholds": [
    0.6,
    0.7,
    0.7
-  ],
-  "factor": 0.709,
-  "out_image_size": 160
+  ]
  },
  "retinaface": {
   "model_path": "RetinaFace/model/R50",
+  "device": "cuda",
   "scale": [
    1024,
    1980
   ],
-  "device": "cuda",
   "thresh": 0.8
  },
  "job2_output": "tmp/input/input_job3/",
