@@ -334,12 +334,25 @@ def build_targets(model, targets):
 
 
 def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.5):
-    """
+    '''
+    
     Removes detections with lower object confidence score than 'conf_thres'
     Non-Maximum Suppression to further filter detections.
     Returns detections with shape:
         (x1, y1, x2, y2, object_conf, class_conf, class)
-    """
+    
+    这个个批处理方法，批量返回文件的预测
+    :param prediction: (batch,allposible,5+C)
+    :param conf_thres:小于这个值，表示不存在目标 
+    :param nms_thres: 当某个类别的bbox有多个的时候，选取这个类别得分最高的那个，淘汰掉与这个iou>nms_thres
+        的bbox,这里有(OR,AND,MERGE)3重方法进行处理
+    :return: list of result,长度是len(predict)=batch,如果某个图片没有检测到目标，那么这个element是none!
+      
+        result:(#boxes,x1y1x2y2+obj_conf+class_conf,class_label),(#box,7),按照obj_conf
+                降序顺序，前面的表示存在 目标的 可能性高，后面的表示低
+    
+    '''
+
 
     min_wh = 2  # (pixels) minimum box width and height
 
@@ -387,7 +400,7 @@ def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.5):
         det_max = []
         nms_style = 'MERGE'  # 'OR' (default), 'AND', 'MERGE' (experimental)
         for c in pred[:, -1].unique():
-            dc = pred[pred[:, -1] == c]  # select class c
+            dc = pred[pred[:, -1] == c]  # select class c,dc是所有c类别的候选，dc[0]的分数最高
             n = len(dc)
             if n == 1:
                 det_max.append(dc)  # No NMS required if only 1 prediction
@@ -421,6 +434,8 @@ def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.5):
                     dc = dc[1:][iou < nms_thres]  # remove ious > threshold
 
             elif nms_style == 'MERGE':  # weighted mixture box
+                # 这个方法的是选择最高分，淘汰与最高分相交过大的，以上同 or方便
+                #不同在于最高分的bbox不是原始的，而是加权 ”淘汰的“ box
                 while len(dc):
                     if len(dc) == 1:
                         det_max.append(dc)
@@ -428,7 +443,10 @@ def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.5):
                     i = bbox_iou(dc[0], dc) > nms_thres  # iou with other boxes
                     weights = dc[i, 4:5]
                     dc[0, :4] = (weights * dc[i, :4]).sum(0) / weights.sum()
+
+                    # 选择分数最高的
                     det_max.append(dc[:1])
+                    # 选择iou小的，余下的
                     dc = dc[i == 0]
 
             elif nms_style == 'SOFT':  # soft-NMS https://arxiv.org/abs/1704.04503

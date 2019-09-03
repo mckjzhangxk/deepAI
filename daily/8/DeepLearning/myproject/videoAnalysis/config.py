@@ -14,6 +14,7 @@ def createDefaultConfig():
     d['yolo_objs_name']='yolov3/cfg/coco.names'
     d['yolo_img_size']=(416,416)
     d['yolo_refresh_interval']=10
+    d['yolo_batch_size']=4
     d['job1_output']='tmp/input/input_job2/'
 
     #for face detection

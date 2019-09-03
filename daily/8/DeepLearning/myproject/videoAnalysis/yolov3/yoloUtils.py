@@ -28,37 +28,58 @@ class CCPD_YOLO_Detector():
         print('load detector weight of %s'%weight)
 
         self.device=device
-    def _image2Tensor_(self,I):
-        I = cv2.resize(I, self.img_size)
-        I=cv2.cvtColor(I,cv2.COLOR_BGR2RGB).transpose(2,0,1)/255.0
+    def _image2Tensor_(self,Is):
+        '''
+        
+        :param Is:list of numpy image,BGR
+        :return: tensor(batch,3,self.img_size,self.img_size)
+        '''
+        ret=[]
+        for I in Is:
+            I = cv2.resize(I, self.img_size)
+            I=cv2.cvtColor(I,cv2.COLOR_BGR2RGB).transpose(2,0,1)/255.0
+            x = torch.from_numpy(I)
+            ret.append(x)
+        ret=torch.stack(ret,0).to(self.device)
 
-        x = torch.from_numpy(I)
-        x = x[None]
-        x=x.to(self.device)
-        return x.float()
+        return ret.float()
     def predict(self,I,conf_thres=.5,nms_thres=.5):
         '''
 
-        :param I:cv2.imread,BGR format
+        :param I:list of cv2.imread,BGR format
         :param conf_thres:
         :param nms_thres:
-        :return:
+        :return:list(list(tuple6)),和I有一样的长度，out[i]对应第i个图片的结果 
+        结果=list of (x1,y1,x2,y2,confident,label)
+        没有结果，这个list 就是[]
         '''
-        oldshape=I.shape
+        if not isinstance(I,list):
+            I=[I]
+
+        oldshapes=[x.shape for x in I]
 
         x=self._image2Tensor_(I)
         y,_=self.model(x)
-        det = non_max_suppression(y,conf_thres,nms_thres)[0]
+        dets = non_max_suppression(y,conf_thres,nms_thres)
 
         ret=[]
-        if det is not None and len(det)>0:
-            H,W,_=oldshape
-            for (x1,y1,x2,y2,score,class_conf,cls)in det:
-                x1=max(min((x1/self.img_size[1])*W,W),0)
-                x2=max(min((x2/self.img_size[1])*W,W),0)
+        for det,oldshape in zip(dets,oldshapes):
+            current_result=[]
+            if det is not None and len(det)>0:
+                H,W,_=oldshape
+                for (x1,y1,x2,y2,score,class_conf,cls)in det:
+                    x1=max(min((x1/self.img_size[1])*W,W),0)
+                    x2=max(min((x2/self.img_size[1])*W,W),0)
 
-                y1=max(min((y1/self.img_size[0]*H),H),0)
-                y2=max(min((y2/self.img_size[0]*H),H),0)
-
-                ret.append((int(x1),int(y1),int(x2),int(y2),float(score*class_conf),int(cls)))
+                    y1=max(min((y1/self.img_size[0]*H),H),0)
+                    y2=max(min((y2/self.img_size[0]*H),H),0)
+                    current_result.append((int(x1),int(y1),int(x2),int(y2),float(score*class_conf),int(cls)))
+            ret.append(current_result)
         return ret
+
+
+if __name__ == '__main__':
+    import cv2
+    det=CCPD_YOLO_Detector()
+    I=cv2.imread('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/videoAnalysis/RetinaFace/2.jpg')
+    det.predict()

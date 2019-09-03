@@ -50,6 +50,7 @@ class ObjDetectionService(BaseService):
         self.skip=config['skipRate']
         self.config=config
         self.outputpath=config['job1_output']
+        self.batchsize = config['yolo_batch_size']
         with open(config['yolo_objs_name'],'r') as fs:
             self.cls=[x.strip() for x in fs]
 
@@ -80,6 +81,36 @@ class ObjDetectionService(BaseService):
 
     def _relation_between_object(self,objs_at_t):
         pass
+    def _handle(self,ts,queue,final,writer):
+        '''
+        处理的是ts[i]帧的queue[i]图片，det告诉我results[i]这张图片有多少对象，
+        为把它保存到obj_at_t对象里，如果obj_at_t.size>0,为把信息保存到final,
+        这一帧图片保存到writer
+        :param ts:list of timestamp 
+        :param queue: list of image
+        :param final: 最终的输出对象dict
+        :param writer: 视频文件的输出，只输出有价值的 帧（有目标）
+        :return: 
+        '''
+        results = self.det.predict(queue)
+        for t,frame,result in zip(ts,queue,results):
+            objs_at_t = []
+            for x1, y1, x2, y2, conf, label in result:
+                obj = {
+                        'id': str(uuid.uuid1()).replace('-', ''),
+                        'type': self.cls[label],
+                        'confident': conf,
+                        'box': [int(x1), int(y1), int(x2), int(y2)]
+                }
+                objs_at_t.append(obj)
+            ####################计算object 之间的关系##############################
+            self._relation_between_object(objs_at_t)
+
+                # ###############################################
+            if len(objs_at_t) > 0:
+                final['track']['ts'].append(t)
+                final['track']['objs'].append(objs_at_t)
+                writer.write(frame)
 
     def _process(self,videofile):
         '''
@@ -104,30 +135,23 @@ class ObjDetectionService(BaseService):
             final['job2_video']=outputfile
 
             frames=videoinfo['frames']
+            queue,ts=[],[]
+
             for t in tqdm(range(0,frames,self.skip)):
                 stream.set(1,t)
                 retval, frame = stream.read()
                 if not retval: break
-                
-                # if t % self.skip==0:
-                result = self.det.predict(frame)
-                objs_at_t=[]
-                for x1, y1, x2, y2, conf, label in result:
-                    obj={
-                            'id':str(uuid.uuid1()).replace('-',''),
-                            'type':self.cls[label],
-                            'confident':conf,
-                            'box':[int(x1),int(y1),int(x2),int(y2)]
-                        }
-                    objs_at_t.append(obj)
-                    ####################计算object 之间的关系##############################
-                self._relation_between_object(objs_at_t)
 
-                # ###############################################
-                if len(objs_at_t)>0:
-                    final['track']['ts'].append(t)
-                    final['track']['objs'].append(objs_at_t)
-                    writer.write(frame)
+                queue.append(frame)
+                ts.append(t)
+
+                if len(queue)==self.batchsize:
+                    self._handle(ts,queue,final,writer)
+                    queue=[]
+                    ts=[]
+            if len(queue)>0:
+                self._handle(ts, queue, final, writer)
+
             print('任务1:%s完成'%videofile)
         except Exception as e:
             final['status']='fail'
@@ -369,12 +393,12 @@ if __name__ == "__main__":
     service1=ObjDetectionService(config)
     threads.append(MyWorker(service1))
 
-    service2=FaceDetectionService(config)
-    threads.append(MyWorker(service2))
+    # service2=FaceDetectionService(config)
+    # threads.append(MyWorker(service2))
+    # #
+    # service3=FaceFeatureService(config)
+    # threads.append(MyWorker(service3))
     #
-    service3=FaceFeatureService(config)
-    threads.append(MyWorker(service3))
-
     for t in threads:
         t.start()
     for t in threads:

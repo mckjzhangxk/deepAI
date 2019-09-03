@@ -1,4 +1,19 @@
 def parse_model_cfg(path):
+    '''
+    解析path文件，文件的格式是
+        [blocktype]
+            attr=value
+        ......
+    返回list:每个元素是一个dict,保存的就是每个文件单元的内容
+    第一个元素是[net],保存训练网络的相关参数
+    
+    注意。
+    1.对于[convolutional],其实表示conv+bn+activation,默认bn是不使用的，文件中设在batch_normalize=1
+    才开启bn
+
+    :param path: 
+    :return: 
+    '''
     """Parses the yolo-v3 layer configuration file and returns module definitions"""
     file = open(path, 'r')
     lines = file.read().split('\n')
