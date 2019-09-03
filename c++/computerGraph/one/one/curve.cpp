@@ -221,6 +221,7 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
             B.normalize();
             p.B=B;
             //面貌需要舍弃。。。
+        
             ret.push_back(p);
         }
     }
