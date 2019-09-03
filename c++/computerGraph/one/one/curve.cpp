@@ -175,17 +175,65 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
     // cerr << "\t>>> Returning empty curve." << endl;
 
     // Return an empty curve right now.
-    vector<Vector3f> Pnew;
+    
     Curve ret;
+    Vector3f B=initBiNormal(P);
+    
     for(unsigned i=0;i<P.size()-4+1;i++){
-        vector<Vector3f> newpts=changeControlPoints(P[i],P[i+1],P[i+2],P[i+3]);
-        Curve r=evalBezier(newpts,steps);
-        
-        int s=ret.size()>0?1:0;
-        for(unsigned j=s;j<r.size();j++){
-            ret.push_back(r[j]);
+       
+        vector<Vector3f> cp4;
+        //每四个控制点产生一条曲线
+        for(unsigned j=0;j<4;j++)
+            cp4.push_back(P[i+j]);
+        //4控制点,产生steps+1点吧
+        for(unsigned s=0;s<steps+1;s++){
+            float t=s/(float(steps));
+            float weight_V[4]={
+                pow(1-t,3)/6.0,
+                (3*pow(t,3)-6*pow(t,2)+4)/6.0,
+                (-3*pow(t,3)+3*pow(t,2)+3*t+1)/6.0,
+                pow(t,3)/6.0
+            };
+            //这里需要修改 正确求导数
+            float weight_T[4]={
+                -3*pow(1-t,2),
+                3-12*t+9*pow(t,2),
+                6*t-9*pow(t,2),
+                3*pow(t,2)
+            };
+            struct CurvePoint p;
+            p.V=Vector3f();
+            p.T=Vector3f();
+            //4个控制点的不同加权 是新点和新切线方向
+            for(unsigned j=0;j<4;j++){
+                p.V+=cp4[j]*weight_V[j];
+                p.T+=cp4[j]*weight_T[j];
+            }
+            // 切线均一化
+            p.T.normalize();
+
+            //法线是之前的BxT,然后均已化,能不能TxB呢?
+            p.N=Vector3f::cross(B,p.T);
+            p.N.normalize();
+            
+            //新的B 是TxN 
+            B=Vector3f::cross(p.T,p.N);
+            B.normalize();
+            p.B=B;
+            //面貌需要舍弃。。。
+            ret.push_back(p);
         }
     }
+    // vector<Vector3f> Pnew;
+    // for(unsigned i=0;i<P.size()-4+1;i++){
+    //     vector<Vector3f> newpts=changeControlPoints(P[i],P[i+1],P[i+2],P[i+3]);
+    //     Curve r=evalBezier(newpts,steps);
+        
+    //     int s=ret.size()>0?1:0;
+    //     for(unsigned j=s;j<r.size();j++){
+    //         ret.push_back(r[j]);
+    //     }
+    // }
 
     
     return ret;

@@ -405,13 +405,19 @@ namespace
             for (unsigned i=0; i<gCtrlPoints.size(); i++)
             {
                 glBegin(GL_POINTS);
-                for (unsigned j=0; j<gCtrlPoints[i].size(); j++)
+                for (unsigned j=0; j<gCtrlPoints[i].size(); j++){
                     glVertex(gCtrlPoints[i][j]);
+                }
+                    
+                    
+                    
                 glEnd();
 
                 glBegin(GL_LINE_STRIP);
-                for (unsigned j=0; j<gCtrlPoints[i].size(); j++)
+                for (unsigned j=0; j<gCtrlPoints[i].size(); j++){
                     glVertex(gCtrlPoints[i][j]);
+                }
+                    
                 glEnd();
             }
             
