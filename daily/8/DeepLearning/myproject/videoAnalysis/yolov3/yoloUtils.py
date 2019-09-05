@@ -80,6 +80,8 @@ class CCPD_YOLO_Detector():
 
 if __name__ == '__main__':
     import cv2
+
     det=CCPD_YOLO_Detector()
+
     I=cv2.imread('/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/videoAnalysis/RetinaFace/2.jpg')
     det.predict()
