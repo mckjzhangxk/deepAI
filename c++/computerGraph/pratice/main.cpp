@@ -19,6 +19,31 @@ void parse(int argc,char **argv){
 void display(){
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
     cout<<"display"<<endl;
+    
+    glBegin(GL_TRIANGLES);
+        glVertex3d(0,0,0);
+        glNormal3d(0,0,1);
+
+        glVertex3d(1,0,0);
+        glNormal3d(0,0,1);
+
+        glVertex3d(1,1,0);
+        glNormal3d(0,0,1);
+
+    glEnd();
+
+
+    glBegin(GL_TRIANGLES);
+        glVertex3d(0,0,0);
+        glNormal3d(0,0,1);
+
+        glVertex3d(-1,0,0);
+        glNormal3d(0,0,1);
+
+        glVertex3d(-1,-1,0);
+        glNormal3d(0,0,1);
+
+    glEnd();
 
     glutSwapBuffers();
 }
