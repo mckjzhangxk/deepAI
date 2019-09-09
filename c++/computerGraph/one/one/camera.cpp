@@ -174,11 +174,11 @@ void Camera::PlaneTranslation(int x, int y)
 {
     // map window x,y into viewport x,y
 
-    // start
+    // start,开始点击的鼠标相对于viewport 的左上角是(sx,sy)
     int sx = mStartClick[0] - mViewport[0];
     int sy = mStartClick[1] - mViewport[1];
 
-    // current
+    // current，当前移动到了 相对于 viewport 左上角的 (cx,cy)
     int cx = x - mViewport[0];
     int cy = y - mViewport[1];
 

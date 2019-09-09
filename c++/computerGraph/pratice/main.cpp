@@ -3,6 +3,21 @@
 #include<GL/glut.h>
 #include<memory.h>
 #include<string>
+#include<vecmath/Matrix4f.h>
+
+
+GLfloat angle=0;
+int INTERVAL=100;
+bool rotate=0;
+void timefunc(int value){
+    if(rotate){
+        angle+=0.01;
+    
+    }
+    glutPostRedisplay();
+    
+    glutTimerFunc(INTERVAL,timefunc,value);
+}
 
 using namespace std;
 //https://www.opengl.org/resources/libraries/glut/spec3/spec3.html
@@ -18,9 +33,19 @@ void parse(int argc,char **argv){
 
 void display(){
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
-    cout<<"display"<<endl;
-    
+
+    glMatrixMode(GL_MODELVIEW);
+    Matrix4f rot=rot.rotateZ(angle);
+     
+
+    glLoadIdentity();
+    // glMultMatrixf(rot);
+    glTranslatef(0.5,0.5,0);
+
+
+    gluLookAt(0,0,1,0,0,0,0,1,0);
     glBegin(GL_TRIANGLES);
+        glColor3f(0,1,0);
         glVertex3d(0,0,0);
         glNormal3d(0,0,1);
 
@@ -34,6 +59,7 @@ void display(){
 
 
     glBegin(GL_TRIANGLES);
+        glColor3f(0,1,1);
         glVertex3d(0,0,0);
         glNormal3d(0,0,1);
 
@@ -48,7 +74,13 @@ void display(){
     glutSwapBuffers();
 }
 void reshape(int w,int h){
-    cout<<"reshape:("<<w<<","<<h<<")"<<endl;
+    // glViewport(0,0,w,h);
+    cout<<"reshape"<<endl;
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+ 
+    gluPerspective(80,w/h,1.0,1000.0);
+   
 }
 void keyFunc(unsigned char key,int x, int y){
     switch (key)
@@ -56,7 +88,10 @@ void keyFunc(unsigned char key,int x, int y){
     case 'q':
         exit(0);
         break;
-    
+    case 'r':
+        rotate=1-rotate;
+        cout<<rotate<<endl;
+        break;
     default:
         break;
     }
@@ -81,6 +116,7 @@ int main(int argc,char **argv){
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyFunc);
     glutMouseFunc(mouseFunc);
+    glutTimerFunc(INTERVAL,timefunc,1);
     glutMainLoop();
     return 0;
 }
