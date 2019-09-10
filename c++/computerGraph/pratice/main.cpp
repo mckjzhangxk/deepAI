@@ -7,8 +7,11 @@
 
 
 GLfloat angle=0;
+GLfloat pangle=0;
+GLfloat aspect=1.7;
 int INTERVAL=100;
 bool rotate=0;
+
 void timefunc(int value){
     if(rotate){
         angle+=0.01;
@@ -35,15 +38,15 @@ void display(){
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
-    Matrix4f rot=rot.rotateZ(angle);
+    // Matrix4f rot=rot.rotateZ(angle);
      
 
     glLoadIdentity();
     // glMultMatrixf(rot);
-    glTranslatef(0.5,0.5,0);
+    // glTranslatef(0.5,0.5,0);
 
 
-    gluLookAt(0,0,1,0,0,0,0,1,0);
+    gluLookAt(0,0,5,0,0,0,0,1,0);
     glBegin(GL_TRIANGLES);
         glColor3f(0,1,0);
         glVertex3d(0,0,0);
@@ -68,18 +71,34 @@ void display(){
 
         glVertex3d(-1,-1,0);
         glNormal3d(0,0,1);
+            
 
+    glEnd();
+
+    
+    glBegin(GL_TRIANGLES);
+        glColor3f(1,1,1);
+        glVertex3d(0,2,0);
+        glNormal3d(0,0,1);
+
+        glVertex3d(-1,-1,0);
+        glNormal3d(0,0,1);
+
+        glVertex3d(1,-1,0);
+        glNormal3d(0,0,1);
     glEnd();
 
     glutSwapBuffers();
 }
 void reshape(int w,int h){
-    // glViewport(0,0,w,h);
-    cout<<"reshape"<<endl;
+  
+    
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
- 
-    gluPerspective(80,w/h,1.0,1000.0);
+      
+    glViewport(0,0,w,h);
+    cout<<aspect<<endl;
+    gluPerspective(pangle, aspect, 1.0, 100.0);
    
 }
 void keyFunc(unsigned char key,int x, int y){
@@ -92,9 +111,18 @@ void keyFunc(unsigned char key,int x, int y){
         rotate=1-rotate;
         cout<<rotate<<endl;
         break;
+    case 'x':
+        pangle+=1;
+        reshape(glutGet(GLUT_WINDOW_WIDTH),glutGet(GLUT_WINDOW_HEIGHT));
+        break;
+    case 'z':
+        aspect*=0.9;
+        reshape(glutGet(GLUT_WINDOW_WIDTH),glutGet(GLUT_WINDOW_HEIGHT));
+        break;
     default:
         break;
     }
+    glutPostRedisplay();
 }
 void mouseFunc(int button, int state,int x, int y){
     /*
@@ -110,13 +138,14 @@ int main(int argc,char **argv){
 
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
     glutInit(&argc,argv);
-
+    glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
+    
     glutCreateWindow("Hello Computer Graphics");
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyFunc);
     glutMouseFunc(mouseFunc);
-    glutTimerFunc(INTERVAL,timefunc,1);
+    //glutTimerFunc(INTERVAL,timefunc,1);
     glutMainLoop();
     return 0;
 }

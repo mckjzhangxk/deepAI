@@ -17,7 +17,7 @@ vector<Vector3f> vecn;
 // This is the list of faces (indices into vecv and vecn)
 vector<vector<unsigned> > vecf;
 
-
+float field_angle=0;
 // You will need more global variables to implement color and position changes
 int current_step=0;
 const int STEP_PER_COLOR=10;
@@ -43,6 +43,23 @@ void timefunc(int value){
     }
     glutTimerFunc(INTERVAL,timefunc,value);
 }
+// Called when the window is resized
+// w, h - width and height of the window in pixels.
+void reshapeFunc(int w, int h)
+{
+    // Always use the largest square viewport possible
+    if (w > h) {
+        glViewport((w - h) / 2, 0, h, h);
+    } else {
+        glViewport(0, (h - w) / 2, w, w);
+    }
+    // glViewport(0,0,w,h);
+    // Set up a perspective view, with square aspect ratio
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    // 50 degree fov, uniform aspect ratio, near = 1, far = 100
+    gluPerspective(field_angle, 1.0*w/h, 1.0, 100.0);
+}
 // This function is called whenever a "Normal" key press is received.
 void keyboardFunc( unsigned char key, int x, int y )
 {
@@ -59,6 +76,16 @@ void keyboardFunc( unsigned char key, int x, int y )
         break;
     case 'r':
         rotate=!rotate;  
+        break;
+    case 'x':
+        field_angle+=5;
+        {
+            int W=glutGet(GLUT_WINDOW_WIDTH);
+            int H=glutGet(GLUT_WINDOW_HEIGHT);
+            cout<<W<<"xxx"<<H<<"ss"<<field_angle<<endl;
+            reshapeFunc(W,H);
+        }
+
         break;
     default:
         cout << "Unhandled key press " << key << "." << endl;        
@@ -208,23 +235,7 @@ void initRendering()
     glEnable(GL_LIGHT0);       // Turn on light #0.
 }
 
-// Called when the window is resized
-// w, h - width and height of the window in pixels.
-void reshapeFunc(int w, int h)
-{
-    // Always use the largest square viewport possible
-    if (w > h) {
-        glViewport((w - h) / 2, 0, h, h);
-    } else {
-        glViewport(0, (h - w) / 2, w, w);
-    }
 
-    // Set up a perspective view, with square aspect ratio
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    // 50 degree fov, uniform aspect ratio, near = 1, far = 100
-    gluPerspective(50.0, 1.0, 1.0, 100.0);
-}
 
 void loadInput()
 {
