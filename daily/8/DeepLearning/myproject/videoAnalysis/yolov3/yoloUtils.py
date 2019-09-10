@@ -6,7 +6,7 @@ import cv2
 
 
 class CCPD_YOLO_Detector():
-    def __init__(self,cfg=None,weight=None,img_size=(416,416),device=None):
+    def __init__(self,cfg=None,weight=None,img_size=(416,416),device=None,half=False):
         if cfg==None:
             cfg=os.path.dirname(os.path.abspath(__file__))
             cfg=os.path.join(cfg,'cfg/yolov-obj.cfg')
@@ -23,6 +23,10 @@ class CCPD_YOLO_Detector():
         load_darknet_weights(model,weight)
         model.fuse()
 
+        self.dtype='torch.FloatTensor'
+        if half:
+            model=model.half()
+            self.dtype='torch.HalfTensor'
         self.model=model.to(device)
         self.model.eval()
         print('load detector weight of %s'%weight)
@@ -40,9 +44,11 @@ class CCPD_YOLO_Detector():
             I=cv2.cvtColor(I,cv2.COLOR_BGR2RGB).transpose(2,0,1)/255.0
             x = torch.from_numpy(I)
             ret.append(x)
-        ret=torch.stack(ret,0).to(self.device)
+        ret=torch.stack(ret,0).type(self.dtype).to(self.device)
 
-        return ret.float()
+
+        return ret
+
     def predict(self,I,conf_thres=.5,nms_thres=.5):
         '''
 
@@ -60,7 +66,7 @@ class CCPD_YOLO_Detector():
 
         x=self._image2Tensor_(I)
         y,_=self.model(x)
-        dets = non_max_suppression(y,conf_thres,nms_thres)
+        dets = non_max_suppression(y.float(),conf_thres,nms_thres)
 
         ret=[]
         for det,oldshape in zip(dets,oldshapes):

@@ -29,15 +29,17 @@ def evaluate(labelfile, baseoutputpath,imagepath=None,detector=None):
 
             #####################图片检测#################################
             import cv2
-            inputbatch=[cv2.imread(os.path.join(imagepath,name))]
-            result=detector.predict(inputbatch)[0]
+            # inputbatch=[cv2.imread(os.path.join(imagepath,name))]
+            # result=detector.predict(inputbatch)[0]
+            import PIL.Image
+            result = detector.detect_faces(PIL.Image.open(os.path.join(imagepath,name)))[0]
             cnt=len(result)
             #############################################################
             with open(os.path.join(baseoutputpath, name[:-3] + 'txt'), 'w') as ff:
                 ff.write(name+'\n')
                 ff.write(str(cnt) + '\n')
                 for r in result:
-                    face=[int(r[0]),int(r[1]),int(r[2]-r[0]),int(r[3]-r[1]),float(r[4])]
+                    face=[int(r[0]),int(r[1]),int(r[2]-r[0]),int(r[3]-r[1]),float(1)]
                     ff.write(' '.join(map(str, face)) + '\n')
             progress+=1
             if progress%10==0:
@@ -70,13 +72,19 @@ def abc(labelpath,basepath='examples/test'):
 
 if __name__ == '__main__':
     from  yolov3 import  CCPD_YOLO_Detector
-    cfg='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/videoAnalysis/yolov3/cfg/widerface/widerface.cfg'
-    weight='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/videoAnalysis/yolov3/cfg/widerface/widerface_last.weights'
+    cfg='../yolov3/cfg/widerface/widerface.cfg'
+    weight='../yolov3/cfg/widerface/widerface_last.weights'
     # cfg=None
     # weight=None
-    device='cpu'
-    imgpath='/home/zhangxk/AIProject/数据集与模型/WINDER_Face/WIDER_val/images'
+    device='cuda'
+    imgpath='/home/zxk/AI/WIDER_val/images'
 
-    detector = CCPD_YOLO_Detector(cfg=cfg, weight=weight, device=device)
-    evaluate('examples/widerface/wider_face_val_bbx_gt.txt','/home/zhangxk/widerface/yolo_result',imgpath,detector)
+    # detector = CCPD_YOLO_Detector(cfg=cfg, weight=weight, device=device,half=False)
+    from  RetinaFace import RetinaFaceDetector
+
+    detector = RetinaFaceDetector('../RetinaFace/model/R50',
+                                  device=device,
+                                  scale=(1024,1980),
+                                  thresh=0.8)
+    evaluate('examples/widerface/wider_face_val_bbx_gt.txt','/home/zxk/下载/eval_tools/eval_tools/pred_retina',imgpath,detector)
 

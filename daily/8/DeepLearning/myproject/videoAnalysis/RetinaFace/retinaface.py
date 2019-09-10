@@ -644,6 +644,7 @@ class RetinaFaceDetector():
         faces, landmarks = self.detector.detect(img, self.thresh, scales=[im_scale], do_flip=False)
         landmarks=np.reshape(landmarks,(-1,10))
 
+        # return faces[:,:5]
         return faces[:,:4].astype(np.int),landmarks.astype(np.int)
 
 if __name__ == '__main__':

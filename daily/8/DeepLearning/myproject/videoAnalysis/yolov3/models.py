@@ -157,7 +157,7 @@ class Upsample(nn.Module):
 
 
 class YOLOLayer(nn.Module):
-    def __init__(self, anchors, nc, img_size, yolo_layer, cfg):
+    def __init__(self, anchors, nc, img_size, yolo_layer, cfg,dtype='torch.FloatTensor'):
         '''
         这个层的输入是(3*nc+4+1),是神经网络输出，
         这个类的作用是根据神经网络输出，anchors，还原出检测目标在img_size尺寸的box坐标
@@ -171,6 +171,7 @@ class YOLOLayer(nn.Module):
         :param cfg: 配置文件名yolov-obj.cfg
         '''
         super(YOLOLayer, self).__init__()
+        self.dtype=dtype
 
         self.anchors = torch.Tensor(anchors)
         self.na = len(anchors)  # number of anchors (3)
@@ -391,10 +392,10 @@ def create_grids(self, img_size=416, ng=(13, 13), device='cpu'):
     # (ny,nx),(ny,nx)
     yv, xv = torch.meshgrid([torch.arange(ny), torch.arange(nx)])
     # (ny,nx,2)->(1,1,ny,nx,2)
-    self.grid_xy = torch.stack((xv, yv), 2).to(device).float().view((1, 1, ny, nx, 2))
+    self.grid_xy = torch.stack((xv, yv), 2).view((1, 1, ny, nx, 2)).type(self.dtype).to(device)
 
     # build wh gains
-    self.anchor_vec = self.anchors.to(device) / self.stride
+    self.anchor_vec = (self.anchors/ self.stride).type(self.dtype).to(device)
     self.anchor_wh = self.anchor_vec.view(1, self.na, 1, 1, 2).to(device)
     self.ng = torch.Tensor(ng).to(device)
     self.nx = nx
