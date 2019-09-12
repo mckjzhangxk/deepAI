@@ -11,10 +11,10 @@ ONNX_EXPORT = False
 def create_modules(module_defs):
     '''
     Constructs module list of layer blocks from module configuration in module_defs
-    
+
     根据module_defs(list),创建module_list（nn.ModuleList()）,模型在module_list的存储是线性的,
     存放的是下一个 需要执行的 模型
-    
+
     注意
     1.module_list存放的是下一个需要的模型，但是模型怎么链接，这里不做解析。
      解析是根据module_def配合使用的
@@ -30,13 +30,13 @@ def create_modules(module_defs):
         [shortcut]
             from=-3
         对应的modelule_defs应该是[x,conv,conv,shortcut(from -3)],
-        
+
         这样shortcut层的输出dim 与 它之前3层x 一至
     2.其他标签的解析
        [route]
          layers = -1, 36
          这一层的输出就是-1与36层之和
-         
+
        [yolo]
         //当前使用anchors的索引,也就是这三个，10,13,  16,30,  33,23
         mask = 0,1,2
@@ -48,7 +48,7 @@ def create_modules(module_defs):
     所以module_list的数量与module_defs对应，也就是说有几个标签，就有
     几个module,shortcut,router使用empty_layer,yolo_layer使用yolo_layer,
     还有convolutional,upsample2中标签
-    
+
     convolutional
     shortcut
     upsample
@@ -72,7 +72,7 @@ def create_modules(module_defs):
             bn = int(module_def['batch_normalize'])
             filters = int(module_def['filters'])
             kernel_size = int(module_def['size'])
-            stride=module_def['stride']
+            stride = module_def['stride']
 
             pad = (kernel_size - 1) // 2 if int(module_def['pad']) else 0
             modules.add_module('conv_%d' % i, nn.Conv2d(in_channels=output_filters[-1],
@@ -139,7 +139,6 @@ class EmptyLayer(nn.Module):
 
 
 class Upsample(nn.Module):
-
     # Custom Upsample layer (nn.Upsample gives deprecated warning message)
 
     def __init__(self, scale_factor=1, mode='nearest'):
@@ -157,12 +156,12 @@ class Upsample(nn.Module):
 
 
 class YOLOLayer(nn.Module):
-    def __init__(self, anchors, nc, img_size, yolo_layer, cfg,dtype='torch.FloatTensor'):
+    def __init__(self, anchors, nc, img_size, yolo_layer, cfg):
         '''
         这个层的输入是(3*nc+4+1),是神经网络输出，
         这个类的作用是根据神经网络输出，anchors，还原出检测目标在img_size尺寸的box坐标
         具体来说是(batch,A*nh*hw,5+C)
-        
+
         具体见forward
         :param anchors: list of tuple2,使用的anchors
         :param nc: 类别数量
@@ -171,7 +170,7 @@ class YOLOLayer(nn.Module):
         :param cfg: 配置文件名yolov-obj.cfg
         '''
         super(YOLOLayer, self).__init__()
-        self.dtype=dtype
+
 
         self.anchors = torch.Tensor(anchors)
         self.na = len(anchors)  # number of anchors (3)
@@ -186,11 +185,15 @@ class YOLOLayer(nn.Module):
 
             nx = int(img_size[1] / stride)  # number x grid points
             ny = int(img_size[0] / stride)  # number y grid points
-            create_grids(self, max(img_size), (nx, ny))
-
-    def forward(self, p, img_size, var=None):
+            self.create_grids(max(img_size), (nx, ny))
+        else:
+            stride = [32, 16, 8][yolo_layer]
+            img_size=max(img_size)
+            nx=ny=int(img_size/stride)
+            self.create_grids(img_size,(nx,ny))
+    def forward(self, p):
         '''
-        
+ 
         :param p: (batch,C,ny,nx)
         :param img_size: 
         :param var: 
@@ -203,44 +206,16 @@ class YOLOLayer(nn.Module):
         if ONNX_EXPORT:
             bs = 1  # batch size
         else:
-            bs, ny, nx = p.shape[0], p.shape[-2], p.shape[-1]
-            if (self.nx, self.ny) != (nx, ny):
-                # 设这了3个重要的属性grid_xy(1,1,ny,nx,2)本网格系统
-                # anchor_vec:(A,2)本网格下的anchor大小
-                # anchor_wh:(1,A,1,1,2),用上
-                create_grids(self, img_size, (nx, ny), p.device)
+            bs= p.shape[0]
 
         # p.view(bs, 255, 13, 13) -- > (bs, 3, 13, 13, 85)  # (bs, anchors, grid, grid, classes + xywh)
         p = p.view(bs, self.na, self.nc + 5, self.ny, self.nx).permute(0, 1, 3, 4, 2).contiguous()  # prediction
-
         if self.training:
             return p
 
         elif ONNX_EXPORT:
             # Constants CAN NOT BE BROADCAST, ensure correct shape!
-            ngu = self.ng.repeat((1, self.na * self.nx * self.ny, 1))
-            grid_xy = self.grid_xy.repeat((1, self.na, 1, 1, 1)).view((1, -1, 2))
-            anchor_wh = self.anchor_wh.repeat((1, 1, self.nx, self.ny, 1)).view((1, -1, 2)) / ngu
-
-            # p = p.view(-1, 5 + self.nc)
-            # xy = torch.sigmoid(p[..., 0:2]) + grid_xy[0]  # x, y
-            # wh = torch.exp(p[..., 2:4]) * anchor_wh[0]  # width, height
-            # p_conf = torch.sigmoid(p[:, 4:5])  # Conf
-            # p_cls = F.softmax(p[:, 5:85], 1) * p_conf  # SSD-like conf
-            # return torch.cat((xy / ngu[0], wh, p_conf, p_cls), 1).t()
-
-            p = p.view(1, -1, 5 + self.nc)
-            xy = torch.sigmoid(p[..., 0:2]) + grid_xy  # x, y
-            wh = torch.exp(p[..., 2:4]) * anchor_wh  # width, height
-            p_conf = torch.sigmoid(p[..., 4:5])  # Conf
-            p_cls = p[..., 5:85]
-            # Broadcasting only supported on first dimension in CoreML. See onnx-coreml/_operators.py
-            # p_cls = F.softmax(p_cls, 2) * p_conf  # SSD-like conf
-            p_cls = torch.exp(p_cls).permute((2, 1, 0))
-            p_cls = p_cls / p_cls.sum(0).unsqueeze(0) * p_conf.permute((2, 1, 0))  # F.softmax() equivalent
-            p_cls = p_cls.permute(2, 1, 0)
-            return torch.cat((xy / ngu, wh, p_conf, p_cls), 2).squeeze().t()
-
+            raise "请补全这段代码"
         else:  # inference
             # (bs, anchors, grid, grid,  xywh+classes)
             io = p.clone()  # inference output
@@ -255,7 +230,45 @@ class YOLOLayer(nn.Module):
 
             # reshape from [1, 3, 13, 13, 85] to [1, 507, 85]
             return io.view(bs, -1, 5 + self.nc), p
+    def create_grids(self, img_size=416, ng=(13, 13)):
+        '''
+        这个方法中设在了很对属性
+            self.img_size:输入图片的大小
+            self.stride:当前是处理那个步长后的 特征
+            self.nx:当前特征的宽度
+            self.ny:当前特征的高度
+            self.ng：(self.nx,self.ny)
+            self.grid_xy:(1,1,ny,nx,2),可以看成一个基本的网格grid_xy[:::,0]是y坐标,grid_xy[:::,1]是x坐标
+                :grid_xy[0,0,r,c]表示r行c列的x,y,前2个1是batch,anchornum的维度
+            self.anchor_vec:(A,2):经过步长处理后的anchor box
+            self.anchor_wh：(1,A,1,1,2),表示本层侧使用的anchor在 本grid(ny,ny)的长宽
+                anchor_wh[0,2,0,0,:]表示2号anchors，在ng中多的长宽
 
+        :param self: 
+        :param img_size: 
+        :param ng: 网格的长宽
+        :param device: 
+        :return: 
+        '''
+        nx, ny = ng  # x and y grid size
+        self.img_size = img_size
+        self.stride = img_size / max(ng)
+
+        # build xy offsets
+        # (ny,nx),(ny,nx)
+        yv, xv = torch.meshgrid([torch.arange(ny), torch.arange(nx)])
+        # (ny,nx,2)->(1,1,ny,nx,2)
+        self.grid_xy = torch.stack((xv, yv), 2).view((1, 1, ny, nx, 2)).float()
+        self.grid_xy=nn.Parameter(self.grid_xy,requires_grad=False)
+
+        # build wh gains
+        self.anchor_vec = (self.anchors / self.stride).float()
+        self.anchor_wh = self.anchor_vec.view(1, self.na, 1, 1, 2).float()
+        self.anchor_wh =nn.Parameter(self.anchor_wh,requires_grad=False)
+
+        self.ng = torch.Tensor(ng)
+        self.nx = nx
+        self.ny = ny
 
 class Darknet(nn.Module):
     """YOLOv3 object detection model"""
@@ -278,10 +291,10 @@ class Darknet(nn.Module):
         程序维护了layer_outputs的list,记录创建个轨迹。
         根据
         module_list,modele_def 构建模型
-        
-        modele_def:有一下几个标签
+
+        module_def:有一下几个标签
          'convolutional', 'upsample', 'maxpool',
-            输输入是上一级的输入x,输出是用相应module_list里面的module,module(x)
+            输入是上一级的输入x,输出是用相应module_list里面的module,module(x)
          [shortcut]: from=-3
             输出是layer_outputs[from]+layer_outputs[-1]
          [route]:layer表示跳转的位置，这个标签表示不再线性了，要跳转了
@@ -290,19 +303,18 @@ class Darknet(nn.Module):
             layers=-4,
             输出是layer_outputs[-4]
         [yolo]:具体看看YOLOLayer的注释 
-        
+
         一句话概括这个方法，输入图片x,输出 预定义下anchor下检测目标的box,class.
         :param x: tensor(batch,channel,imagesize,imagesize),表示一张图片
         :param var: 
         :return: output:tensor(batch,num1+num2+num3,5+C)
         num1,num2,num3:表示3个分辨率下的anchor数量，num_i=3*nh_i*nw_i,
         5表示(cx,cy,w,h),尺寸完全还原成了相对于x的尺寸
-        
+
         output[3,1000,:4]:索引是3的图片的1000号anchor检测到的目标的(cx,cy,w,h)
         output[3,1000,4]:索引是3的图片的1000号anchor检测到的存在目标 概率
         output[3,1000,5:]:索引是3的图片的1000号anchor检测到各种目标类型 的 概率
         '''
-        img_size = 416
         layer_outputs = []
         output = []
 
@@ -321,14 +333,18 @@ class Darknet(nn.Module):
                 x = layer_outputs[-1] + layer_outputs[layer_i]
             elif mtype == 'yolo':
                 # x=(batch,A*ny*nx,5+C)
-                print(module)
-                x = module[0](x, img_size)
+                x = module[0](x)
                 output.append(x)
             layer_outputs.append(x)
 
-
-        io, p = list(zip(*output))  # inference output, training output
-        return torch.cat(io, 1), p
+        if self.training:
+            return output
+        elif ONNX_EXPORT:
+            output = torch.cat(output, 1)  # cat 3 layers 85 x (507, 2028, 8112) to 85 x 10647
+            return output[5:85].t(), output[:4].t()  # ONNX scores, boxes
+        else:
+            io, p = list(zip(*output))  # inference output, training output
+            return torch.cat(io, 1), p
 
     def fuse(self):
         '''
@@ -360,42 +376,7 @@ def get_yolo_layers(model):
     return [i for i, x in enumerate(a) if x]  # [82, 94, 106] for yolov3
 
 
-def create_grids(self, img_size=416, ng=(13, 13), device='cpu'):
-    '''
-    这个方法中设在了很对属性
-        self.img_size:输入图片的大小
-        self.stride:当前是处理那个步长后的 特征
-        self.nx:当前特征的宽度
-        self.ny:当前特征的高度
-        self.ng：(self.nx,self.ny)
-        self.grid_xy:(1,1,ny,nx,2),可以看成一个基本的网格grid_xy[:::,0]是y坐标,grid_xy[:::,1]是x坐标
-            :grid_xy[0,0,r,c]表示r行c列的x,y,前2个1是batch,anchornum的维度
-        self.anchor_vec:(A,2):经过步长处理后的anchor box
-        self.anchor_wh：(1,A,1,1,2),表示本层侧使用的anchor在 本grid(ny,ny)的长宽
-            anchor_wh[0,2,0,0,:]表示2号anchors，在ng中多的长宽
-            
-    :param self: 
-    :param img_size: 
-    :param ng: 网格的长宽
-    :param device: 
-    :return: 
-    '''
-    nx, ny = ng  # x and y grid size
-    self.img_size = img_size
-    self.stride = img_size / max(ng)
 
-    # build xy offsets
-    # (ny,nx),(ny,nx)
-    yv, xv = torch.meshgrid([torch.arange(ny), torch.arange(nx)])
-    # (ny,nx,2)->(1,1,ny,nx,2)
-    self.grid_xy = torch.stack((xv, yv), 2).view((1, 1, ny, nx, 2)).type(self.dtype).to(device)
-
-    # build wh gains
-    self.anchor_vec = (self.anchors/ self.stride).type(self.dtype).to(device)
-    self.anchor_wh = self.anchor_vec.view(1, self.na, 1, 1, 2).to(device)
-    self.ng = torch.Tensor(ng).to(device)
-    self.nx = nx
-    self.ny = ny
 
 
 def load_darknet_weights(self, weights, cutoff=-1):

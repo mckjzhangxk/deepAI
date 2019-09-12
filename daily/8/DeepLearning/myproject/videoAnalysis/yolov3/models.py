@@ -279,9 +279,9 @@ class Darknet(nn.Module):
         根据
         module_list,modele_def 构建模型
         
-        modele_def:有一下几个标签
+        module_def:有一下几个标签
          'convolutional', 'upsample', 'maxpool',
-            输输入是上一级的输入x,输出是用相应module_list里面的module,module(x)
+            输入是上一级的输入x,输出是用相应module_list里面的module,module(x)
          [shortcut]: from=-3
             输出是layer_outputs[from]+layer_outputs[-1]
          [route]:layer表示跳转的位置，这个标签表示不再线性了，要跳转了
