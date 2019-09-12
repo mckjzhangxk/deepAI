@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/helloTorch.dir/main.cpp.o  -o helloTorch -Wl,-rpath,/home/zhangxk/libtorch/lib /home/zhangxk/libtorch/lib/libtorch.so /home/zhangxk/libtorch/lib/libc10.so /home/zhangxk/libtorch/lib/libc10.so -lpthread -Wl,--no-as-needed,/home/zhangxk/libtorch/lib/libtorch.so -Wl,--as-needed 
