@@ -1,0 +1,11 @@
+/home/zxk/下载/clion-2019.1.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=/home/zxk/libtorch -G "CodeBlocks - Unix Makefiles" /home/zxk/PycharmProjects/deepAI1/c++/torchTutoral
+-- Caffe2: CUDA detected: 9.0
+-- Caffe2: CUDA nvcc is: /usr/local/cuda/bin/nvcc
+-- Caffe2: CUDA toolkit directory: /usr/local/cuda
+-- Caffe2: Header version is: 9.0
+-- Found cuDNN: v7.5.0  (include: /usr/include, library: /usr/lib/x86_64-linux-gnu/libcudnn.so)
+-- Autodetected CUDA architecture(s):  6.1
+-- Added CUDA NVCC flags for: -gencode;arch=compute_61,code=sm_61
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/zxk/PycharmProjects/deepAI1/c++/torchTutoral/cmake-build-debug

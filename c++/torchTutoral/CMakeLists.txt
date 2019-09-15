@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.14)
+project(torchTutoral)
+find_package(Torch REQUIRED)
+add_executable(dcgan main.cpp)
+target_link_libraries(dcgan "${TORCH_LIBRARIES}")
+set_property(TARGET dcgan PROPERTY CXX_STANDARD 11)

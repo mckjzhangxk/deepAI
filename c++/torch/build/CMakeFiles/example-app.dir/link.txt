@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/example-app.dir/example-app.cpp.o  -o example-app -Wl,-rpath,/home/zhangxk/projects/deepAI/c++/torch/libtorch/lib ../libtorch/lib/libtorch.so ../libtorch/lib/libc10.so ../libtorch/lib/libc10.so -lpthread -Wl,--no-as-needed,/home/zhangxk/projects/deepAI/c++/torch/libtorch/lib/libtorch.so -Wl,--as-needed 
