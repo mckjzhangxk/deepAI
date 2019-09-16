@@ -79,15 +79,15 @@ dcgan_EXTERNAL_OBJECTS =
 
 dcgan: CMakeFiles/dcgan.dir/main.cpp.o
 dcgan: CMakeFiles/dcgan.dir/build.make
-dcgan: /home/zxk/libtorch/lib/libtorch.so
-dcgan: /home/zxk/libtorch/lib/libc10.so
+dcgan: /home/zxk/libtorch/libtorch_cuda/lib/libtorch.so
+dcgan: /home/zxk/libtorch/libtorch_cuda/lib/libc10.so
 dcgan: /usr/lib/x86_64-linux-gnu/libcuda.so
 dcgan: /usr/local/cuda/lib64/libnvrtc.so
 dcgan: /usr/local/cuda/lib64/libnvToolsExt.so
 dcgan: /usr/local/cuda/lib64/libcudart.so
-dcgan: /home/zxk/libtorch/lib/libc10_cuda.so
-dcgan: /home/zxk/libtorch/lib/libc10_cuda.so
-dcgan: /home/zxk/libtorch/lib/libc10.so
+dcgan: /home/zxk/libtorch/libtorch_cuda/lib/libc10_cuda.so
+dcgan: /home/zxk/libtorch/libtorch_cuda/lib/libc10_cuda.so
+dcgan: /home/zxk/libtorch/libtorch_cuda/lib/libc10.so
 dcgan: /usr/local/cuda/lib64/libcufft.so
 dcgan: /usr/local/cuda/lib64/libcurand.so
 dcgan: /usr/lib/x86_64-linux-gnu/libcudnn.so

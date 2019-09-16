@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/torchTutoral.dir/main.cpp.o  -o torchTutoral 

@@ -15,10 +15,10 @@
 ########################
 
 //Path to a library.
-C10_CUDA_LIBRARY:FILEPATH=/home/zxk/libtorch/lib/libc10_cuda.so
+C10_CUDA_LIBRARY:FILEPATH=/home/zxk/libtorch/libtorch_cuda/lib/libc10_cuda.so
 
 //Path to a library.
-C10_LIBRARY:FILEPATH=/home/zxk/libtorch/lib/libc10.so
+C10_LIBRARY:FILEPATH=/home/zxk/libtorch/libtorch_cuda/lib/libc10.so
 
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
@@ -150,7 +150,7 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //No help, variable specified on the command line.
-CMAKE_PREFIX_PATH:UNINITIALIZED=/home/zxk/libtorch
+CMAKE_PREFIX_PATH:UNINITIALIZED=/home/zxk/libtorch/libtorch_cuda
 
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=
@@ -375,7 +375,7 @@ CUDNN_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libcudnn.so
 CUDNN_ROOT_DIR:PATH=
 
 //The directory containing a CMake configuration file for Caffe2.
-Caffe2_DIR:PATH=/home/zxk/libtorch/share/cmake/Caffe2
+Caffe2_DIR:PATH=/home/zxk/libtorch/libtorch_cuda/share/cmake/Caffe2
 
 //Path to a library.
 LIBNVTOOLSEXT:FILEPATH=/usr/local/cuda/lib64/libnvToolsExt.so
@@ -393,10 +393,10 @@ ProcessorCount_cmd_getconf:FILEPATH=/usr/bin/getconf
 ProcessorCount_cmd_sysctl:FILEPATH=/sbin/sysctl
 
 //Path to a library.
-TORCH_LIBRARY:FILEPATH=/home/zxk/libtorch/lib/libtorch.so
+TORCH_LIBRARY:FILEPATH=/home/zxk/libtorch/libtorch_cuda/lib/libtorch.so
 
 //The directory containing a CMake configuration file for Torch.
-Torch_DIR:PATH=/home/zxk/libtorch/share/cmake/Torch
+Torch_DIR:PATH=/home/zxk/libtorch/libtorch_cuda/share/cmake/Torch
 
 //Value Computed by CMake
 torchTutoral_BINARY_DIR:STATIC=/home/zxk/PycharmProjects/deepAI1/c++/torchTutoral/cmake-build-debug
@@ -634,7 +634,7 @@ CUDA_cusolver_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CUDA_cusparse_LIBRARY
 CUDA_cusparse_LIBRARY-ADVANCED:INTERNAL=1
 //Location of make2cmake.cmake
-CUDA_make2cmake:INTERNAL=/home/zxk/libtorch/share/cmake/Caffe2/Modules_CUDA_fix/upstream/FindCUDA/make2cmake.cmake
+CUDA_make2cmake:INTERNAL=/home/zxk/libtorch/libtorch_cuda/share/cmake/Caffe2/Modules_CUDA_fix/upstream/FindCUDA/make2cmake.cmake
 //ADVANCED property for variable: CUDA_nppc_LIBRARY
 CUDA_nppc_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CUDA_nppial_LIBRARY
@@ -660,9 +660,9 @@ CUDA_nppitc_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CUDA_npps_LIBRARY
 CUDA_npps_LIBRARY-ADVANCED:INTERNAL=1
 //Location of parse_cubin.cmake
-CUDA_parse_cubin:INTERNAL=/home/zxk/libtorch/share/cmake/Caffe2/Modules_CUDA_fix/upstream/FindCUDA/parse_cubin.cmake
+CUDA_parse_cubin:INTERNAL=/home/zxk/libtorch/libtorch_cuda/share/cmake/Caffe2/Modules_CUDA_fix/upstream/FindCUDA/parse_cubin.cmake
 //Location of run_nvcc.cmake
-CUDA_run_nvcc:INTERNAL=/home/zxk/libtorch/share/cmake/Caffe2/Modules_CUDA_fix/upstream/FindCUDA/run_nvcc.cmake
+CUDA_run_nvcc:INTERNAL=/home/zxk/libtorch/libtorch_cuda/share/cmake/Caffe2/Modules_CUDA_fix/upstream/FindCUDA/run_nvcc.cmake
 //Details about finding CUDA
 FIND_PACKAGE_MESSAGE_DETAILS_CUDA:INTERNAL=[/usr/local/cuda][/usr/local/cuda/bin/nvcc][/usr/local/cuda/include][/usr/local/cuda/lib64/libcudart.so][v9.0()]
 //Details about finding CUDNN
@@ -670,7 +670,7 @@ FIND_PACKAGE_MESSAGE_DETAILS_CUDNN:INTERNAL=[/usr/include][/usr/lib/x86_64-linux
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding torch
-FIND_PACKAGE_MESSAGE_DETAILS_torch:INTERNAL=[/home/zxk/libtorch/lib/libtorch.so][/home/zxk/libtorch/include;/home/zxk/libtorch/include/torch/csrc/api/include][v()]
+FIND_PACKAGE_MESSAGE_DETAILS_torch:INTERNAL=[/home/zxk/libtorch/libtorch_cuda/lib/libtorch.so][/home/zxk/libtorch/libtorch_cuda/include;/home/zxk/libtorch/libtorch_cuda/include/torch/csrc/api/include][v()]
 //ADVANCED property for variable: ProcessorCount_cmd_getconf
 ProcessorCount_cmd_getconf-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ProcessorCount_cmd_sysctl

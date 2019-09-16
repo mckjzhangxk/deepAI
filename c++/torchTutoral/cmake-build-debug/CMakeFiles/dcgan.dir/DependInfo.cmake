@@ -16,8 +16,8 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/home/zxk/libtorch/include"
-  "/home/zxk/libtorch/include/torch/csrc/api/include"
+  "/home/zxk/libtorch/libtorch_cuda/include"
+  "/home/zxk/libtorch/libtorch_cuda/include/torch/csrc/api/include"
   "/usr/local/cuda/include"
   )
 
