@@ -10,4 +10,4 @@ ps aux |grep python3，查看下所有python3 cluster.py的进程pid记录
 其他命令:
 myai --start & //注意 + &表示后台执行
 myai --show //查询是否启动
-myai --stop //查询关闭
+myai --stop //关闭

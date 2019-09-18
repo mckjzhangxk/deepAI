@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: myai
-Version: 1.2
+Version: 1.3
 Summary: A package Test package
 Home-page: https://github.com/mckjzhangxk/deepAI.git
 Author: zhangxk
@@ -18,7 +18,7 @@ Description: 1.关闭以后服务
         其他命令:
         myai --start & //注意 + &表示后台执行
         myai --show //查询是否启动
-        myai --stop //查询关闭
+        myai --stop //关闭
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3

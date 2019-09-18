@@ -1,12 +1,17 @@
-import json
+import json,os
 from collections import OrderedDict
 def defaultConfig():
     d=OrderedDict()
     d['debug']=False
-    # d['source']='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/cluster/cfai/test/src/*.json'
-    # d['target']='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/cluster/cfai/test/tgt'
-    d['source']='/cfai/cluster/pre/*.json'
-    d['target']='/cfai/cluster/tgt'
+    basepath='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/cluster/cfai/test'
+    # basepath='/cfai/cluster'
+    d['source']=os.path.join(basepath,'src/*.json')
+    d['target']=os.path.join(basepath,'tgt')
+    d['logfile']=os.path.join(basepath,'log')
+    if not os.path.exists(d['logfile']):
+        os.mkdir(d['logfile'])
+
+
 
     d['colors']=["#E25D68","#8BC34A","#03A9F4","#AB47BC","#ff9800","#3f51b5", "#EC407A",
                  "#009688", "#8D6E63",  "#FF7043","#FFCA28", "#4CAF50",

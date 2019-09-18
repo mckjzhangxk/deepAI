@@ -584,3 +584,19 @@ Traceback (most recent call last):
   File "/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/cluster/cfai/cluster.py", line 166, in <module>
     filelist=glob.glob(config['source'])
 TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/usr/lib/python3.5/runpy.py", line 184, in _run_module_as_main
+    "__main__", mod_spec)
+  File "/usr/lib/python3.5/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/cluster/cfai/cluster.py", line 175, in <module>
+    sleep(config['refresh_interval'])
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/usr/lib/python3.5/runpy.py", line 184, in _run_module_as_main
+    "__main__", mod_spec)
+  File "/usr/lib/python3.5/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/cluster/cfai/cluster.py", line 175, in <module>
+    sleep(config['refresh_interval'])
+KeyboardInterrupt

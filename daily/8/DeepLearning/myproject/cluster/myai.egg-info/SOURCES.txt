@@ -7,6 +7,7 @@ cfai/config.py
 cfai/server.py
 cfai/utils.py
 cfai/utilsHelper.py
+cfai/xx.py
 myai.egg-info/PKG-INFO
 myai.egg-info/SOURCES.txt
 myai.egg-info/dependency_links.txt

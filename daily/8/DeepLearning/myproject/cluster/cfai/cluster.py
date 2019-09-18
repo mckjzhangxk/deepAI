@@ -4,6 +4,8 @@ import os
 from collections import OrderedDict
 from cfai.utils import *
 from cfai.utilsHelper import clusterHelper
+import argparse
+import traceback
 
 
 def printProcess(fn):
@@ -43,6 +45,7 @@ def response(jsonobj,src_file,tgt_dir,labels,cluster_rank,id2Index,colors,pos=No
             #本类的topK
             tokKids=cluster_rank[c]['top'] if c in cluster_rank else [len(nodeId)-1]
             tokKvalues=cluster_rank[c]['value'] if c in cluster_rank else [100.]
+
             if nodeId in tokKids:
                 rank=tokKids.index(nodeId)
                 node['topk']=rank
@@ -79,7 +82,7 @@ def loadConfig():
     #     config = json.load(fp)
     config=defaultConfig()
     return config
-def saveError(src, tgt_dir, err):
+def saveError(src, tgt_dir,log_dir):
     '''
     保存错误信息到tgt_dir,然后清除源文件
     :param src: 源请求json文件
@@ -87,14 +90,32 @@ def saveError(src, tgt_dir, err):
     :param err: 错误信息
     :return: 
     '''
+
+    def handleErrorLog(logpath, errobj):
+        '''
+
+        :param logpath: 输出的log路径
+        :param errobj: 要输出的errobj对象
+        :return: 返回错误编号
+        '''
+        import uuid
+        uid = str(uuid.uuid1()).replace('-', '')
+        outpath = os.path.join(logpath, uid + '.json')
+        errinfo = traceback.format_exc()
+
+        with open(outpath, 'w') as fp:
+            json.dump(errobj, fp, indent=1)
+            fp.write(errinfo)
+
+        return uid
+
     if os.path.exists(src):
         with open(src) as fp:
             errobj = json.load(fp)
     else:
         errobj=OrderedDict()
     errobj['success']=False
-    errobj['file']=src
-    errobj['info']=str(err)
+    errobj['info']=handleErrorLog(log_dir,errobj)
 
     tgt_file = os.path.join(tgt_dir, os.path.basename(src))
     with open(tgt_file, 'w') as fp:
@@ -117,6 +138,7 @@ def calcRelation(filename,config):
     :return: 
     '''
     try:
+
         G, Id2Index, Index2Id, jsonObj = makeChengfGraph(filename)
         #############根据临界矩阵进行谱分类######################
         L = LaplacianMatrix(graph2Matrix(G,norm=False))
@@ -158,10 +180,15 @@ def calcRelation(filename,config):
     except Exception as e:
         if config['debug']:
             raise e
-        saveError(filename, config['target'], e)
+        saveError(filename, config['target'], config['logfile'])
 
 if __name__ == '__main__':
+    parser=argparse.ArgumentParser()
     config=loadConfig()
+    parser.add_argument('--target', default=config['target'],type=str)
+    args=parser.parse_args()
+    config['target']=args.target
+
     while True:
         filelist=glob.glob(config['source'])
         if len(filelist)>0:

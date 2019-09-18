@@ -1,2 +1,3 @@
 #!/bin/bash
-python3 -m cfai.server "$1"
+#$*表示全部参数,$1表示第一个参数
+python3 -m cfai.server $*
