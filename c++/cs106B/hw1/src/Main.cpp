@@ -37,14 +37,38 @@ int Hash(string s, int maxCode)
         hashcode = hashcode * Multiplier + s[i];
    return (hashcode % maxCode);
 }
-void simulate();
-int main ()
-{
+void simulate(int);
+void Ghaos_Game();
+void part3();
+void warmup(){
     cout << "Please enter your name: ";
     string name = getLine();
-
     int hashcode = Hash(name,MAX_HASH_CODE);
     cout << "The hash code for your name is " << hashcode << "." <<endl;
-    simulate();
+}
+int main ()
+{
+
+
+    cout<<"Input which you want:"<<endl;
+    cout<<"[0].warm up"<<endl;
+    cout<<"[1].simulate voter"<<endl;
+    cout<<"[2].Chaos Games"<<endl;
+    cout<<"[3].Soundex"<<endl;
+    cout<<"type:";
+    int option=getInteger();
+
+    switch (option) {
+        case 0:
+            warmup();
+            break;
+         case 1:
+            simulate(500);
+            break;
+         case 2:
+            Ghaos_Game();
+         case 3:
+            part3();
+    }
     return 0;
 }
