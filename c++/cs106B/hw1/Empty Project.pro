@@ -207,6 +207,7 @@ HEADERS *= "" \
     src/soundex.h
 HEADERS = ""
 SOURCES *= "" \
+    src/FileProcessing.cpp \
     src/graphics.cpp \
     src/part2.cpp \
     src/soundex.cpp

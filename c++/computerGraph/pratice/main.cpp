@@ -4,101 +4,157 @@
 #include<memory.h>
 #include<string>
 #include<vecmath/Matrix4f.h>
+#include<vecmath/Vector3f.h>
+#include<vector>
+#include "draw.h"
+
+using namespace std;
+
+ 
 
 
-GLfloat angle=0;
-GLfloat pangle=0;
-GLfloat aspect=1.7;
+GLfloat KEY_VIEW_ANGLE_A=30;//视角，Y方向
+GLfloat KEY_VIEW_ASPECT_V=1.7;//视图的w/h,
+GLint KEY_OFFSET_O=0;//viewport xmin,ymin
+GLfloat KEY_DEPTH_Z=2;//更改z坐标，看看有啥变化
+GLfloat KEY_ZROTATE_R=0;//旋转Z轴
+bool KEY_SHOW_AXIS=true;
+
 int INTERVAL=100;
 bool rotate=0;
 
 void timefunc(int value){
-    if(rotate){
-        angle+=0.01;
-    
-    }
-    glutPostRedisplay();
+
     
     glutTimerFunc(INTERVAL,timefunc,value);
 }
 
-using namespace std;
+
 //https://www.opengl.org/resources/libraries/glut/spec3/spec3.html
 //https://www.khronos.org/registry/OpenGL-Refpages/gl4/
-void parse(int argc,char **argv){
-    int top=30,left=30,width=1024,height=600;
-
+void init(int argc,char **argv){
     
+
+    int top=30,left=30,width=1024,height=600;    
     // 第一步窗口的初始化等
     glutInitWindowPosition(left,top);
     glutInitWindowSize(width,height);
+
+    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
+    glutInit(&argc,argv);
+    
+    glutCreateWindow("Hello Computer Graphics");
+    //很重要，而且要放对位置，不然后面的物体会遮挡前面的物体
+   glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
 }
 
+//画3个三角形
+void example1(){
+    drawTriangle({
+        {{0,0,0},{0,0,1}},
+        {{1,0,0},{0,0,1}},
+        {{1,1,0},{0,0,1}},
+    },{1,0,0});
+
+    drawTriangle({
+        {{0,0,0},{0,0,1}},
+        {{-1,0,0},{0,0,1}},
+        {{-1,-1,0},{0,0,1}},
+    },{0,1,0});
+   
+     drawTriangle({
+        {{0,2,KEY_DEPTH_Z},{0,0,1}},
+        {{-1,-1,KEY_DEPTH_Z},{0,0,1}},
+        {{1,-1,KEY_DEPTH_Z},{0,0,1}},
+    },{0,0,1}); 
+
+    // drawTriangle({
+    //     {{0,0,0},{0,0,1}},
+    //     {{1,0,0},{0,0,1}},
+    //     {{1,1,0},{0,0,1}},
+    //     {{0,0,0},{0,0,1}},
+    //     {{-1,0,0},{0,0,1}},
+    //     {{-1,-1,0},{0,0,1}},
+    //     {{0,2,KEY_Z},{0,0,1}},
+    //     {{-1,-1,KEY_Z},{0,0,1}},
+    //     {{1,-1,KEY_Z},{0,0,1}},
+    // }
+    // ,{0,1,0});
+}
+//画x,y,z三个轴
+
+void drawAxis(){
+    GLfloat LINEWIDTH=10;
+    drawLines({{0,0,0},{1,0,0}},{1,0,0},LINEWIDTH);
+    drawLines({{0,0,0},{0,1,0}},{0,1,0},LINEWIDTH);
+    drawLines({{0,0,0},{0,0,1}},{0,0,1},LINEWIDTH);
+}
+//设置3个帧。后2个是平移第一个得到的，然后选择，用于展示 继承结构 
+void example2(){
+    glPushMatrix();
+        glRotated(KEY_ZROTATE_R,0,0,1);
+        drawAxis();
+        //复制一个axis,我希望它同时旋转,push起到隔离的作用！
+        glPushMatrix();
+            glTranslated(.4,.4,0);
+            drawAxis();
+        glPopMatrix();
+        //复制一个axis,我希望它同时旋转，这里的push,pop可有可无
+        // glPushMatrix();
+            glTranslated(-.4,-.4,0);
+            drawAxis();
+        // glPopMatrix();
+
+    glPopMatrix();
+}
+//展示glutSolidCube,glutSolidSphere用法
+void example3(){
+    // glRotated(KEY_ZROTATE_R,0,1,0);
+    glPushMatrix();
+        glScalef(0.25,0.25,3);
+        glTranslated(0.5,0.5,0);
+        //中心是0,0,0,边长是1
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        // Matrix4f m;
+        // glLoadMatrixf(m);
+        // glGetFloatv(GL_MATRIX_MODE,m);
+        // cout<<"xx"<<endl;
+        // m.print();
+        // glLoadMatrixd(&m);
+        // glTranslated(-1,-1,0);
+        
+        glutSolidSphere(0.125,12,12);
+    glPopMatrix();
+}
+void setPespectiveView(){
+    Matrix4f I=Matrix4f::identity();
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(I);
+    gluPerspective(KEY_VIEW_ANGLE_A,KEY_VIEW_ASPECT_V, 1.0, 100.0);
+
+}
 void display(){
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
-    // Matrix4f rot=rot.rotateZ(angle);
-     
-
     glLoadIdentity();
-    // glMultMatrixf(rot);
-    // glTranslatef(0.5,0.5,0);
-
+    
+    // glGetFloatv(GL_MATRIX_MODE,m);
 
     gluLookAt(0,0,5,0,0,0,0,1,0);
-    glBegin(GL_TRIANGLES);
-        glColor3f(0,1,0);
-        glVertex3d(0,0,0);
-        glNormal3d(0,0,1);
 
-        glVertex3d(1,0,0);
-        glNormal3d(0,0,1);
-
-        glVertex3d(1,1,0);
-        glNormal3d(0,0,1);
-
-    glEnd();
-
-
-    glBegin(GL_TRIANGLES);
-        glColor3f(0,1,1);
-        glVertex3d(0,0,0);
-        glNormal3d(0,0,1);
-
-        glVertex3d(-1,0,0);
-        glNormal3d(0,0,1);
-
-        glVertex3d(-1,-1,0);
-        glNormal3d(0,0,1);
-            
-
-    glEnd();
-
+    example3();
+    if(KEY_SHOW_AXIS) drawAxis();
     
-    glBegin(GL_TRIANGLES);
-        glColor3f(1,1,1);
-        glVertex3d(0,2,0);
-        glNormal3d(0,0,1);
-
-        glVertex3d(-1,-1,0);
-        glNormal3d(0,0,1);
-
-        glVertex3d(1,-1,0);
-        glNormal3d(0,0,1);
-    glEnd();
-
+    setPespectiveView();
     glutSwapBuffers();
 }
-void reshape(int w,int h){
-  
-    
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-      
-    glViewport(0,0,w,h);
-    cout<<aspect<<endl;
-    gluPerspective(pangle, aspect, 1.0, 100.0);
+void reshape(int w,int h){  
+    //(0,0)在左下角
+    glViewport(KEY_OFFSET_O,KEY_OFFSET_O,w-KEY_OFFSET_O,h-KEY_OFFSET_O);
    
 }
 void keyFunc(unsigned char key,int x, int y){
@@ -107,17 +163,36 @@ void keyFunc(unsigned char key,int x, int y){
     case 'q':
         exit(0);
         break;
-    case 'r':
-        rotate=1-rotate;
-        cout<<rotate<<endl;
+    case 'V':
+        KEY_VIEW_ASPECT_V+=0.1;
         break;
-    case 'x':
-        pangle+=1;
+    case 'v':
+        KEY_VIEW_ASPECT_V-=0.1;
+        break;
+    case 'A':
+        KEY_VIEW_ANGLE_A+=1;
+        break;
+    case 'a':
+        KEY_VIEW_ANGLE_A-=1;
+        break;
+    case 'O':
+        KEY_OFFSET_O+=1;
         reshape(glutGet(GLUT_WINDOW_WIDTH),glutGet(GLUT_WINDOW_HEIGHT));
+        break;
+    case 'Z':
+        KEY_DEPTH_Z+=1;
         break;
     case 'z':
-        aspect*=0.9;
-        reshape(glutGet(GLUT_WINDOW_WIDTH),glutGet(GLUT_WINDOW_HEIGHT));
+        KEY_DEPTH_Z-=1;
+        break;
+    case 'R':
+        KEY_ZROTATE_R+=1;
+        break;
+    case 'r':
+        KEY_ZROTATE_R-=1;
+        break;
+    case 'p':
+        KEY_SHOW_AXIS=!KEY_SHOW_AXIS;
         break;
     default:
         break;
@@ -134,13 +209,8 @@ void mouseFunc(int button, int state,int x, int y){
     cout<<(state==GLUT_DOWN)<<endl;GLUT_DOWN;
 }
 int main(int argc,char **argv){
-    parse(argc,argv);
+    init(argc,argv);
 
-    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
-    glutInit(&argc,argv);
-    glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
-    
-    glutCreateWindow("Hello Computer Graphics");
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyFunc);

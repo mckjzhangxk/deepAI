@@ -40,6 +40,7 @@ int Hash(string s, int maxCode)
 void simulate(int);
 void Ghaos_Game();
 void part3();
+void part4();
 void warmup(){
     cout << "Please enter your name: ";
     string name = getLine();
@@ -55,6 +56,7 @@ int main ()
     cout<<"[1].simulate voter"<<endl;
     cout<<"[2].Chaos Games"<<endl;
     cout<<"[3].Soundex"<<endl;
+    cout<<"[4].File processing and vectors"<<endl;
     cout<<"type:";
     int option=getInteger();
 
@@ -67,8 +69,13 @@ int main ()
             break;
          case 2:
             Ghaos_Game();
+            break;
          case 3:
             part3();
+            break;
+         case 4:
+           part4();
+           break;
     }
     return 0;
 }
