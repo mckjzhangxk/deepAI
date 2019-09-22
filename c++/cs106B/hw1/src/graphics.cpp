@@ -5,11 +5,11 @@
 #include "random.h"
 using namespace  std;
 
-Vector<GPoint> points;
-GWindow* win;
-const string COLOR="green";
-const int CIRCLE_SIZE=4;
-const unsigned int Iters=2000;
+static Vector<GPoint> points;
+static GWindow* win;
+static const string COLOR="green";
+static const int CIRCLE_SIZE=4;
+static const unsigned int Iters=2000;
 
 const GPoint & randomVertex(){
     int n=randomInteger(0,points.size()-1);

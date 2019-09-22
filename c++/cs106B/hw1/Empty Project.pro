@@ -204,12 +204,14 @@ PRECOMPILED_HEADER = $$files($$PWD/lib/StanfordCPPLib/private/precompiled.h)
 DISTFILES *= ""
 DISTFILES = ""
 HEADERS *= "" \
+    main.h \
     src/soundex.h
 HEADERS = ""
 SOURCES *= "" \
     src/FileProcessing.cpp \
     src/graphics.cpp \
     src/part2.cpp \
+    src/plot.cpp \
     src/soundex.cpp
 SOURCES = ""
 
