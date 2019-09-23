@@ -44,10 +44,11 @@ public:
 
 	// 1.1. Implement this method with a recursive helper to draw a sphere at each joint.
 	void drawJoints( );
-
+	void drawJoint_dfs(Joint* root);
+	
 	// 1.2. Implement this method a recursive helper to draw a box between each pair of joints
 	void drawSkeleton( );
-
+	void drawSkeleton_dfs(Joint* root);
 	// 1.3. Implement this method to handle changes to your skeleton given
 	// changes in the slider values
 	void setJointTransform( int jointIndex, float rX, float rY, float rZ );

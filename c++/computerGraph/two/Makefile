@@ -21,6 +21,7 @@ LINKFLAGS += -lXrender -lXcursor -lXfixes -lXext -lXft -lfontconfig -lXinerama -
 
 CFLAGS    = -g
 CFLAGS    += -DSOLN
+CFLAGS    += -std=c++11
 CC        = g++
 SRCS      = bitmap.cpp camera.cpp MatrixStack.cpp modelerapp.cpp modelerui.cpp ModelerView.cpp Joint.cpp SkeletalModel.cpp Mesh.cpp main.cpp
 OBJS      = $(SRCS:.cpp=.o)

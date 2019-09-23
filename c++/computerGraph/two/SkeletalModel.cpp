@@ -71,8 +71,11 @@ void SkeletalModel::loadSkeleton( const char* filename )
 		m_joints.push_back(joint);
 
 		Matrix4f tr=Matrix4f::identity();
-		tr.setCol(4,Vector4f(x,y,z,1));
+
+		tr.setCol(3,Vector4f(x,y,z,1)); //I make a mistake,set col=4,ooh my god!!
 		joint->transform=tr;
+
+
 		//need double check whether is identity
 		if(parentId==-1){
 			joint->bindWorldToJointTransform=Matrix4f::identity();
@@ -95,7 +98,7 @@ void SkeletalModel::loadSkeleton( const char* filename )
 		bindWorldToJointTransform is a map from global frame to local
 		*/
 
-		Matrix4f current2World=parent->currentJointToWorldTransform*tr;
+		Matrix4f current2World=tr*parent->currentJointToWorldTransform;
 		joint->currentJointToWorldTransform=current2World;
 		joint->bindWorldToJointTransform=current2World.inverse();
 
@@ -103,7 +106,77 @@ void SkeletalModel::loadSkeleton( const char* filename )
 	}
 	m_rootJoint=m_joints[0];
 }
+void drawPoint(const Vector3f &point){
+        glVertex3d(point.x(),point.y(),point.z());     
+}
+void drawLines(const vector<Vector3f> pts,const Vector3f &color,GLfloat linewidth){
+    glLineWidth(linewidth);//放在begin里面不起作用
+    /*
+    GL_LINES:每2个点组成一条线
+    GL_LINE_STRIP:一个点连接下一个点
+    */
+    glBegin(GL_LINES);    
+        glColor3d(color.x(),color.y(),color.z());
+        for(int i=0;i<pts.size();i++){
+            drawPoint(pts[i]);
+        }
+    glEnd();
+}
+//画x,y,z三个轴
+void drawAxis(GLfloat LINEWIDTH=1,GLfloat scale=0.1){
+    drawLines({{0,0,0},{scale,0,0}},{1,0,0},LINEWIDTH);
+    drawLines({{0,0,0},{0,scale,0}},{0,1,0},LINEWIDTH);
+    drawLines({{0,0,0},{0,0,scale}},{0,0,1},LINEWIDTH);
+}
+/*
+计算当前需要旋转对齐的矩阵,z轴对齐 从 parent到child的向量，
+另为两个轴与这个对齐的Z轴彼此垂直
 
+这个矩阵是相对于一个父坐标系,而言的
+*/
+Matrix4f calcNewFrame(Joint * child){
+	
+	Vector3f Z=child->transform.getCol(3).xyz();
+	if(Z.x()==0&&Z.y()==0&&Z.z()==0){
+		return Matrix4f::identity();
+	}
+	Z.normalize();
+	Vector3f rndV(0,0,1);
+	Vector3f Y=Vector3f::cross(Z,rndV);
+	Y.normalize();
+	Vector3f X=Vector3f::cross(Y,Z);
+	X.normalize();
+
+	Matrix3f f=Matrix3f::identity();
+	f.setCol(0,X);
+	f.setCol(1,Y);
+	f.setCol(2,Z);
+
+	Matrix4f M=Matrix4f::identity();
+	M.setSubmatrix3x3(0,0,f);
+	return M;
+}
+Matrix4f localTransform2Global(Matrix4f f,Matrix4f local2global){
+	bool sigular;
+
+	Matrix4f inv=local2global.inverse(&sigular,1e-3);
+	return local2global*f*inv;
+}
+void SkeletalModel::drawJoint_dfs(Joint* root){
+	Matrix4f currentTransform=root->transform;
+	
+	m_matrixStack.push(currentTransform);
+	Matrix4f currentState=m_matrixStack.top();
+	//how to transform current joint
+	glLoadMatrixf(currentState);
+	glutSolidSphere(0.025f,12,12);
+	drawAxis(2,0.2);
+
+	for(Joint *child:root->children){ 	
+		drawJoint_dfs(child);
+	}
+	m_matrixStack.pop();
+}
 void SkeletalModel::drawJoints( )
 {
 	// Draw a sphere at each joint. You will need to add a recursive helper function to traverse the joint hierarchy.
@@ -115,11 +188,39 @@ void SkeletalModel::drawJoints( )
 	// (glPushMatrix, glPopMatrix, glMultMatrix).
 	// You should use your MatrixStack class
 	// and use glLoadMatrix() before your drawing call.
+	
+	
+	drawJoint_dfs(m_rootJoint);
+	
 }
+void SkeletalModel::drawSkeleton_dfs(Joint* root){
+	Matrix4f currentTransform=root->transform;
+	m_matrixStack.push(currentTransform);
 
+	Matrix4f tr=Matrix4f::translation(Vector3f(0,0,0.5));
+	Matrix4f sc=Matrix4f::scaling(0.05,0.05,0.5);
+	sc.print();
+	
+	Matrix4f currentState=m_matrixStack.top();
+	//how to transform current joint
+	bool sigular;
+
+	glLoadMatrixf(currentState*(sc*tr)*currentState.inverse(&sigular,0.001));
+
+	glutSolidCube(1);
+
+
+	for(Joint *child:root->children){ 	
+		drawSkeleton_dfs(child);
+	}
+	m_matrixStack.pop();
+} 
 void SkeletalModel::drawSkeleton( )
 {
 	// Draw boxes between the joints. You will need to add a recursive helper function to traverse the joint hierarchy.
+	// m_matrixStack.clear();
+	// drawSkeleton_dfs(m_rootJoint);
+	// m_matrixStack.clear();
 }
 
 void SkeletalModel::setJointTransform(int jointIndex, float rX, float rY, float rZ)

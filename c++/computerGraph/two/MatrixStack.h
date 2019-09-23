@@ -13,7 +13,7 @@ public:
 	void push( const Matrix4f& m );
 	void pop();
 
-private:
+public:
 
 	std::vector< Matrix4f > m_matrices;
 

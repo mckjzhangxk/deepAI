@@ -84,11 +84,19 @@ void example1(){
 //画x,y,z三个轴
 
 void drawAxis(){
-    GLfloat LINEWIDTH=10;
+    GLfloat LINEWIDTH=2;
     drawLines({{0,0,0},{1,0,0}},{1,0,0},LINEWIDTH);
     drawLines({{0,0,0},{0,1,0}},{0,1,0},LINEWIDTH);
     drawLines({{0,0,0},{0,0,1}},{0,0,1},LINEWIDTH);
 }
+
+void drawAxis1(){
+    GLfloat LINEWIDTH=5;
+    drawLines({{0,0,0},{1,0,0}},{1,1,0},LINEWIDTH);
+    drawLines({{0,0,0},{0,1,0}},{0,1,1},LINEWIDTH);
+    drawLines({{0,0,0},{0,0,1}},{1,0,1},LINEWIDTH);
+}
+
 //设置3个帧。后2个是平移第一个得到的，然后选择，用于展示 继承结构 
 void example2(){
     glPushMatrix();
@@ -111,8 +119,13 @@ void example2(){
 void example3(){
     // glRotated(KEY_ZROTATE_R,0,1,0);
     glPushMatrix();
-        glScalef(0.25,0.25,3);
+        //下面表示先scale 再移动，越接近模型函数的操作越先被执行！
         glTranslated(0.5,0.5,0);
+        glScalef(0.25,0.25,0.25);
+        
+        
+        
+        
         //中心是0,0,0,边长是1
         glutSolidCube(1.0);
     glPopMatrix();
@@ -129,6 +142,20 @@ void example3(){
         glutSolidSphere(0.125,12,12);
     glPopMatrix();
 }
+
+void example4(){
+    Matrix4f m=Matrix4f::rotateZ(3.1415926/6);
+    m.print();
+    cout<<endl;
+    glLoadMatrixf(m);
+    // glLoadMatrixf(Matrix4f::identity());
+    drawAxis1();
+
+    m=Matrix4f::rotateZ(-3.1415926/6);
+    m=m*m.uniformScaling(0.2);
+    glLoadMatrixf(m);
+    drawAxis1();
+}
 void setPespectiveView(){
     Matrix4f I=Matrix4f::identity();
     glMatrixMode(GL_PROJECTION);
@@ -138,16 +165,15 @@ void setPespectiveView(){
 }
 void display(){
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
-
+    gluLookAt(0,0,2,0,0,0,0,1,0);
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    //  glLoadIdentity();
+    glLoadMatrixf(Matrix4f::identity());
     
-    // glGetFloatv(GL_MATRIX_MODE,m);
-
-    gluLookAt(0,0,5,0,0,0,0,1,0);
-
-    example3();
+    
     if(KEY_SHOW_AXIS) drawAxis();
+    example4();
+    
     
     setPespectiveView();
     glutSwapBuffers();
