@@ -23,6 +23,7 @@
 #include <vector>
 #include <sstream>
 #include <vecmath.h>
+#include<cmath>
 
 #include "tuple.h"
 #include "Joint.h"

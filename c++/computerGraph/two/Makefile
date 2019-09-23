@@ -2,16 +2,16 @@
 #INCFLAGS += -I /mit/glut/include
 #LINKFLAGS = -L /mit/6.837/public/lib -l vecmath
 #LINKFLAGS += -L /mit/glut/lib -lGL -lGLU -lglut -lX11 -lXi
-INCFLAGS  = -I include/GL
-INCFLAGS += -I include/vecmath
+#mINCFLAGS  = -I include/GL
+#INCFLAGS += -I include/vecmath
 #INCFLAGS += -I ~/vecmath/include
 
 #g++ -I/usr/local/include -I/usr/include/freetype2 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_THREAD_SAFE -D_REENTRANT -o 'main' *.cpp /usr/local/lib/libfltk_gl.a -lGLU -lGL /usr/local/lib/libfltk.a -lXrender -lXcursor -lXfixes -lXext -lXft -lfontconfig -lXinerama -lpthread -ldl -lm -lX11 -lvecmath -lglut
 
 LINKFLAGS  = -lglut -lGL -lGLU
 LINKFLAGS += -lvecmath
-#LINKFLAGS += /usr/local/lib/libfltk_gl.a 
-#LINKFLAGS += /usr/local/lib/libfltk.a
+# LINKFLAGS += /usr/local/lib/libfltk_gl.a 
+# LINKFLAGS += /usr/local/lib/libfltk.a
 
 LINKFLAGS += -lfltk_gl 
 LINKFLAGS += -lfltk

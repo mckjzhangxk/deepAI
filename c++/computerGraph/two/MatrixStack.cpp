@@ -28,8 +28,17 @@ void MatrixStack::push( const Matrix4f& m )
 	// Push m onto the stack.
 	// Your stack should have OpenGL semantics:
 	// the new top should be the old top multiplied by m
-	Matrix4f currentState=m_matrices[m_matrices.size()-1];
-	m_matrices.push_back(m*currentState);
+
+	
+	Matrix4f&  currentState=m_matrices[m_matrices.size()-1];
+	/**
+	 * I make a bug,multi m at left hand side
+	 * 
+	 * I need first convert a local to parent using m,
+	 * 
+	 * then use parent's convert matrix currentState to global
+	*/
+	m_matrices.push_back(currentState*m);
 }
 
 void MatrixStack::pop()

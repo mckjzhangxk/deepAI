@@ -98,7 +98,7 @@ void SkeletalModel::loadSkeleton( const char* filename )
 		bindWorldToJointTransform is a map from global frame to local
 		*/
 
-		Matrix4f current2World=tr*parent->currentJointToWorldTransform;
+		Matrix4f current2World=parent->currentJointToWorldTransform*tr;
 		joint->currentJointToWorldTransform=current2World;
 		joint->bindWorldToJointTransform=current2World.inverse();
 
@@ -134,7 +134,7 @@ void drawAxis(GLfloat LINEWIDTH=1,GLfloat scale=0.1){
 
 这个矩阵是相对于一个父坐标系,而言的
 */
-Matrix4f calcNewFrame(Joint * child){
+Matrix4f alignTransform(Joint * child){
 	
 	Vector3f Z=child->transform.getCol(3).xyz();
 	if(Z.x()==0&&Z.y()==0&&Z.z()==0){
@@ -156,21 +156,14 @@ Matrix4f calcNewFrame(Joint * child){
 	M.setSubmatrix3x3(0,0,f);
 	return M;
 }
-Matrix4f localTransform2Global(Matrix4f f,Matrix4f local2global){
-	bool sigular;
 
-	Matrix4f inv=local2global.inverse(&sigular,1e-3);
-	return local2global*f*inv;
-}
 void SkeletalModel::drawJoint_dfs(Joint* root){
 	Matrix4f currentTransform=root->transform;
-	
 	m_matrixStack.push(currentTransform);
 	Matrix4f currentState=m_matrixStack.top();
 	//how to transform current joint
 	glLoadMatrixf(currentState);
 	glutSolidSphere(0.025f,12,12);
-	drawAxis(2,0.2);
 
 	for(Joint *child:root->children){ 	
 		drawJoint_dfs(child);
@@ -193,24 +186,31 @@ void SkeletalModel::drawJoints( )
 	drawJoint_dfs(m_rootJoint);
 	
 }
+
+
 void SkeletalModel::drawSkeleton_dfs(Joint* root){
 	Matrix4f currentTransform=root->transform;
 	m_matrixStack.push(currentTransform);
-
-	Matrix4f tr=Matrix4f::translation(Vector3f(0,0,0.5));
-	Matrix4f sc=Matrix4f::scaling(0.05,0.05,0.5);
-	sc.print();
-	
 	Matrix4f currentState=m_matrixStack.top();
-	//how to transform current joint
-	bool sigular;
-
-	glLoadMatrixf(currentState*(sc*tr)*currentState.inverse(&sigular,0.001));
-
-	glutSolidCube(1);
+	
+	//local translate
+	Matrix4f tr=Matrix4f::translation(Vector3f(0,0,0.5));	
+	
 
 
 	for(Joint *child:root->children){ 	
+		//我误认为d是child 与parent 的第四维度之差
+		double d=sqrt(child->transform.getCol(3).xyz().absSquared());
+		
+		if(d>1e-4){
+			//local scale,and align
+			Matrix4f sc=Matrix4f::scaling(0.05,0.05,d);
+			Matrix4f alignM=alignTransform(child);
+			glLoadMatrixf(currentState*(alignM*sc*tr));
+			glutSolidCube(1);
+
+		}
+		
 		drawSkeleton_dfs(child);
 	}
 	m_matrixStack.pop();
@@ -218,14 +218,15 @@ void SkeletalModel::drawSkeleton_dfs(Joint* root){
 void SkeletalModel::drawSkeleton( )
 {
 	// Draw boxes between the joints. You will need to add a recursive helper function to traverse the joint hierarchy.
-	// m_matrixStack.clear();
-	// drawSkeleton_dfs(m_rootJoint);
-	// m_matrixStack.clear();
+	drawSkeleton_dfs(m_rootJoint);
+
 }
 
 void SkeletalModel::setJointTransform(int jointIndex, float rX, float rY, float rZ)
 {
 	// Set the rotation part of the joint's transformation matrix based on the passed in Euler angles.
+	Matrix3f M=Matrix3f::rotateZ(rZ)*Matrix3f::rotateY(rY)*Matrix3f::rotateX(rX);
+	m_joints[jointIndex]->transform.setSubmatrix3x3(0,0,M);
 }
 
 
