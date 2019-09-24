@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build",
+  "command": "/usr/bin/g++-5    -g   -o CMakeFiles/mylib.dir/hello.cpp.o -c /home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/hello.cpp",
+  "file": "/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/hello.cpp"
+},
+{
+  "directory": "/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build",
+  "command": "/usr/bin/g++-5    -g   -o CMakeFiles/MyAI.dir/main.cpp.o -c /home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/main.cpp",
+  "file": "/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/main.cpp"
+}
+]
