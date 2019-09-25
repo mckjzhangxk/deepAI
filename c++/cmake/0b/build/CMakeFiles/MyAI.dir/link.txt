@@ -1,0 +1,1 @@
+/usr/bin/g++-5  -g   CMakeFiles/MyAI.dir/main.cpp.o  -o MyAI libmylib.a 

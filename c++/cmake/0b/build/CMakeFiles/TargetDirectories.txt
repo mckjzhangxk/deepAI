@@ -1,0 +1,4 @@
+/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build/CMakeFiles/rebuild_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build/CMakeFiles/edit_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build/CMakeFiles/mylib.dir
+/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build/CMakeFiles/MyAI.dir

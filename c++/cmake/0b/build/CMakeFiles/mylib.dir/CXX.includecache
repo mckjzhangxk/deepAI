@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/hello.cpp
+iostream
+-
+hello.h
+/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/hello.h
+
+/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/hello.h
+
