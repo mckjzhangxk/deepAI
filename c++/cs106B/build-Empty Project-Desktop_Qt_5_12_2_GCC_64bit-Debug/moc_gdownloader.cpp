@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../hw1/lib/StanfordCPPLib/graphics/gdownloader.h"
+#include "../hw2/lib/StanfordCPPLib/graphics/gdownloader.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #include <QtCore/QList>

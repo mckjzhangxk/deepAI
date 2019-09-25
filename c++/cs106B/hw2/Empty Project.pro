@@ -203,10 +203,17 @@ PRECOMPILED_HEADER = $$files($$PWD/lib/StanfordCPPLib/private/precompiled.h)
 # out SOURCES, so that the Qt Creator .pro modification is ineffectual.
 DISTFILES *= ""
 DISTFILES = ""
-HEADERS *= ""
+HEADERS *= "" \
+    ../../../../../下载/Assign2PCADTs/maze.h \
+    ../../../../../下载/Assign2PCADTs/maze.h \
+    extgraph.h \
+    src/maze.h
 HEADERS = ""
 SOURCES *= "" \
-    src/markov.cpp
+    ../../../../../下载/Assign2PCADTs/maze.cpp \
+    src/extgraph.cpp \
+    src/markov.cpp \
+    src/maze.cpp
 SOURCES = ""
 
 # include various source .cpp files and header .h files in the build process
