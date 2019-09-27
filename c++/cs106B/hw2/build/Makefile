@@ -53,11 +53,21 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/spl.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/extgraph.cpp \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/Main.cpp \
-		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/markov.cpp 
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/markov.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/MazeHelper.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/mazeProblem.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/simplepath.cpp 
 OBJECTS       = spl.o \
+		extgraph.o \
 		Main.o \
-		markov.o
+		markov.o \
+		maze.o \
+		MazeHelper.o \
+		mazeProblem.o \
+		simplepath.o
 DIST          = /home/zhangxk/projects/deepAI/c++/cs106B/hw2/.qmake.stash \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/Empty Project.pro /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/basicgraph.h \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/collections.h \
@@ -176,9 +186,18 @@ DIST          = /home/zhangxk/projects/deepAI/c++/cs106B/hw2/.qmake.stash \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/sound.h \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/stringutils.h \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/strlib.h \
-		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/timer.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/spl.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/timer.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/MazeHelper.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/extgraph.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/simplepath.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/spl.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/extgraph.cpp \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/Main.cpp \
-		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/markov.cpp
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/markov.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/MazeHelper.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/mazeProblem.cpp \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/simplepath.cpp
 QMAKE_TARGET  = Empty\ Project
 DESTDIR       = 
 TARGET        = Empty\ Project
@@ -563,8 +582,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /home/zhangxk/projects/deepAI/c++/cs106B/hw2/res/README $(DISTDIR)/
 	$(COPY_FILE) --parents /home/zhangxk/Qt/5.12.2/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/basicgraph.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/collections.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/dawglexicon.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/deque.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/functional.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/graph.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/grid.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/gridlocation.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashcode.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashmap.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashset.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/lexicon.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/linkedhashmap.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/linkedhashset.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/linkedlist.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/map.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/pqueue.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/priorityqueue.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/queue.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/set.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/shuffle.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/sparsegrid.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/stack.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/stl.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/vector.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/console.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/consoletext.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gbrowserpane.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gbufferedimage.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gbutton.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcanvas.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcheckbox.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gchooser.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gclipboard.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcolor.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcolorchooser.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gconsolewindow.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcontainer.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdiffgui.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdiffimage.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdownloader.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdrawingsurface.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gevent.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/geventqueue.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gevents.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gfilechooser.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gfont.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gfontchooser.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gformattedpane.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/ginputpanel.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/ginteractor.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/ginteractors.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/glabel.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/glayout.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gobjects.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gobservable.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/goptionpane.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gradiobutton.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gscrollbar.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gscrollpane.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gslider.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gspacer.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtable.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtextarea.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtextfield.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gthread.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtimer.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtypes.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gwindow.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/qtgui.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/base64.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/bitstream.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/filelib.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/plainconsole.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/rapidxml.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/server.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/simpio.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/tokenscanner.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/urlstream.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/xmlutils.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/consolestreambuf.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/echoinputstreambuf.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/foreachpatch.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/forwardingstreambuf.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/headless.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/init.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/initstudent.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/limitoutputstreambuf.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/multimain.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/precompiled.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/randompatch.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/static.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/version.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/call_stack.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/error.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/exceptions.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/os.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/bigfloat.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/biginteger.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/complex.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/diff.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/direction.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/foreach.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/gmath.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/intrange.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/managed.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/memory.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/note.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/observable.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/point.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/random.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/recursion.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/regexpr.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/require.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/sound.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/stringutils.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/strlib.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/timer.h $(DISTDIR)/
-	$(COPY_FILE) --parents /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/spl.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/Main.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/markov.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/basicgraph.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/collections.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/dawglexicon.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/deque.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/functional.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/graph.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/grid.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/gridlocation.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashcode.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashmap.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashset.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/lexicon.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/linkedhashmap.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/linkedhashset.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/linkedlist.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/map.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/pqueue.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/priorityqueue.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/queue.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/set.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/shuffle.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/sparsegrid.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/stack.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/stl.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/vector.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/console.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/consoletext.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gbrowserpane.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gbufferedimage.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gbutton.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcanvas.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcheckbox.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gchooser.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gclipboard.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcolor.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcolorchooser.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gconsolewindow.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcontainer.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdiffgui.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdiffimage.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdownloader.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdrawingsurface.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gevent.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/geventqueue.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gevents.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gfilechooser.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gfont.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gfontchooser.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gformattedpane.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/ginputpanel.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/ginteractor.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/ginteractors.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/glabel.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/glayout.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gobjects.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gobservable.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/goptionpane.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gradiobutton.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gscrollbar.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gscrollpane.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gslider.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gspacer.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtable.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtextarea.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtextfield.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gthread.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtimer.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtypes.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gwindow.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/qtgui.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/base64.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/bitstream.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/filelib.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/plainconsole.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/rapidxml.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/server.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/simpio.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/tokenscanner.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/urlstream.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/xmlutils.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/consolestreambuf.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/echoinputstreambuf.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/foreachpatch.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/forwardingstreambuf.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/headless.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/init.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/initstudent.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/limitoutputstreambuf.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/multimain.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/precompiled.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/randompatch.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/static.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/version.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/call_stack.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/error.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/exceptions.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/os.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/bigfloat.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/biginteger.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/complex.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/diff.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/direction.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/foreach.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/gmath.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/intrange.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/managed.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/memory.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/note.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/observable.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/point.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/random.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/recursion.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/regexpr.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/require.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/sound.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/stringutils.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/strlib.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/timer.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/MazeHelper.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/extgraph.h /home/zhangxk/projects/deepAI/c++/cs106B/hw2/simplepath.h $(DISTDIR)/
+	$(COPY_FILE) --parents /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/spl.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/extgraph.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/Main.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/markov.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/MazeHelper.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/mazeProblem.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/simplepath.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -4148,12 +4167,184 @@ spl.o: /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/spl.cpp /
 		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QSysInfo
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o spl.o /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/spl.cpp
 
+extgraph.o: /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/extgraph.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/extgraph.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gwindow.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/init.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/headless.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/initstudent.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/multimain.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QWindow \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qwindow.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtcore-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsysinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlogging.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qflags.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmutex.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnumeric.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qversiontagging.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtgui-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QObject \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qobject.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnamespace.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstring.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qchar.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbytearray.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qrefcount.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qarraydata.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringliteral.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringalgorithms.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringview.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlist.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qalgorithms.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qiterator.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qpair.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringlist.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qregexp.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcoreevent.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmetatype.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QMargins \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmargins.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QRect \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qrect.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsize.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qpoint.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qsurface.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qsurfaceformat.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qicon.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpixmap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qcolor.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qrgb.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qrgba64.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qshareddata.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qhash.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qimage.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpixelformat.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtransform.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qmatrix.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpolygon.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qvector.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qregion.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qdatastream.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qiodevice.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qline.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpainterpath.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qcursor.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QCloseEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qevent.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qkeysequence.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qvariant.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qdebug.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtextstream.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlocale.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qset.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qurl.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qurlquery.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qfile.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qfiledevice.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qvector2d.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtouchdevice.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/QLayout \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qlayout.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qwidget.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpalette.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qbrush.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qfont.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qfontinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/QMainWindow \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qmainwindow.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qtabwidget.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcanvas.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QKeyEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QMouseEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QPainter \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpainter.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtextoption.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpen.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QPaintEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QResizeEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QSize \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QWheelEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/QWidget \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdrawingsurface.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QFont \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/grid.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/collections.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/error.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/gmath.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtypes.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/Qt \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/point.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashcode.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/random.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/gridlocation.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/strlib.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/vector.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gobjects.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QImage \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QPen \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gevent.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/ginteractor.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QReadWriteLock \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qreadwritelock.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/map.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/stack.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gobservable.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QTimerEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QWindowStateChangeEvent \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcontainer.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/QBoxLayout \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/geventqueue.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/queue.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/set.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o extgraph.o /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/extgraph.cpp
+
 Main.o: /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/Main.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/console.h \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/init.h \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/headless.h \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/initstudent.h \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/multimain.h \
-		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/simpio.h
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/simpio.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/random.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Main.o /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/Main.cpp
 
 markov.o: /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/markov.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/simpio.h \
@@ -4161,8 +4352,347 @@ markov.o: /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/markov.cpp /home/zhan
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/headless.h \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/initstudent.h \
 		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/multimain.h \
-		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/tokenscanner.h
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/io/tokenscanner.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/map.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/collections.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/error.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/gmath.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtypes.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/Qt \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnamespace.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtcore-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsysinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlogging.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qflags.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmutex.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnumeric.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qversiontagging.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/point.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashcode.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/random.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/stack.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/vector.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o markov.o /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/markov.cpp
+
+maze.o: /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/grid.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/init.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/headless.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/initstudent.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/multimain.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/collections.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/error.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/gmath.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtypes.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/Qt \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnamespace.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtcore-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsysinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlogging.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qflags.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmutex.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnumeric.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qversiontagging.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/point.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashcode.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/random.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/gridlocation.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/strlib.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/vector.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/extgraph.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gwindow.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QWindow \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qwindow.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtgui-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QObject \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qobject.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstring.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qchar.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbytearray.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qrefcount.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qarraydata.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringliteral.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringalgorithms.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringview.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlist.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qalgorithms.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qiterator.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qpair.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringlist.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qregexp.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcoreevent.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmetatype.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QMargins \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmargins.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QRect \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qrect.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsize.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qpoint.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qsurface.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qsurfaceformat.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qicon.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpixmap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qcolor.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qrgb.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qrgba64.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qshareddata.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qhash.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qimage.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpixelformat.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtransform.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qmatrix.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpolygon.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qvector.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qregion.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qdatastream.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qiodevice.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qline.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpainterpath.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qcursor.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QCloseEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qevent.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qkeysequence.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qvariant.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qdebug.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtextstream.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlocale.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qset.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qurl.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qurlquery.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qfile.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qfiledevice.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qvector2d.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtouchdevice.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/QLayout \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qlayout.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qwidget.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpalette.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qbrush.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qfont.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qfontinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/QMainWindow \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qmainwindow.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/qtabwidget.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcanvas.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QKeyEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QMouseEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QPainter \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpainter.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qtextoption.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/qpen.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QPaintEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QResizeEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QSize \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QWheelEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/QWidget \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gdrawingsurface.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QFont \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gobjects.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QImage \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QPen \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gevent.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/ginteractor.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QReadWriteLock \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qreadwritelock.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/map.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/stack.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gobservable.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/QTimerEvent \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui/QWindowStateChangeEvent \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gcontainer.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets/QBoxLayout \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/geventqueue.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/queue.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/set.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o maze.o /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.cpp
+
+MazeHelper.o: /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/MazeHelper.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/MazeHelper.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/grid.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/init.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/headless.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/initstudent.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/multimain.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/collections.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/error.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/gmath.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtypes.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/Qt \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnamespace.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtcore-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsysinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlogging.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qflags.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmutex.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnumeric.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qversiontagging.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/point.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashcode.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/random.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/gridlocation.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/strlib.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/vector.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MazeHelper.o /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/MazeHelper.cpp
+
+mazeProblem.o: /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/mazeProblem.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/MazeHelper.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/grid.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/init.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/headless.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/initstudent.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/multimain.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/collections.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/error.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/gmath.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtypes.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/Qt \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnamespace.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtcore-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsysinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlogging.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qflags.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmutex.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnumeric.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qversiontagging.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/point.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashcode.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/random.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/gridlocation.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/strlib.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/vector.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/queue.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/simplepath.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/set.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/map.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/stack.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mazeProblem.o /home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/mazeProblem.cpp
+
+simplepath.o: /home/zhangxk/projects/deepAI/c++/cs106B/hw2/simplepath.cpp /home/zhangxk/projects/deepAI/c++/cs106B/hw2/simplepath.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/set.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/init.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/headless.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/initstudent.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/private/multimain.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/collections.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/system/error.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/gmath.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/graphics/gtypes.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/Qt \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnamespace.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobal.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qconfig.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtcore-config.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qsysinfo.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qlogging.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qflags.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qmutex.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qnumeric.h \
+		/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore/qversiontagging.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/point.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/hashcode.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/random.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/map.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/stack.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/vector.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/src/maze.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/grid.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/collections/gridlocation.h \
+		/home/zhangxk/projects/deepAI/c++/cs106B/hw2/lib/StanfordCPPLib/util/strlib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o simplepath.o /home/zhangxk/projects/deepAI/c++/cs106B/hw2/simplepath.cpp
 
 ####### Install
 

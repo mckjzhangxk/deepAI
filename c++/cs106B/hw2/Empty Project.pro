@@ -207,13 +207,18 @@ HEADERS *= "" \
     ../../../../../下载/Assign2PCADTs/maze.h \
     ../../../../../下载/Assign2PCADTs/maze.h \
     extgraph.h \
+    simplepath.h \
+    src/MazeHelper.h \
     src/maze.h
 HEADERS = ""
 SOURCES *= "" \
     ../../../../../下载/Assign2PCADTs/maze.cpp \
+    simplepath.cpp \
+    src/MazeHelper.cpp \
     src/extgraph.cpp \
     src/markov.cpp \
-    src/maze.cpp
+    src/maze.cpp \
+    src/mazeProblem.cpp
 SOURCES = ""
 
 # include various source .cpp files and header .h files in the build process

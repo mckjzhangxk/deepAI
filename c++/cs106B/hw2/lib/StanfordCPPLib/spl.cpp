@@ -19793,6 +19793,7 @@ std::string randomColorString() {
  *
  * can overflow the integer range.  These calculations must therefore be
  * performed using doubles instead of ints.
+ * return a number at range [low,high]
  */
 int randomInteger(int low, int high) {
     if (!STATIC_VARIABLE(fixedInts).empty()) {

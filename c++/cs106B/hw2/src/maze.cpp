@@ -74,9 +74,9 @@ void Maze::setWall(pointT p1, pointT p2, bool state)
     cells.set(p1.row, p1.col,c1);
     cells.set(p2.row, p2.col,c2);
 
-	if (!configured) configureGraphics();
-	drawWallsForCell(p1);
-	UpdateDisplay();
+//	if (!configured) configureGraphics();
+//	drawWallsForCell(p1);
+//	UpdateDisplay();
 }
 void Maze::drawMark(pointT p, string color)
 {
@@ -123,9 +123,4 @@ void Maze::configureGraphics()
 	originX = (GetWindowWidth() - numCols()*cellSize)/2;
 	originY = (GetWindowHeight() - numRows()*cellSize)/2;
 	configured = true;	
-}
-
-void play_maze(){
-    Maze mz(30,30,true);
-    mz.draw();
 }

@@ -1,10 +1,12 @@
 #include <iostream>
 #include "console.h"
 #include "simpio.h"
+#include "random.h"
 
 using namespace std;
 void markov_main();
 void play_maze();
+
 int main() {
   cout << "chioce [1-2]" << endl;
   cout<<"1.Markov models of language"<<endl;
@@ -18,6 +20,8 @@ int main() {
         play_maze();
         break;
   }
+
+
   return 0;
 
 }

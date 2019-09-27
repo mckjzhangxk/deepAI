@@ -1,4 +1,11 @@
-/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build/CMakeFiles/rebuild_cache.dir
-/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build/CMakeFiles/edit_cache.dir
-/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build/CMakeFiles/mylib.dir
-/home/zxk/PycharmProjects/deepAI1/c++/cmake/0b/build/CMakeFiles/MyAI.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/CMakeFiles/edit_cache.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/CMakeFiles/myzxk.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/libs/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/libs/CMakeFiles/edit_cache.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/libs/libA/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/libs/libA/CMakeFiles/edit_cache.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/libs/libA/CMakeFiles/myA.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/libs/libB/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/libs/libB/CMakeFiles/edit_cache.dir
+/home/zhangxk/projects/deepAI/c++/cmake/0b/build/libs/libB/CMakeFiles/myB.dir

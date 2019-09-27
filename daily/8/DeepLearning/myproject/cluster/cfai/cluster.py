@@ -110,8 +110,12 @@ def saveError(src, tgt_dir,log_dir):
         return uid
 
     if os.path.exists(src):
-        with open(src) as fp:
-            errobj = json.load(fp)
+        try:
+            with open(src) as fp:
+                errobj = json.load(fp)
+        except Exception as e:
+            errobj = OrderedDict()
+            errobj['parse_error']=True
     else:
         errobj=OrderedDict()
     errobj['success']=False
