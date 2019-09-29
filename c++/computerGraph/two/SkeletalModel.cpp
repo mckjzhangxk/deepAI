@@ -43,7 +43,6 @@ void SkeletalModel::loadSkeleton( const char* filename )
 {
 	// Load the skeleton from file here.
 	ifstream fin(filename);
-	cout<<filename<<endl;
 	if(!fin){
 		cout<<"error input file"<<endl;
 		exit(0);
@@ -106,28 +105,8 @@ void SkeletalModel::loadSkeleton( const char* filename )
 	}
 	m_rootJoint=m_joints[0];
 }
-void drawPoint(const Vector3f &point){
-        glVertex3d(point.x(),point.y(),point.z());     
-}
-void drawLines(const vector<Vector3f> pts,const Vector3f &color,GLfloat linewidth){
-    glLineWidth(linewidth);//放在begin里面不起作用
-    /*
-    GL_LINES:每2个点组成一条线
-    GL_LINE_STRIP:一个点连接下一个点
-    */
-    glBegin(GL_LINES);    
-        glColor3d(color.x(),color.y(),color.z());
-        for(int i=0;i<pts.size();i++){
-            drawPoint(pts[i]);
-        }
-    glEnd();
-}
-//画x,y,z三个轴
-void drawAxis(GLfloat LINEWIDTH=1,GLfloat scale=0.1){
-    drawLines({{0,0,0},{scale,0,0}},{1,0,0},LINEWIDTH);
-    drawLines({{0,0,0},{0,scale,0}},{0,1,0},LINEWIDTH);
-    drawLines({{0,0,0},{0,0,scale}},{0,0,1},LINEWIDTH);
-}
+
+
 /*
 计算当前需要旋转对齐的矩阵,z轴对齐 从 parent到child的向量，
 另为两个轴与这个对齐的Z轴彼此垂直
