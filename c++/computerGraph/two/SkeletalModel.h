@@ -35,6 +35,7 @@ class SkeletalModel
 public:
 	// Already-implemented utility functions that call the code you will write.
 	void load(const char *skeletonFile, const char *meshFile, const char *attachmentsFile);
+	//drawSkeleton=True只画骨骼，否则只画皮肤
 	void draw(Matrix4f cameraMatrix, bool drawSkeleton);
 
 	// Part 1: Understanding Hierarchical Modeling
@@ -61,10 +62,11 @@ public:
 	// 2.3.1. Implement this method to compute a per-joint transform from
 	// world-space to joint space in the BIND POSE.
 	void computeBindWorldToJointTransforms();
-
+	
 	// 2.3.2. Implement this method to compute a per-joint transform from
 	// joint space to world space in the CURRENT POSE.
 	void updateCurrentJointToWorldTransforms();
+
 
 	// 2.3.2. This is the core of SSD.
 	// Implement this method to update the vertices of the mesh
@@ -73,8 +75,9 @@ public:
 	// and the current joint --> world transforms.
 	void updateMesh();
 
+	void computeBindWorldToJointTransformsHelper(Joint* root);
+	void updateCurrentJointToWorldTransformsHelper(Joint* root);
 private:
-
 	// pointer to the root joint
 	Joint* m_rootJoint;
 	// the list of joints.
@@ -83,6 +86,7 @@ private:
 	Mesh m_mesh;
 
 	MatrixStack m_matrixStack;
+	MatrixStack m_matrix_mesh;
 };
 
 #endif

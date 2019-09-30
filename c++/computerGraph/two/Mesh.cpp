@@ -77,7 +77,6 @@ void Mesh::loadAttachments( const char* filename, int numJoints )
 {
 	// 2.2. Implement this method to load the per-vertex attachment weights
 	// this method should update m_mesh.attachments
-	cout<<"joints:"<<numJoints<<endl;
 	ifstream fin(filename);
 	if(!fin){
 		cout<<"error when load file:"<<filename<<endl;
@@ -90,11 +89,13 @@ void Mesh::loadAttachments( const char* filename, int numJoints )
 		stringstream ss(buf);
 		float w=0;
 		vector<float> ws;
-		attachments.push_back(ws);
+		//如果先push_back，是对ws做个个clone,加入进去之后对ws的更改不会反映到attachments中！！
+		// attachments.push_back(ws);
 		for(int i=0;i<numJoints-1;i++){
 			ss>>w;
 			ws.push_back(w);
 		}
-
+		attachments.push_back(ws);	
 	}
+	cout<<"acctch num:"<<attachments.size()<<endl;
 }

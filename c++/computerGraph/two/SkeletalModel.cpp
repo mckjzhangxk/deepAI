@@ -77,8 +77,8 @@ void SkeletalModel::loadSkeleton( const char* filename )
 
 		//need double check whether is identity
 		if(parentId==-1){
-			joint->bindWorldToJointTransform=Matrix4f::identity();
-			joint->currentJointToWorldTransform=Matrix4f::identity();
+			// joint->bindWorldToJointTransform=Matrix4f::identity();
+			// joint->currentJointToWorldTransform=Matrix4f::identity();
 			continue;
 		}
 		 
@@ -97,9 +97,9 @@ void SkeletalModel::loadSkeleton( const char* filename )
 		bindWorldToJointTransform is a map from global frame to local
 		*/
 
-		Matrix4f current2World=parent->currentJointToWorldTransform*tr;
-		joint->currentJointToWorldTransform=current2World;
-		joint->bindWorldToJointTransform=current2World.inverse();
+		// Matrix4f current2World=parent->currentJointToWorldTransform*tr;
+		// joint->currentJointToWorldTransform=current2World;
+		// joint->bindWorldToJointTransform=current2World.inverse();
 
 		
 	}
@@ -208,7 +208,18 @@ void SkeletalModel::setJointTransform(int jointIndex, float rX, float rY, float 
 	m_joints[jointIndex]->transform.setSubmatrix3x3(0,0,M);
 }
 
+void SkeletalModel::computeBindWorldToJointTransformsHelper(Joint* root){
+ 
 
+
+	m_matrix_mesh.push(root->transform);
+	Matrix4f current=m_matrix_mesh.top();
+	root->bindWorldToJointTransform=current.inverse();
+	for(Joint* child:root->children){
+		computeBindWorldToJointTransformsHelper(child);
+	}
+	m_matrix_mesh.pop();
+}
 void SkeletalModel::computeBindWorldToJointTransforms()
 {
 	// 2.3.1. Implement this method to compute a per-joint transform from
@@ -219,8 +230,35 @@ void SkeletalModel::computeBindWorldToJointTransforms()
 	//
 	// This method should update each joint's bindWorldToJointTransform.
 	// You will need to add a recursive helper function to traverse the joint hierarchy.
-}
 
+
+	computeBindWorldToJointTransformsHelper(m_rootJoint);
+
+}
+/*
+设置root的currentJointToWorldTransform属性，
+	这个属性是stack.top()* root->transform
+1.把currentJointToWorldTransform入stack
+2.遍历子节点
+3.出stack
+
+我犯的错误有2个，
+1.不熟悉自定义stack的用法，push是与站顶相成后在压stack,默认占顶有个I
+2.不能使用m_matrixStack,因为m_matrixStack的占有个camera_view transform
+3.自定义的m_matrix_mesh 在updateCurrentJointToWorldTransformsHelper声名为
+private的时候报错，为还不清楚原因 :(
+*/
+void  SkeletalModel::updateCurrentJointToWorldTransformsHelper(Joint* root){
+	m_matrix_mesh.push(root->transform);
+
+	Matrix4f current=m_matrix_mesh.top();
+	root->currentJointToWorldTransform=current;
+	for(Joint* child:root->children){
+		updateCurrentJointToWorldTransformsHelper(child);
+	}
+	m_matrix_mesh.pop();
+
+}
 void SkeletalModel::updateCurrentJointToWorldTransforms()
 {
 	// 2.3.2. Implement this method to compute a per-joint transform from
@@ -231,6 +269,9 @@ void SkeletalModel::updateCurrentJointToWorldTransforms()
 	//
 	// This method should update each joint's bindWorldToJointTransform.
 	// You will need to add a recursive helper function to traverse the joint hierarchy.
+	
+	updateCurrentJointToWorldTransformsHelper(m_rootJoint);
+
 }
 
 void SkeletalModel::updateMesh()
@@ -240,5 +281,22 @@ void SkeletalModel::updateMesh()
 	// given the current state of the skeleton.
 	// You will need both the bind pose world --> joint transforms.
 	// and the current joint --> world transforms.
+	
+
+
+	for(int i=0;i<m_mesh.currentVertices.size();i++){
+		Vector4f bindP(m_mesh.bindVertices[i],1);
+		Vector3f currentP(0.0);
+		vector<float> ws=m_mesh.attachments[i];
+		 
+		for(int j=0;j<ws.size();j++){
+			float w=ws[j];
+			if(w>0){
+				Joint* joint=m_joints[j+1];
+				currentP=currentP+w*(joint->currentJointToWorldTransform*(joint->bindWorldToJointTransform*bindP)).xyz();
+			}
+		}
+		m_mesh.currentVertices[i]=currentP;
+	}
 }
 

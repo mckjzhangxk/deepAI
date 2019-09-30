@@ -1,0 +1,2 @@
+/home/zhangxk/projects/deepAI/c++/cmake/script/build/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/cmake/script/build/CMakeFiles/edit_cache.dir

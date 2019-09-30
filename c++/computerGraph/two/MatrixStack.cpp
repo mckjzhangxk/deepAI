@@ -1,7 +1,9 @@
 #include "MatrixStack.h"
-
+#include<iostream>
+using namespace std;
 MatrixStack::MatrixStack()
 {
+	
 	// Initialize the matrix stack with the identity matrix.
 	Matrix4f I=Matrix4f::identity();
 	m_matrices.push_back(I);
