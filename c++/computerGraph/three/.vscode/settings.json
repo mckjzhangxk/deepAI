@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "new": "cpp"
+        "new": "cpp",
+        "vector": "cpp",
+        "tuple": "cpp"
     }
 }

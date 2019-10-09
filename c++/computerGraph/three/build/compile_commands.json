@@ -1,37 +1,37 @@
 [
 {
   "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/build",
-  "command": "/usr/bin/g++-4.9    -g   -o CMakeFiles/a3.dir/ClothSystem.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/ClothSystem.cpp",
+  "command": "/usr/bin/g++-4.9     -std=c++11 -g   -o CMakeFiles/a3.dir/ClothSystem.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/ClothSystem.cpp",
   "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/ClothSystem.cpp"
 },
 {
   "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/build",
-  "command": "/usr/bin/g++-4.9    -g   -o CMakeFiles/a3.dir/TimeStepper.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/TimeStepper.cpp",
+  "command": "/usr/bin/g++-4.9     -std=c++11 -g   -o CMakeFiles/a3.dir/TimeStepper.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/TimeStepper.cpp",
   "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/TimeStepper.cpp"
 },
 {
   "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/build",
-  "command": "/usr/bin/g++-4.9    -g   -o CMakeFiles/a3.dir/camera.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/camera.cpp",
+  "command": "/usr/bin/g++-4.9     -std=c++11 -g   -o CMakeFiles/a3.dir/camera.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/camera.cpp",
   "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/camera.cpp"
 },
 {
   "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/build",
-  "command": "/usr/bin/g++-4.9    -g   -o CMakeFiles/a3.dir/main.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/main.cpp",
+  "command": "/usr/bin/g++-4.9     -std=c++11 -g   -o CMakeFiles/a3.dir/main.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/main.cpp",
   "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/main.cpp"
 },
 {
   "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/build",
-  "command": "/usr/bin/g++-4.9    -g   -o CMakeFiles/a3.dir/particleSystem.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/particleSystem.cpp",
+  "command": "/usr/bin/g++-4.9     -std=c++11 -g   -o CMakeFiles/a3.dir/particleSystem.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/particleSystem.cpp",
   "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/particleSystem.cpp"
 },
 {
   "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/build",
-  "command": "/usr/bin/g++-4.9    -g   -o CMakeFiles/a3.dir/pendulumSystem.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/pendulumSystem.cpp",
+  "command": "/usr/bin/g++-4.9     -std=c++11 -g   -o CMakeFiles/a3.dir/pendulumSystem.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/pendulumSystem.cpp",
   "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/pendulumSystem.cpp"
 },
 {
   "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/build",
-  "command": "/usr/bin/g++-4.9    -g   -o CMakeFiles/a3.dir/simpleSystem.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/simpleSystem.cpp",
+  "command": "/usr/bin/g++-4.9     -std=c++11 -g   -o CMakeFiles/a3.dir/simpleSystem.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/three/simpleSystem.cpp",
   "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/three/simpleSystem.cpp"
 }
 ]

@@ -12,7 +12,7 @@
 
 #include "TimeStepper.hpp"
 #include "simpleSystem.h"
-
+#include "pendulumSystem.h"
 using namespace std;
 
 // Globals here.
@@ -21,6 +21,7 @@ namespace
 
     ParticleSystem *system;
     TimeStepper * timeStepper;
+    float h = 0.04f;
 
   // initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
@@ -28,9 +29,41 @@ namespace
   {
     // seed the random number generator with the current time
     srand( time( NULL ) );
-    system = new SimpleSystem();
-    // timeStepper = new RK4();		
-    timeStepper=new Trapzoidal();
+    // system = new SimpleSystem();
+    system=new PendulumSystem(4);
+    
+    if(timeStepper)
+        delete timeStepper;
+    if(argc>1){
+        h=atof(argv[1]);
+        if(argc==3){
+            char solver=argv[2][0];
+            switch (solver)
+            {
+            case 'e':
+                timeStepper=new ForwardEuler();
+                cout<<"Euler Steps"<<endl;
+                break;
+            case 't':
+                timeStepper=new Trapzoidal();
+                cout<<"Trapzoidal Steps"<<endl;
+                break;
+            default:
+                timeStepper=new RK4();
+                cout<<"RK4 Steps"<<endl;
+                break;
+            }
+        }else
+        {
+            timeStepper=new RK4();
+            cout<<"RK4 Steps"<<endl;
+        }
+        
+    }else{
+        timeStepper=new RK4();
+        cout<<"RK4 Steps"<<endl;
+    }
+
   }
 
   // Take a step forward for the particle shower
@@ -39,7 +72,6 @@ namespace
   void stepSystem()
   {
       ///TODO The stepsize should change according to commandline arguments
-    const float h = 0.04f;
     if(timeStepper!=0){
       timeStepper->takeStep(system,h);
     }
@@ -105,6 +137,7 @@ namespace
             camera.SetCenter( Vector3f::ZERO );
             break;
         }
+
         default:
             cout << "Unhandled key press " << key << "." << endl;        
         }

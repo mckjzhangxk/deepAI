@@ -51,7 +51,33 @@ class MyWorker(Thread):
     def run(self):
         self.model.fit(self.d)
         self.codebook[self.id]=self.model.cluster_centers_
-def createCodeBook(X,m=64,z=256,outpath='codebook.npy',cpus=1,max_iter=300,start=0):
+def createCodeBook(X,m=64,z=256,outpath='codebook.npy',max_iter=300,start=0):
+    '''
+    这个方法 其实是为LSH中对每一段输入做hash准备的hash参数
+    
+    例如 我的输入是1024维度的float，我相对这个长数组建立索引,建立m=64个索引
+    
+    也就是每1024/64=64长度的输入，对应一个输出数字(0,z]
+    X[0:64]------->hash()--->z0
+    X[64:128]----->hash()--->z1
+    X[128:192]---->hash()--->z2
+    .....
+    
+    z0~(0,z],z0,z1...z63就是索引
+    
+    产生zi是使用kmean算法，也就是说产生产生z个中心(dreduce维度)，
+    一共产生m个zi
+    
+    所以产生的codebook.npy是(m,z,dreduce)维度
+    
+    :param X: (N,features)
+    :param m: 分成m组
+    :param z: 每个组输出(0,Z]的数字
+    :param outpath: 保存的路径
+    :param max_iter: 
+    :param start: 
+    :return: 
+    '''
     import tqdm
     d=X.shape[-1]
     assert d%m==0,"m必须是d 的因数"
@@ -84,12 +110,11 @@ def loadCodeBook(path='codebook.npy'):
     return np.load(path)
 if __name__ == '__main__':
 
-    pass
-    # # c=np.random.rand(m,z,d//m)
-    # c=np.load('codebook.npy')
-
-    # print(c.shape)
-    # r=quanizer(x,c)
+    # pass
+    x=np.random.rand(3,512)
+    c=np.load('codebook.npy')
+    r=quanizer(x,c)
+    print(r.shape)
     # #
     # assert r.shape==(N,m)
 

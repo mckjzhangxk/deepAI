@@ -4,8 +4,10 @@
 #include <vecmath.h>
 #include <vector>
 #include <GL/glut.h>
+#include <math.h>
 
 #include "particleSystem.h"
+
 
 class PendulumSystem: public ParticleSystem
 {
@@ -15,7 +17,11 @@ public:
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	
 	void draw();
+private:
+	float m_drag;
+	float m_gravity;
 	
+	vector<vector<float> > m_springs;
 };
 
 #endif
