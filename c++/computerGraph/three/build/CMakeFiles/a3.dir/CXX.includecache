@@ -6,25 +6,27 @@
 
 #IncludeRegexTransform: 
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/three/particleSystem.h
-vector
--
-vecmath.h
--
+/home/zhangxk/projects/deepAI/c++/computerGraph/three/ClothSystem.cpp
+ClothSystem.h
+/home/zhangxk/projects/deepAI/c++/computerGraph/three/ClothSystem.h
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/three/pendulumSystem.cpp
-pendulumSystem.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/three/pendulumSystem.h
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/three/pendulumSystem.h
+/home/zhangxk/projects/deepAI/c++/computerGraph/three/ClothSystem.h
 vecmath.h
 -
 vector
--
-GL/glut.h
 -
 math.h
 -
 particleSystem.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/three/particleSystem.h
+GL/glut.h
+-
+iostream
+-
+
+/home/zhangxk/projects/deepAI/c++/computerGraph/three/particleSystem.h
+vector
+-
+vecmath.h
+-
 

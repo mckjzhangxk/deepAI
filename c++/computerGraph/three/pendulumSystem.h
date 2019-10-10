@@ -17,10 +17,10 @@ public:
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	
 	void draw();
+	void reset();
 private:
 	float m_drag;
 	float m_gravity;
-	
 	vector<vector<float> > m_springs;
 };
 

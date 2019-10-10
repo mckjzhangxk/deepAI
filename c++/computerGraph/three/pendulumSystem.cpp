@@ -3,22 +3,7 @@
 
 PendulumSystem::PendulumSystem(int numParticles):ParticleSystem(numParticles),m_gravity(9.8),m_drag(2.5)
 {
-	float distance=0.3;
-	m_numParticles = numParticles;
-
-	//fixed point
-	m_vVecState.push_back(Vector3f(0,2,0));
-	m_vVecState.push_back(Vector3f(0,0,0));
-
-	// fill in code for initializing the state based on the number of particles
-	for (int i = 0; i < m_numParticles; i++) {
-		
-		// for this system, we care about the position and the velocity
-		m_vVecState.push_back(Vector3f(0,1.5-i*distance,0));
-		m_vVecState.push_back(Vector3f(0,0,0));
-
-		m_springs.push_back({i,0.5,15});
-	}
+	reset();
 }
 
 
@@ -64,5 +49,23 @@ void PendulumSystem::draw()
 		glTranslatef(pos[0], pos[1], pos[2] );
 		glutSolidSphere(0.075f,10.0f,10.0f);
 		glPopMatrix();
+	}
+}
+void PendulumSystem::reset(){
+	float distance=0.3;
+
+	m_vVecState.clear();
+	//fixed point
+	m_vVecState.push_back(Vector3f(0,2,0));
+	m_vVecState.push_back(Vector3f(0,0,0));
+
+	// fill in code for initializing the state based on the number of particles
+	for (int i = 0; i < m_numParticles; i++) {
+		
+		// for this system, we care about the position and the velocity
+		m_vVecState.push_back(Vector3f(0,1.5-i*distance,0));
+		m_vVecState.push_back(Vector3f(0,0,0));
+
+		m_springs.push_back({i,0.5,15});
 	}
 }

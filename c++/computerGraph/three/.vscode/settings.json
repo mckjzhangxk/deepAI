@@ -2,6 +2,8 @@
     "files.associations": {
         "new": "cpp",
         "vector": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "random": "cpp",
+        "cmath": "cpp"
     }
 }

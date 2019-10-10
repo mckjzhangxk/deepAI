@@ -5,7 +5,7 @@ using namespace std;
 
 SimpleSystem::SimpleSystem()
 {
-	m_vVecState.push_back(Vector3f(1,0,0));
+	reset();
 }
 
 // TODO: implement evalF
@@ -31,4 +31,8 @@ void SimpleSystem::draw()
  
 		glutSolidSphere(0.075f,10.0f,10.0f);
 		glPopMatrix();
+}
+void SimpleSystem::reset(){
+	m_vVecState.clear();
+	m_vVecState.push_back(Vector3f(1,0,0));
 }

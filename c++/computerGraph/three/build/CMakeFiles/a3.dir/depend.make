@@ -12,6 +12,7 @@ CMakeFiles/a3.dir/TimeStepper.cpp.o: ../particleSystem.h
 CMakeFiles/a3.dir/camera.cpp.o: ../camera.cpp
 CMakeFiles/a3.dir/camera.cpp.o: ../camera.h
 
+CMakeFiles/a3.dir/main.cpp.o: ../ClothSystem.h
 CMakeFiles/a3.dir/main.cpp.o: ../TimeStepper.hpp
 CMakeFiles/a3.dir/main.cpp.o: ../camera.h
 CMakeFiles/a3.dir/main.cpp.o: ../main.cpp

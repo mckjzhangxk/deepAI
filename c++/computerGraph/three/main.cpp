@@ -13,6 +13,8 @@
 #include "TimeStepper.hpp"
 #include "simpleSystem.h"
 #include "pendulumSystem.h"
+#include "ClothSystem.h"
+
 using namespace std;
 
 // Globals here.
@@ -21,6 +23,9 @@ namespace
 
     ParticleSystem *system;
     TimeStepper * timeStepper;
+    vector<ParticleSystem *>options_system={new SimpleSystem(),new PendulumSystem(1),new PendulumSystem(4),new ClothSystem()};
+    int current=0;
+    
     float h = 0.04f;
 
   // initialize your particle systems
@@ -30,7 +35,7 @@ namespace
     // seed the random number generator with the current time
     srand( time( NULL ) );
     // system = new SimpleSystem();
-    system=new PendulumSystem(4);
+    system=options_system[current];
     
     if(timeStepper)
         delete timeStepper;
@@ -137,7 +142,23 @@ namespace
             camera.SetCenter( Vector3f::ZERO );
             break;
         }
-
+        case 't':
+        {
+            current=(current+1)%options_system.size();
+            system=options_system[current];
+            
+            break;
+        }
+        case 'r':{
+            system->reset();
+            break;
+        }
+        case 'w':{
+            if(current==options_system.size()-1){
+                ((ClothSystem*)(system))->toggleWired();
+            }
+            break;
+        }
         default:
             cout << "Unhandled key press " << key << "." << endl;        
         }
