@@ -40,7 +40,7 @@ def record(filename,emb,index):
 
     emb=str(emb.tolist())
     index=','.join(map(str,index))
-    return "insert into table values('%s','%s',%s)"%(id,str(emb),index)
+    return filename+' '+index
 
 if __name__ == '__main__':
     filelist=readFiles()
