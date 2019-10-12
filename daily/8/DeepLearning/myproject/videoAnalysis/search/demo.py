@@ -8,8 +8,13 @@ def numpy2pixel(content):
     :param content: ndarray
     :return: 
     '''
-    img = QtGui.QImage(content, content.shape[1], content.shape[0], 3 * content.shape[1], QtGui.QImage.Format_RGB888)
+
+    content_show=np.zeros_like(content,np.uint8)
+    content_show[:]=content
+
+    img = QtGui.QImage(content_show, content.shape[1], content.shape[0], 3 * content.shape[1], QtGui.QImage.Format_RGB888)
     pixels = QtGui.QPixmap(img)
+
     return pixels
 def ImageComponent(parent,content):
     '''
@@ -84,53 +89,150 @@ class MyWidge(QtWidgets.QWidget):
         self.cols=cols
 
         self.setWindowTitle('Yolov3 demo')
+
+        layout=QtWidgets.QHBoxLayout()
+
         self.container = QtWidgets.QVBoxLayout()
+        layout.insertLayout(0,self.container)
+        layout.insertLayout(1,self.searchPannel())
         self.loadImage()
         self.setToolKits()
-        self.setLayout(self.container)
+        self.setLayout(layout)
+
+        self.setButtonState(True,False)
     def loadImage(self):
         contents=self.dataModel.get_content()
 
-        p=[ImageComponent(None,ct) for ct in contents]
-        ui_imglist = wrapGrid(p, (self.rows, self.cols))
 
         if self.container.count()==0:
+            p = [ImageComponent(None, ct) for ct in contents]
+            p+=[ImageComponent(None,np.zeros((112,112,3),np.uint8)) for _ in range(self.rows*self.cols-len(contents))]
+            ui_imglist = wrapGrid(p, (self.rows, self.cols))
             self.container.addLayout(ui_imglist)
+            self.Img_grid=p
         else:
-            oldui=self.container.itemAt(0)
-            self.container.removeItem(oldui)
-            self.container.insertLayout(0, ui_imglist, 0)
+            for i in range(len(self.Img_grid)):
+                qimg=self.Img_grid[i]
+
+                img=contents[i] if i<len(contents) else np.zeros((112,112,3),np.uint8)
+                qpixel = numpy2pixel(img)
+                qpixel = qpixel.scaledToWidth(112).scaledToHeight(112)
+                qimg.setPixmap(qpixel)
+
+        if hasattr(self,'lb_pageinfo'):
+            self.lb_pageinfo.setText('page:%d/%d'%(self.dataModel.cursor+1,self.dataModel.totalPage))
     def setToolKits(self):
         previous_=ButtonComponent(None,"<<",lambda :self.dataModel.pageChange(self,'left'))
-        label_=LabelComponent(None,'page:1/4')
+        label_=LabelComponent(None,'page:%d/%d'%(self.dataModel.cursor+1,self.dataModel.totalPage))
+
         next_=ButtonComponent(None,">>",lambda :self.dataModel.pageChange(self,'right'))
 
         toolpanel=wrap([previous_,label_,next_],'H')
         self.container.addLayout(toolpanel)
+
+        self.bn_previous=previous_
+        self.bn_next=next_
+        self.lb_pageinfo=label_
+
+    def clickSearch(self):
+        import cv2
+        filename=QtWidgets.QFileDialog().getOpenFileName()[0]
+        qimg=QtGui.QPixmap()
+        qimg.load(filename)
+        qimg=qimg.scaledToWidth(112).scaledToHeight(112)
+        self.Img_search.setPixmap(qimg)
+
+        self.dataModel=self.dataModel.search(filename)
+
+        self.loadImage()
+    def searchPannel(self):
+        vlayout=QtWidgets.QVBoxLayout()
+
+        imgcmp=ImageComponent(None,np.random.randint(0,255,(112,112,3),np.uint8))
+        bn=ButtonComponent(None,"search",self.clickSearch)
+
+        vlayout.addStretch()
+
+        vlayout.addWidget(imgcmp)
+
+        vlayout.addWidget(bn)
+        vlayout.addStretch()
+        vlayout.addStretch()
+
+        self.Img_search=imgcmp
+        return vlayout
+
+    def setButtonState(self,pre_state,next_state):
+        self.bn_previous.setDisabled(pre_state)
+        self.bn_next.setDisabled(next_state)
+
 class DataModel():
     def __init__(self):
-        self.content=[np.random.randint(0,255,(100,100,3),np.uint8) for i in range(16)]
-        self.content += [np.zeros((100,100,3),np.uint8) for i in range(16)]
-        self.cursor=0
+        self.parent=None
+
+    def setDataSource(self,source):
+        self.cursor = 0
+        self.dbSource=source
+        self.indexes=np.array([s[1] for s in source])
+
+        if hasattr(self,'pageSize'):
+            self._loadContent_()
+
+    def _loadContent_(self):
+        import cv2
+        ret=[]
+        for i in range(self.cursor*self.pageSize,min(self.cursor*self.pageSize+self.pageSize,len(self.dbSource))):
+            imgfile=self.dbSource[i][0]
+            I=cv2.imread(imgfile)[:,:,::-1]
+            ret.append(I)
+        self._imgs=ret
+
     def get_content(self):
-        return self.content[self.cursor*self.pageSize:self.cursor*self.pageSize+self.pageSize]
+        return self._imgs
+
     def setPageSize(self,pagesize):
         self.pageSize=pagesize
-        self.totalPage=np.ceil(len(self.content)/self.pageSize)
+        self.totalPage=np.ceil(len(self.dbSource)/self.pageSize)
+        self._loadContent_()
+
     def pageChange(self,ui,flag):
+        state_1=False
+        state_2=False
         if flag=='right':
             self.cursor+=1
         if flag=='left':
             self.cursor-=1
         if self.cursor==0:
-            print('disable <<')
+            state_1=True
         if self.cursor==self.totalPage-1:
-            print('disable >>')
+            state_2=True
+        ui.setButtonState(state_1,state_2)
+        self._loadContent_()
         ui.loadImage()
 
-app=QtWidgets.QApplication(sys.argv)
-dbModel=DataModel()
+    def search(self,filename):
+        obj=self
+        while obj.parent is not None:
+            obj=obj.parent
 
+        db=DataModel()
+        db.setDataSource(self.dbSource[:10])
+        db.setPageSize(self.pageSize)
+        db.parent=obj
+
+        return db
+def defaultSource():
+    dbSource=[]
+    with open('record.sql') as fs:
+        for line in fs:
+            filename,indexes=line.split()
+            dbSource.append((filename,eval(indexes)))
+    return dbSource
+
+app=QtWidgets.QApplication(sys.argv)
+dbSource=defaultSource()
+dbModel=DataModel()
+dbModel.setDataSource(dbSource)
 w=MyWidge(dbModel,4,4)
 w.show()
 sys.exit(app.exec())
