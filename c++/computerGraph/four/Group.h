@@ -6,7 +6,7 @@
 #include "Ray.h"
 #include "Hit.h"
 #include <iostream>
-
+#include <vector>
 using  namespace std;
 
 ///TODO: 
@@ -28,16 +28,14 @@ public:
    
   }
 
-  virtual bool intersect( const Ray& r , Hit& h , float tmin ) {
-		
-   }
+  virtual bool intersect( const Ray& r , Hit& h , float tmin );
 	
   void addObject( int index , Object3D* obj ){
     mObjects[index]=obj;
   }
 
   int getGroupSize(){ 
-  
+    
   }
 
  private:

@@ -7,10 +7,10 @@ bool Plane::intersect(const Ray &ray,Hit &hit,float tmin){
     if(abs(r)<1e-4)
         return false;
     
-    float t=(-m_d-Vector3f::dot(m_normal,ray.getOrigin()));
+    float t=-(m_d+Vector3f::dot(m_normal,ray.getOrigin())) /r;
     if(t>tmin){
         if(t<hit.getT()){
-            hit.set(t,m_matrial,m_normal);
+            hit.set(t,m_matrial,m_normal.normalized());
         }
         return true;
     }else

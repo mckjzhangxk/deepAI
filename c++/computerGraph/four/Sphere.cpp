@@ -26,7 +26,10 @@ bool Sphere::intersect(const Ray &ray,Hit &h, float tmin){
     float t1,t2;
     quadratic_solve(a,b,c,isSolved,t1,t2);
 
+
     if(isSolved && t1>tmin && t1<h.getT()){
-        h.set(t1,material,ray.pointAtParameter(t1));
+        Vector3f norm=(ray.pointAtParameter(t1)-center).normalized();
+        h.set(t1,material,norm);
     }
+    return isSolved==true;    
 }

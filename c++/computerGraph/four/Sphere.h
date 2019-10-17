@@ -25,10 +25,7 @@ public:
 
 	~Sphere(){}
 
-	virtual bool intersect( const Ray& r , Hit& h , float tmin){
-
-	}
-
+	virtual bool intersect( const Ray& r , Hit& h , float tmin);
 protected:
 	Vector3f center;
 	float radius;

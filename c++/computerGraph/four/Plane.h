@@ -17,9 +17,7 @@ public:
 		m_matrial=m;
 	}
 	~Plane(){}
-	virtual bool intersect( const Ray& r , Hit& h , float tmin){
-		
-	}
+	virtual bool intersect( const Ray& r , Hit& h , float tmin);
 
 protected:
 	Material *m_matrial;
