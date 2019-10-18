@@ -1,0 +1,1 @@
+/usr/bin/g++-5   -std=c++11 -g   CMakeFiles/a4.dir/Camera.cpp.o CMakeFiles/a4.dir/Group.cpp.o CMakeFiles/a4.dir/Image.cpp.o CMakeFiles/a4.dir/Mesh.cpp.o CMakeFiles/a4.dir/Plane.cpp.o CMakeFiles/a4.dir/SceneParser.cpp.o CMakeFiles/a4.dir/Sphere.cpp.o CMakeFiles/a4.dir/main.cpp.o CMakeFiles/a4.dir/texture.cpp.o  -o a4 -lglut -lGL -lGLU -lvecmath 

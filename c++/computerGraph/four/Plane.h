@@ -12,7 +12,7 @@ class Plane: public Object3D
 public:
 	Plane(){}
 	Plane( const Vector3f& normal , float d , Material* m):Object3D(m){
-		m_d=d;
+		m_d=-d;
 		m_normal=normal;
 		m_matrial=m;
 	}

@@ -2,7 +2,7 @@ from utils import Bitmap,subSet_K
 
 class Bucket():
     '''
-    useage:
+    usage:
     
     A).
         bucket=Bucket(buckSize=71,K=2)
@@ -73,7 +73,6 @@ class Bucket():
     def __repr__(self):
         return self.__str__()
 
-
 class TransActionSystem():
     def __init__(self,buckSizes):
         '''
@@ -81,7 +80,7 @@ class TransActionSystem():
 
             usage:
                 system=TransActionSystem(buckSizes=[11,21,31,17])
-                system.build_summary_system(support=232)
+                system.build_summary_system(ds,support=232)
         '''
 
         self._bucket_set={}
@@ -135,34 +134,35 @@ class TransActionSystem():
         '''
 
         assert isinstance(item,tuple) or isinstance(item,list)
+        if len(item)>len(self._bucket_set):
+            return False
         subsets=self._subSet_(item)
 
-        for k in range(1,len(item)+1):
+        for k in range(len(item),0,-1):
             k_items=subsets[k]
             for subitem in k_items:
                 if not self._bucket_set[k].isFrequence(subitem):
                     return False
         return True
-
+    def maxK(self):
+        return len(self._bucket_set)
     def print(self):
         for k,v in self._bucket_set.items():
-            print(v)
+            print(k,v)
 if __name__ == "__main__":
-    # bucket=Bucket(71,2)
-    # for i in range(5):
-    #     bucket.add((1,2))
-    # for i in range((3)):
-    #     bucket.add((20,9))
-    # for i in range((3)):
-    #     bucket.add((2,9))
+    bucket=Bucket(71,2)
+    for i in range(5):
+        bucket.add((1,2))
+    for i in range((3)):
+        bucket.add((20,9))
+    for i in range((3)):
+        bucket.add((2,9))
 
-    # bucket.finalize(support=4)
-    # print(bucket)
+    bucket.finalize(support=3)
+    print(bucket)
 
-    # for i in range((3)):
-    #     bucket.add((2,9))
-    # print(bucket)
-    # print(bucket.isFrequence((2,9)))
+
+    print(bucket.isFrequence((2,9)))
     dataSource=[
         ('a','b','c'),
         ('a','b','c'),
@@ -177,7 +177,10 @@ if __name__ == "__main__":
         ('c','d'),
         ('d',)
     ]
+    # dataSource=[
+    #     ('a',),('a',),('a',)
+    # ]
     system=TransActionSystem([71,71,19,22])
     system.build_summary_system(dataSource,support=3)
-    # system.print()
-    print(system.isFrequence(('a','b','c','d','e')))
+    system.print()
+    print(system.isFrequence(('a','b','c','d')))

@@ -33,10 +33,10 @@ public:
 
   Vector3f Shade( const Ray& ray, const Hit& hit,
                   const Vector3f& dirToLight, const Vector3f& lightColor ) {
-    //first get which point want to shade
-    Vector3f p=ray.pointAtParameter(hit.getT());
+  
+  
     //then get light direction,and normal
-    Vector3f Ldir=(dirToLight-p).normalized();
+    Vector3f Ldir=dirToLight.normalized();
     //L dot normal,clamp to 0
     float rate=max(0.f,Vector3f::dot(Ldir,hit.getNormal()));
 

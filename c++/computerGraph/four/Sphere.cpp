@@ -20,16 +20,15 @@ bool Sphere::intersect(const Ray &ray,Hit &h, float tmin){
     Vector3f light_dir=ray.getDirection();
     
     float a=Vector3f::dot(light_dir,light_dir);
-    float b=-2*Vector3f::dot(light_dir,light_orgin-center);
+    float b=2*Vector3f::dot(light_dir,light_orgin-center);
     float c=Vector3f::dot(light_orgin-center,light_orgin-center)-radius*radius;
     bool isSolved=false;
     float t1,t2;
     quadratic_solve(a,b,c,isSolved,t1,t2);
 
-
     if(isSolved && t1>tmin && t1<h.getT()){
         Vector3f norm=(ray.pointAtParameter(t1)-center).normalized();
         h.set(t1,material,norm);
     }
-    return isSolved==true;    
+    return isSolved==true &&t1>tmin;    
 }

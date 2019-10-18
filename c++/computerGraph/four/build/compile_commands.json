@@ -1,0 +1,47 @@
+[
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a4.dir/Camera.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/four/Camera.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/Camera.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a4.dir/Group.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/four/Group.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/Group.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a4.dir/Image.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/four/Image.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/Image.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a4.dir/Mesh.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/four/Mesh.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/Mesh.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a4.dir/Plane.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/four/Plane.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/Plane.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a4.dir/SceneParser.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/four/SceneParser.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/SceneParser.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a4.dir/Sphere.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/four/Sphere.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/Sphere.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a4.dir/main.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/four/main.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/main.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a4.dir/texture.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/four/texture.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/four/texture.cpp"
+}
+]
