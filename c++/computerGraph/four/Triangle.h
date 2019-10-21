@@ -20,25 +20,27 @@ public:
           hasTex = false;
 
 		  m_a=a;m_b=b;m_c=c;
-		  m_normal=Vector3f::cross(b-a,c-a).normalized();
+		//   m_normal=Vector3f::cross(b-a,c-a).normalized();
 		  m_material=m;
 	}
-
+	Vector3f interpNorm(float a,float b,float c){
+		return (a*normals[0]+b*normals[1]+c*normals[2]).normalized();
+	}
+	
 	virtual bool intersect( const Ray& ray,  Hit& hit , float tmin){
 		Vector3f eyepoint=ray.getOrigin();
 		Vector3f d=ray.getDirection();
 
 	 	Matrix3f m(m_b-m_a,m_c-m_a,-d);
 		Vector3f f=eyepoint-m_a;
-
-		bool invertable;
-		Matrix3f minv=m.inverse(&invertable,1e-4);
-		if(invertable){
+		
+		bool sigular;
+		Matrix3f minv=m.inverse(&sigular,1e-4);
+		if(!sigular){
 			Vector3f result=minv*f;
 			float r2=result[0],r3=result[1],t=result[2];
-			if(r2>=0&&r3>=0&&((r2+r3)<=1)&&t>tmin){
-				if(t<hit.getT())
-					hit.set(t,m_material,m_normal);
+			if(r2>=0&&r3>=0&&((r2+r3)<=1)&&t>tmin&&t<hit.getT()){
+					hit.set(t,m_material,interpNorm(1-r2-r3,r2,r3));
 				return true;
 			}else
 			{
@@ -59,7 +61,7 @@ protected:
 	Vector3f m_a;
 	Vector3f m_b;
 	Vector3f m_c;
-	Vector3f m_normal;
+	// Vector3f m_normal;
 };
 
 #endif //TRIANGLE_H

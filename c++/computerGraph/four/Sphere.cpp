@@ -29,6 +29,9 @@ bool Sphere::intersect(const Ray &ray,Hit &h, float tmin){
     if(isSolved && t1>tmin && t1<h.getT()){
         Vector3f norm=(ray.pointAtParameter(t1)-center).normalized();
         h.set(t1,material,norm);
+        return true;
+    }else
+    {
+        return false;
     }
-    return isSolved==true &&t1>tmin;    
 }

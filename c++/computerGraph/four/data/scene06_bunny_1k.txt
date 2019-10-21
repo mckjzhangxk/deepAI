@@ -37,7 +37,7 @@ Group {
     numObjects 1
     MaterialIndex 0
     Transform {
-		Scale  5 5 5 
+		Scale  3 3 3 
 		Translate  0.03 -0.0666 0 	
         TriangleMesh {
             obj_file bunny_1k.obj

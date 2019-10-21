@@ -41,9 +41,10 @@ int main( int argc, char* argv[] )
   // "argument" provided to the program is actually the
   // name of the executable (in our case, "a4").
   
-  char *p[14]={"./a4","-input","data/scene01_plane.txt","-size","200","200","-output","2.bmp","-normals","norm.bmp","-depth","8","12","depth.bmp"};
-  argv=p;
-  argc=14;
+  
+  // char *p[14]={"./a4","-input","data/scene02_cube.txt","-size","200","200","-output","2.bmp","-normals","norm.bmp","-depth","8","12","depth.bmp"};
+  // argv=p;
+  // argc=14;
 
   char *infile;
   char *outfile;
@@ -91,7 +92,7 @@ int main( int argc, char* argv[] )
  
   float wstep=2./width;
   float hstep=2./height;
-  Vector3f defaultColor(0);
+  Vector3f defaultColor=scence.getBackgroundColor();
   for(int r=0;r<height;r++)
     for(int c=0;c<width;c++){
       float x=-1+c*wstep;
@@ -115,6 +116,8 @@ int main( int argc, char* argv[] )
         }
         Vector3f pixel=get_pixel_color(ray,hit,scence);
         img.SetPixel(c,r,pixel);
+      }else{
+        img.SetPixel(c,r,defaultColor);
       }
 
     }
