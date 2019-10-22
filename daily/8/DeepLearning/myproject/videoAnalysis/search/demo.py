@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets,QtGui
 import sys
 import numpy  as np
+from search.runTest import getFeature,LSH
 
 def numpy2pixel(content):
     '''
@@ -137,6 +138,7 @@ class MyWidge(QtWidgets.QWidget):
     def clickSearch(self):
         import cv2
         filename=QtWidgets.QFileDialog().getOpenFileName()[0]
+        if filename==None or filename=="":return
         qimg=QtGui.QPixmap()
         qimg.load(filename)
         qimg=qimg.scaledToWidth(112).scaledToHeight(112)
@@ -166,6 +168,7 @@ class MyWidge(QtWidgets.QWidget):
         self.bn_previous.setDisabled(pre_state)
         self.bn_next.setDisabled(next_state)
 
+lsh=LSH()
 class DataModel():
     def __init__(self):
         self.parent=None
@@ -211,12 +214,26 @@ class DataModel():
         ui.loadImage()
 
     def search(self,filename):
+
         obj=self
         while obj.parent is not None:
             obj=obj.parent
 
+        emb=getFeature(filename)
+        index = np.array(lsh.localHash(emb))
+
+        isSame=obj.indexes == index
+        prob = isSame.sum(axis=1) / isSame.shape[1]
+        isSame=np.any(isSame, axis=1)
+        subsetIndex=np.where(isSame)[0]
+
+        print(subsetIndex)
+        print(prob[subsetIndex])
+
+
         db=DataModel()
-        db.setDataSource(self.dbSource[:10])
+        subdb=[obj.dbSource[ii] for ii in subsetIndex]
+        db.setDataSource(subdb)
         db.setPageSize(self.pageSize)
         db.parent=obj
 
