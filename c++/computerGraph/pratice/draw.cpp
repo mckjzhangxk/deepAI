@@ -1,19 +1,28 @@
 #include "draw.h"
 
 void drawPoint(const Vector3f &point,const Vector3f& normal){
+        glNormal3d(normal.x(),normal.y(),normal.z());   
         glVertex3d(point.x(),point.y(),point.z());
-        glNormal3d(normal.x(),normal.y(),normal.z());        
+        
+        
+             
 }
 void drawPoint(const Vector3f &point){
         glVertex3d(point.x(),point.y(),point.z());     
 }
+void drawNormal(const Vector3f& norm){
+    glNormal3f(norm.x(),norm.y(),norm.z());
+}
 
-void drawTriangle(const vector<vector<Vector3f> > pts,const Vector3f &color){
-    
+
+
+void drawTriangle(const vector<Vector3f > pts,const vector<Vector3f > norms){
+    assert(pts.size()==3);
+    assert(norms.size()==3);
+
     glBegin(GL_TRIANGLES);
-        glColor3d(color.x(),color.y(),color.z());
-        for(int i=0;i<pts.size();i++){
-            drawPoint(pts[i][0],pts[i][1]);
+        for(int i=0;i<3;i++){
+            drawPoint(pts[i],norms[i]);
         }
     glEnd();
 }

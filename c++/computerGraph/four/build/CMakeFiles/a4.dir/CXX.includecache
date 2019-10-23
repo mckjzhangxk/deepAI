@@ -16,6 +16,10 @@ float.h
 cmath
 -
 
+/home/zhangxk/projects/deepAI/c++/computerGraph/four/Group.cpp
+Group.h
+/home/zhangxk/projects/deepAI/c++/computerGraph/four/Group.h
+
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Group.h
 Object3D.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Object3D.h
@@ -98,6 +102,10 @@ Hit.h
 Material.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Material.h
 
+/home/zhangxk/projects/deepAI/c++/computerGraph/four/Plane.cpp
+Plane.h
+/home/zhangxk/projects/deepAI/c++/computerGraph/four/Plane.h
+
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Plane.h
 Object3D.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Object3D.h
@@ -171,6 +179,12 @@ Triangle.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Triangle.h
 Transform.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Transform.h
+
+/home/zhangxk/projects/deepAI/c++/computerGraph/four/Sphere.cpp
+Sphere.h
+/home/zhangxk/projects/deepAI/c++/computerGraph/four/Sphere.h
+math.h
+-
 
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Sphere.h
 Object3D.h

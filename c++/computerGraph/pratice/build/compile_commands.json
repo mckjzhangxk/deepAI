@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/myzxk.dir/draw.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/draw.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/draw.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/myzxk.dir/main.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/main.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/main.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/myzxk.dir/parse.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/parse.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/parse.cpp"
+}
+]

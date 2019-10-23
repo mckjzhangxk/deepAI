@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/draw.h
+vector
+-
+vecmath/Matrix4f.h
+-
+vecmath/Vector3f.h
+-
+GL/glut.h
+-
+iostream
+-
+cassert
+-
+
+/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/parse.cpp
+parse.h
+/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/parse.h
+
+/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/parse.h
+iostream
+-
+fstream
+-
+sstream
+-
+vector
+-
+vecmath/Vector3f.h
+-
+draw.h
+/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/draw.h
+

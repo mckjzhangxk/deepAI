@@ -64,17 +64,19 @@ int main( int argc, char* argv[] )
   assert(string("-output")==argv[6]);
   outfile=argv[7];
 
-  if(argc>=8){
+ 
+  if(argc>=9){
     assert(string("-normals")==argv[8]);
     normfile=argv[9];
   }
-
-  if(argc>=10){
+ 
+  if(argc>=11){
     assert(string("-depth")==argv[10]);
     depth_low=atof(argv[11]);
     depth_high=atof(argv[12]);
     depthfile=argv[13];
   }
+  
   // First, parse the scene using SceneParser.
   // Then loop over each pixel in the image, shooting a ray
   // through that pixel and finding its intersection with

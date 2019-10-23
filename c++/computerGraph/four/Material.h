@@ -37,11 +37,22 @@ public:
   
     //then get light direction,and normal
     Vector3f Ldir=dirToLight.normalized();
-    //L dot normal,clamp to 0
-    float rate=max(0.f,Vector3f::dot(Ldir,hit.getNormal()));
+    Vector3f norm_dir=hit.getNormal();
 
+    //L dot normal,clamp to 0
+    float rate=max(0.f,Vector3f::dot(Ldir,norm_dir));
     Vector3f color=diffuseColor*lightColor*rate;
-    return color ; 
+
+    //specular color
+    Vector3f ray_dir=ray.getDirection().normalized();
+    Vector3f R=-Ldir+2*norm_dir*Vector3f::dot(norm_dir,Ldir);
+    R.normalize();
+
+
+    rate=pow(max(0.f,Vector3f::dot(R,-ray_dir)),shininess);
+    
+    Vector3f color1=lightColor*specularColor*rate;
+    return color+color1 ; 
 		
   }
 

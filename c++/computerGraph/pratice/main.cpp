@@ -7,6 +7,7 @@
 #include<vecmath/Vector3f.h>
 #include<vector>
 #include "draw.h"
+#include "parse.h"
 
 using namespace std;
 
@@ -18,16 +19,14 @@ GLfloat KEY_VIEW_ASPECT_V=1.7;//视图的w/h,
 GLint KEY_OFFSET_O=0;//viewport xmin,ymin
 GLfloat KEY_DEPTH_Z=2;//更改z坐标，看看有啥变化
 GLfloat KEY_ZROTATE_R=0;//旋转Z轴
-bool KEY_SHOW_AXIS=true;
+bool KEY_SHOW_AXIS=false;
 
 int INTERVAL=100;
 bool rotate=0;
 
-void timefunc(int value){
+Mesh meshobj("data/garg.obj");
 
-    
-    glutTimerFunc(INTERVAL,timefunc,value);
-}
+
 
 
 //https://www.opengl.org/resources/libraries/glut/spec3/spec3.html
@@ -46,41 +45,11 @@ void init(int argc,char **argv){
     glutCreateWindow("Hello Computer Graphics");
     //很重要，而且要放对位置，不然后面的物体会遮挡前面的物体
    glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
+   glEnable(GL_LIGHTING);     // Enable lighting calculations
+   glEnable(GL_LIGHT0);       // Turn on light #0.
 }
 
-//画3个三角形
-void example1(){
-    drawTriangle({
-        {{0,0,0},{0,0,1}},
-        {{1,0,0},{0,0,1}},
-        {{1,1,0},{0,0,1}},
-    },{1,0,0});
 
-    drawTriangle({
-        {{0,0,0},{0,0,1}},
-        {{-1,0,0},{0,0,1}},
-        {{-1,-1,0},{0,0,1}},
-    },{0,1,0});
-   
-     drawTriangle({
-        {{0,2,KEY_DEPTH_Z},{0,0,1}},
-        {{-1,-1,KEY_DEPTH_Z},{0,0,1}},
-        {{1,-1,KEY_DEPTH_Z},{0,0,1}},
-    },{0,0,1}); 
-
-    // drawTriangle({
-    //     {{0,0,0},{0,0,1}},
-    //     {{1,0,0},{0,0,1}},
-    //     {{1,1,0},{0,0,1}},
-    //     {{0,0,0},{0,0,1}},
-    //     {{-1,0,0},{0,0,1}},
-    //     {{-1,-1,0},{0,0,1}},
-    //     {{0,2,KEY_Z},{0,0,1}},
-    //     {{-1,-1,KEY_Z},{0,0,1}},
-    //     {{1,-1,KEY_Z},{0,0,1}},
-    // }
-    // ,{0,1,0});
-}
 //画x,y,z三个轴
 
 void drawAxis(){
@@ -165,15 +134,25 @@ void setPespectiveView(){
 }
 void display(){
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
-    gluLookAt(0,0,2,0,0,0,0,1,0);
     glMatrixMode(GL_MODELVIEW);
-    //  glLoadIdentity();
     glLoadMatrixf(Matrix4f::identity());
+
+    gluLookAt(0,0,5,0,0,0,0,1,0);
+
     
+    GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
     
-    if(KEY_SHOW_AXIS) drawAxis();
-    example4();
+    // Light position
+	GLfloat Lt0pos[] = {1.0f, 1.0f, 5.0f, 1.0f};
     
+    glLightfv(GL_LIGHT0,GL_DIFFUSE,Lt0diff);
+    // glLightfv(GL_LIGHT0,GL_AMBIENT,Lt0diff);
+    glLightfv(GL_LIGHT0,GL_POSITION,Lt0pos);
+    // if(KEY_SHOW_AXIS) drawAxis();
+    meshobj.draw();
+ 
+
+    // glutSolidTeapot(0.6);
     
     setPespectiveView();
     glutSwapBuffers();
@@ -234,9 +213,10 @@ void mouseFunc(int button, int state,int x, int y){
     cout<<"mouseFunc:("<<x<<","<<y<<")"<<endl;
     cout<<(state==GLUT_DOWN)<<endl;GLUT_DOWN;
 }
+
 int main(int argc,char **argv){
     init(argc,argv);
-
+    
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyFunc);

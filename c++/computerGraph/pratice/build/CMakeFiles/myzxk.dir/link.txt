@@ -1,0 +1,1 @@
+/usr/bin/g++-5   -std=c++11 -g   CMakeFiles/myzxk.dir/draw.cpp.o CMakeFiles/myzxk.dir/main.cpp.o CMakeFiles/myzxk.dir/parse.cpp.o  -o myzxk -lglut -lGL -lGLU -lvecmath 
