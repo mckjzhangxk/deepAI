@@ -4,6 +4,8 @@
 #include <sstream>
 #include <vector>
 #include <vecmath.h>
+#include"Camera.h"
+
 using namespace std;
 
 // Globals
@@ -27,7 +29,7 @@ GLfloat GPos[2]={1,1};
 GLfloat angle=0;
 const int INTERVAL=100;
 bool rotate=false;
-
+Camera mycamera;
 // These are convenience functions which allow us to call OpenGL 
 // methods on Vec3d objects
 inline void glVertex(const Vector3f &a) 
@@ -54,11 +56,14 @@ void reshapeFunc(int w, int h)
         glViewport(0, (h - w) / 2, w, w);
     }
     // glViewport(0,0,w,h);
-    // Set up a perspective view, with square aspect ratio
+    // mycamera.project(20,(float)w/float(h),1,100);
+
+    
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     // 50 degree fov, uniform aspect ratio, near = 1, far = 100
-    gluPerspective(field_angle, 1.0*w/h, 1.0, 100.0);
+    gluPerspective(50, (float)w/float(h), 1.0, 100.0);
+
 }
 // This function is called whenever a "Normal" key press is received.
 void keyboardFunc( unsigned char key, int x, int y )
@@ -76,16 +81,6 @@ void keyboardFunc( unsigned char key, int x, int y )
         break;
     case 'r':
         rotate=!rotate;  
-        break;
-    case 'x':
-        field_angle+=5;
-        {
-            int W=glutGet(GLUT_WINDOW_WIDTH);
-            int H=glutGet(GLUT_WINDOW_HEIGHT);
-            cout<<W<<"xxx"<<H<<"ss"<<field_angle<<endl;
-            reshapeFunc(W,H);
-        }
-
         break;
     default:
         cout << "Unhandled key press " << key << "." << endl;        
@@ -128,7 +123,7 @@ void specialFunc( int key, int x, int y )
 void drawScene(void)
 {
     int i;
-
+    
     // Clear the rendering window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -138,10 +133,13 @@ void drawScene(void)
 
     // Position the camera at [0,0,5], looking at [0,0,0],
     // with [0,1,0] as the up direction.
-    gluLookAt(0.0, 0.0, 5.0,
-              0.0, 0.0, 0.0,
-              0.0, 1.0, 0.0);
-    glRotated(angle,0,1,0);
+    // gluLookAt(0.0, 0.0, 5.0,
+    //           0.0, 0.0, 0.0,
+    //           0.0, 1.0, 0.0);
+    mycamera.getViewMatrix().print();
+    glMultMatrixf(mycamera.getViewMatrix());
+    // glLoadMatrixf(Matrix4f::lookAt({0,0,5},{0,0,0},{0,1,1}));
+    // glRotated(angle,0,1,0);
 
     // Set material properties of object
 
@@ -293,6 +291,7 @@ void loadInput()
 
 // Main routine.
 // Set up OpenGL, define the callbacks and start the main loop
+
 int main( int argc, char** argv )
 {
     loadInput();

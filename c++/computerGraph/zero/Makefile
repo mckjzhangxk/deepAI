@@ -1,20 +1,20 @@
 INCFLAGS  = -I /usr/include/GL
 INCFLAGS += -I include/vecmath
 
-LINKFLAGS  = -lglut -lGL -lGLU
-#LINKFLAGS += -L /mit/6.837/public/lib -lvecmath
+LINKFLAGS  = -lglut -lGL -lGLU -lvecmath
 
 
-CFLAGS    = -O2
+
+CFLAGS    = -O2 -std=c++11
 CC        = g++
-SRCS      = main.cpp
-OBJS      = $(SRCS:.cpp=.o)
+SRCS      = *.cpp
+# OBJS      = $(SRCS:.cpp=.o)
 PROG      = a0
-VECMATH   = vecmath/*.cpp
+
 all: $(SRCS) $(PROG)
 
 $(PROG): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(VECMATH) -o $@ $(INCFLAGS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(SRCS) -o $@ $(INCFLAGS) $(LINKFLAGS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -c -o $@ $(INCFLAGS)
