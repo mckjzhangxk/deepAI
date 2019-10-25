@@ -4,7 +4,11 @@
 CMakeFiles/myzxk.dir/draw.cpp.o: ../draw.cpp
 CMakeFiles/myzxk.dir/draw.cpp.o: ../draw.h
 
+CMakeFiles/myzxk.dir/gui.cpp.o: ../gui.cpp
+CMakeFiles/myzxk.dir/gui.cpp.o: ../gui.h
+
 CMakeFiles/myzxk.dir/main.cpp.o: ../draw.h
+CMakeFiles/myzxk.dir/main.cpp.o: ../gui.h
 CMakeFiles/myzxk.dir/main.cpp.o: ../main.cpp
 CMakeFiles/myzxk.dir/main.cpp.o: ../parse.h
 

@@ -58,11 +58,11 @@ void reshapeFunc(int w, int h)
     // glViewport(0,0,w,h);
     // mycamera.project(20,(float)w/float(h),1,100);
 
-    
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    // 50 degree fov, uniform aspect ratio, near = 1, far = 100
-    gluPerspective(50, (float)w/float(h), 1.0, 100.0);
+    mycamera.perspective_projection(50,(float)w/float(h),1,100);
+    // glMatrixMode(GL_PROJECTION);
+    // glLoadIdentity();
+    // // 50 degree fov, uniform aspect ratio, near = 1, far = 100
+    // gluPerspective(50, (float)w/float(h), 1.0, 100.0);
 
 }
 // This function is called whenever a "Normal" key press is received.
@@ -131,15 +131,9 @@ void drawScene(void)
     glMatrixMode( GL_MODELVIEW );  // Current matrix affects objects positions
     glLoadIdentity();              // Initialize to the identity
 
-    // Position the camera at [0,0,5], looking at [0,0,0],
-    // with [0,1,0] as the up direction.
-    // gluLookAt(0.0, 0.0, 5.0,
-    //           0.0, 0.0, 0.0,
-    //           0.0, 1.0, 0.0);
-    mycamera.getViewMatrix().print();
-    glMultMatrixf(mycamera.getViewMatrix());
-    // glLoadMatrixf(Matrix4f::lookAt({0,0,5},{0,0,0},{0,1,1}));
-    // glRotated(angle,0,1,0);
+
+    glMultMatrixf(mycamera.getViewMatrix());  
+    glRotated(angle,0,1,0);
 
     // Set material properties of object
 
@@ -184,7 +178,7 @@ void drawScene(void)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, Lt0diff);
     Lt0pos[0]=GPos[0];
     Lt0pos[1]=GPos[1];
-    cout<<"light position:("<<Lt0pos[0]<<","<<Lt0pos[1]<<","<<Lt0pos[2]<<")"<<endl;
+    
     glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
 
 	// This GLUT method draws a teapot.  You should replace

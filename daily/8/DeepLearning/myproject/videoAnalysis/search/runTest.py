@@ -46,7 +46,7 @@ if __name__ == '__main__':
     filelist=readFiles()
     lsh=LSH()
 
-    filelist=filelist[:3]
+    # filelist=filelist[:3]
     with open('record.sql','w') as fs:
         for filename in tqdm.tqdm(filelist):
             emb=getFeature(filename)

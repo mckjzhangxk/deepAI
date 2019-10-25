@@ -150,6 +150,33 @@ draw.cpp.s:
 	$(MAKE) -f CMakeFiles/myzxk.dir/build.make CMakeFiles/myzxk.dir/draw.cpp.s
 .PHONY : draw.cpp.s
 
+gui.o: gui.cpp.o
+
+.PHONY : gui.o
+
+# target to build an object file
+gui.cpp.o:
+	$(MAKE) -f CMakeFiles/myzxk.dir/build.make CMakeFiles/myzxk.dir/gui.cpp.o
+.PHONY : gui.cpp.o
+
+gui.i: gui.cpp.i
+
+.PHONY : gui.i
+
+# target to preprocess a source file
+gui.cpp.i:
+	$(MAKE) -f CMakeFiles/myzxk.dir/build.make CMakeFiles/myzxk.dir/gui.cpp.i
+.PHONY : gui.cpp.i
+
+gui.s: gui.cpp.s
+
+.PHONY : gui.s
+
+# target to generate assembly for a file
+gui.cpp.s:
+	$(MAKE) -f CMakeFiles/myzxk.dir/build.make CMakeFiles/myzxk.dir/gui.cpp.s
+.PHONY : gui.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -216,6 +243,9 @@ help:
 	@echo "... draw.o"
 	@echo "... draw.i"
 	@echo "... draw.s"
+	@echo "... gui.o"
+	@echo "... gui.i"
+	@echo "... gui.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

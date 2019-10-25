@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/draw.cpp" "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build/CMakeFiles/myzxk.dir/draw.cpp.o"
+  "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/gui.cpp" "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build/CMakeFiles/myzxk.dir/gui.cpp.o"
   "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/main.cpp" "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build/CMakeFiles/myzxk.dir/main.cpp.o"
   "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/parse.cpp" "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build/CMakeFiles/myzxk.dir/parse.cpp.o"
   )

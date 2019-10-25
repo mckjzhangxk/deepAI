@@ -222,18 +222,27 @@ class DataModel():
         emb=getFeature(filename)
         index = np.array(lsh.localHash(emb))
 
-        isSame=obj.indexes == index
-        prob = isSame.sum(axis=1) / isSame.shape[1]
-        isSame=np.any(isSame, axis=1)
-        subsetIndex=np.where(isSame)[0]
+        # isSame=obj.indexes == index
+        prob = (obj.indexes == index).sum(axis=1)
 
-        print(subsetIndex)
-        print(prob[subsetIndex])
+        # isSame = np.any(isSame, axis=1)
+        subsetIndex = np.where(prob>=8)[0]
+        prob=prob[subsetIndex]
+
+
+
 
 
         db=DataModel()
         subdb=[obj.dbSource[ii] for ii in subsetIndex]
-        db.setDataSource(subdb)
+        #sort the result base on prob
+
+        subsetIndex = np.argsort(-prob)
+        prob = prob[subsetIndex]
+        print(prob)
+        dbnew=[subdb[ii] for ii in subsetIndex]
+
+        db.setDataSource(dbnew)
         db.setPageSize(self.pageSize)
         db.parent=obj
 

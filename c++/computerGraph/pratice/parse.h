@@ -19,10 +19,12 @@ class Mesh{
 public:
     Mesh(const char * filename);
     void draw();
+    void setWired(bool );
 private:
     vector<Vector3f> m_vertexes;
     vector<Vector3f> m_norms;
     vector<Trangle> m_faces;
     vector<Trangle> m_faces_normals;
+    bool wired;
 };
 #endif

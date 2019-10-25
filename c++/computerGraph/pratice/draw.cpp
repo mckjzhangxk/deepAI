@@ -26,14 +26,13 @@ void drawTriangle(const vector<Vector3f > pts,const vector<Vector3f > norms){
         }
     glEnd();
 }
-void drawLines(const vector<Vector3f> pts,const Vector3f &color,GLfloat linewidth){
+void drawLines(const vector<Vector3f> pts,GLfloat linewidth){
     glLineWidth(linewidth);//放在begin里面不起作用
     /*
     GL_LINES:每2个点组成一条线
     GL_LINE_STRIP:一个点连接下一个点
     */
     glBegin(GL_LINES);    
-        glColor3d(color.x(),color.y(),color.z());
         for(int i=0;i<pts.size();i++){
             drawPoint(pts[i]);
         }

@@ -4,8 +4,12 @@
 CMakeFiles/myzxk.dir/draw.cpp.o
  /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/draw.cpp
  /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/draw.h
+CMakeFiles/myzxk.dir/gui.cpp.o
+ /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/gui.cpp
+ /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/gui.h
 CMakeFiles/myzxk.dir/main.cpp.o
  /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/draw.h
+ /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/gui.h
  /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/main.cpp
  /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/parse.h
 CMakeFiles/myzxk.dir/parse.cpp.o

@@ -8,7 +8,7 @@
 #include<vector>
 #include "draw.h"
 #include "parse.h"
-
+#include "gui.h"
 using namespace std;
 
  
@@ -19,7 +19,7 @@ GLfloat KEY_VIEW_ASPECT_V=1.7;//视图的w/h,
 GLint KEY_OFFSET_O=0;//viewport xmin,ymin
 GLfloat KEY_DEPTH_Z=2;//更改z坐标，看看有啥变化
 GLfloat KEY_ZROTATE_R=0;//旋转Z轴
-bool KEY_SHOW_AXIS=false;
+bool KEY_SHOW_AXIS=true;
 
 int INTERVAL=100;
 bool rotate=0;
@@ -34,7 +34,7 @@ Mesh meshobj("data/garg.obj");
 void init(int argc,char **argv){
     
 
-    int top=30,left=30,width=1024,height=600;    
+    int top=30,left=30,width=800,height=600;    
     // 第一步窗口的初始化等
     glutInitWindowPosition(left,top);
     glutInitWindowSize(width,height);
@@ -47,6 +47,7 @@ void init(int argc,char **argv){
    glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
    glEnable(GL_LIGHTING);     // Enable lighting calculations
    glEnable(GL_LIGHT0);       // Turn on light #0.
+
 }
 
 
@@ -54,16 +55,16 @@ void init(int argc,char **argv){
 
 void drawAxis(){
     GLfloat LINEWIDTH=2;
-    drawLines({{0,0,0},{1,0,0}},{1,0,0},LINEWIDTH);
-    drawLines({{0,0,0},{0,1,0}},{0,1,0},LINEWIDTH);
-    drawLines({{0,0,0},{0,0,1}},{0,0,1},LINEWIDTH);
+    drawLines({{0,0,0},{1,0,0}},LINEWIDTH);
+    drawLines({{0,0,0},{0,1,0}},LINEWIDTH);
+    drawLines({{0,0,0},{0,0,1}},LINEWIDTH);
 }
 
 void drawAxis1(){
     GLfloat LINEWIDTH=5;
-    drawLines({{0,0,0},{1,0,0}},{1,1,0},LINEWIDTH);
-    drawLines({{0,0,0},{0,1,0}},{0,1,1},LINEWIDTH);
-    drawLines({{0,0,0},{0,0,1}},{1,0,1},LINEWIDTH);
+    drawLines({{0,0,0},{1,0,0}},LINEWIDTH);
+    drawLines({{0,0,0},{0,1,0}},LINEWIDTH);
+    drawLines({{0,0,0},{0,0,1}},LINEWIDTH);
 }
 
 //设置3个帧。后2个是平移第一个得到的，然后选择，用于展示 继承结构 
@@ -213,15 +214,27 @@ void mouseFunc(int button, int state,int x, int y){
     cout<<"mouseFunc:("<<x<<","<<y<<")"<<endl;
     cout<<(state==GLUT_DOWN)<<endl;GLUT_DOWN;
 }
-
+void menu_hander(int menu){
+    if(menu==3)
+        meshobj.setWired(true);
+    if(menu==4)
+        meshobj.setWired(false);
+    glutPostRedisplay();
+}
+void init_menu(){
+    popUpMenu(menu_hander,nullptr);
+    glutPostRedisplay();
+}
 int main(int argc,char **argv){
     init(argc,argv);
-    
+    init_menu();
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyFunc);
-    glutMouseFunc(mouseFunc);
+    // glutMouseFunc(mouseFunc);
     //glutTimerFunc(INTERVAL,timefunc,1);
+    
+    createControlWidge();
     glutMainLoop();
     return 0;
 }

@@ -71,7 +71,7 @@ CMAKE_BINARY_DIR = /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build
 CMakeFiles/myzxk.dir/all:
 	$(MAKE) -f CMakeFiles/myzxk.dir/build.make CMakeFiles/myzxk.dir/depend
 	$(MAKE) -f CMakeFiles/myzxk.dir/build.make CMakeFiles/myzxk.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build/CMakeFiles --progress-num=1,2,3,4 "Built target myzxk"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target myzxk"
 .PHONY : CMakeFiles/myzxk.dir/all
 
 # Include target in all.
@@ -81,7 +81,7 @@ all: CMakeFiles/myzxk.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/myzxk.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build/CMakeFiles 5
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/myzxk.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build/CMakeFiles 0
 .PHONY : CMakeFiles/myzxk.dir/rule

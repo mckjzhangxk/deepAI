@@ -6,6 +6,11 @@
 },
 {
   "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/myzxk.dir/gui.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/gui.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/gui.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/build",
   "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/myzxk.dir/main.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/pratice/main.cpp",
   "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/main.cpp"
 },
