@@ -8,15 +8,13 @@
 #include<vector>
 #include "draw.h"
 #include "parse.h"
-#include "gui.h"
+
+#include "Camera.h"
+
 using namespace std;
 
  
 
-
-GLfloat KEY_VIEW_ANGLE_A=30;//视角，Y方向
-GLfloat KEY_VIEW_ASPECT_V=1.7;//视图的w/h,
-GLint KEY_OFFSET_O=0;//viewport xmin,ymin
 GLfloat KEY_DEPTH_Z=2;//更改z坐标，看看有啥变化
 GLfloat KEY_ZROTATE_R=0;//旋转Z轴
 bool KEY_SHOW_AXIS=true;
@@ -25,7 +23,7 @@ int INTERVAL=100;
 bool rotate=0;
 
 Mesh meshobj("data/garg.obj");
-
+Camera camera;
 
 
 
@@ -126,19 +124,13 @@ void example4(){
     glLoadMatrixf(m);
     drawAxis1();
 }
-void setPespectiveView(){
-    Matrix4f I=Matrix4f::identity();
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(I);
-    gluPerspective(KEY_VIEW_ANGLE_A,KEY_VIEW_ASPECT_V, 1.0, 100.0);
 
-}
 void display(){
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(Matrix4f::identity());
+    
+    glLoadMatrixf(camera.getViewMatrix());
 
-    gluLookAt(0,0,5,0,0,0,0,1,0);
 
     
     GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
@@ -155,36 +147,23 @@ void display(){
 
     // glutSolidTeapot(0.6);
     
-    setPespectiveView();
+    
     glutSwapBuffers();
 }
 void reshape(int w,int h){  
+    camera.setDimension(w,h);
+    camera.perspective_projection(30,(float)w/float(h),1.f,100.f);
     //(0,0)在左下角
-    glViewport(KEY_OFFSET_O,KEY_OFFSET_O,w-KEY_OFFSET_O,h-KEY_OFFSET_O);
-   
+    glViewport(0,0,w,h);
 }
 void keyFunc(unsigned char key,int x, int y){
     switch (key)
     {
     case 'q':
-        exit(0);
+        // exit(0);
+        camera.setEyePoint({0,0,10});
         break;
-    case 'V':
-        KEY_VIEW_ASPECT_V+=0.1;
-        break;
-    case 'v':
-        KEY_VIEW_ASPECT_V-=0.1;
-        break;
-    case 'A':
-        KEY_VIEW_ANGLE_A+=1;
-        break;
-    case 'a':
-        KEY_VIEW_ANGLE_A-=1;
-        break;
-    case 'O':
-        KEY_OFFSET_O+=1;
-        reshape(glutGet(GLUT_WINDOW_WIDTH),glutGet(GLUT_WINDOW_HEIGHT));
-        break;
+   
     case 'Z':
         KEY_DEPTH_Z+=1;
         break;
@@ -210,9 +189,13 @@ void mouseFunc(int button, int state,int x, int y){
         button:左，中，右
         state:down,up
     */
-    cout<<(button==GLUT_LEFT_BUTTON)<<endl;
-    cout<<"mouseFunc:("<<x<<","<<y<<")"<<endl;
-    cout<<(state==GLUT_DOWN)<<endl;GLUT_DOWN;
+    // cout<<"Button:"<<button<<endl;
+    // cout<<"mouseFunc:("<<x<<","<<y<<")"<<endl;
+    // cout<<"state:"<<state<<endl;;
+    camera.mouseFunc(button,state,x,y);
+}
+void motionFunc(int x, int y){
+    camera.motionFunc(x,y);
 }
 void menu_hander(int menu){
     if(menu==3)
@@ -222,19 +205,19 @@ void menu_hander(int menu){
     glutPostRedisplay();
 }
 void init_menu(){
-    popUpMenu(menu_hander,nullptr);
     glutPostRedisplay();
 }
 int main(int argc,char **argv){
     init(argc,argv);
-    init_menu();
+    // init_menu();
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyFunc);
-    // glutMouseFunc(mouseFunc);
+    glutMouseFunc(mouseFunc);
+    glutMotionFunc(motionFunc);
     //glutTimerFunc(INTERVAL,timefunc,1);
     
-    createControlWidge();
+    // createControlWidge();
     glutMainLoop();
     return 0;
 }

@@ -19,10 +19,3 @@ void popUpMenu(void (* main_menu_hander)(int) ,void (* custom_menu_hander)(int))
     glutAddMenuEntry("z=x*y",1);
     glutAddMenuEntry("z=x+y",2);
 }
-
-void createControlWidge(){
-    Fl_Window win(400,400,"hello");
-    win.show();
-    win.position(0,0);
-     Fl::run();
-}

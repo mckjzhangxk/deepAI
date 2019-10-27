@@ -6,15 +6,23 @@
 
 #IncludeRegexTransform: 
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/gui.cpp
-gui.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/gui.h
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/pratice/Camera.cpp
+Camera.h
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/pratice/Camera.h
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/pratice/gui.h
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/pratice/Camera.h
 GL/glut.h
 -
-FL/Fl.H
+Vector2f.h
 -
-FL/Fl_Window.H
+Vector3f.h
+-
+Vector4f.h
+-
+Matrix4f.h
+-
+iostream
+-
+cmath
 -
 
