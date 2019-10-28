@@ -42,5 +42,6 @@
         "list": "cpp",
         "string": "cpp",
         "thread": "cpp"
-    }
+    },
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools"
 }

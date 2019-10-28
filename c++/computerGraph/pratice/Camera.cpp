@@ -94,6 +94,14 @@ void Camera::compute_viewMatrix(){
     m_viewMatrix.setCol(3,Vector4f(m_eyepoint,1));
     m_viewMatrix=m_viewMatrix.inverse();
     
+    // Matrix4f T1=Matrix4f::translation(-m_eyepoint);
+    // Matrix4f R=Matrix4f::rotation(y,-M_PI/30);
+    // Matrix4f R=Matrix4f::rotation(y,M_PI*0.11);
+    // Matrix4f R=Matrix4f::rotateY(-M_PI/3);
+
+    // Matrix4f T2=Matrix4f::translation(m_eyepoint);
+    m_viewMatrix=R*m_viewMatrix;
+
 }
 
 void Camera::mouseFunc(int button, int state,int x, int y){

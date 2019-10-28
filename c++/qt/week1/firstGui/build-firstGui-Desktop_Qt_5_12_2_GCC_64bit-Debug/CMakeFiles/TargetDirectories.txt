@@ -1,0 +1,4 @@
+/home/zhangxk/projects/deepAI/c++/qt/week1/firstGui/build-firstGui-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/qt/week1/firstGui/build-firstGui-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
+/home/zhangxk/projects/deepAI/c++/qt/week1/firstGui/build-firstGui-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/firstGui.dir
+/home/zhangxk/projects/deepAI/c++/qt/week1/firstGui/build-firstGui-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/firstGui_autogen.dir

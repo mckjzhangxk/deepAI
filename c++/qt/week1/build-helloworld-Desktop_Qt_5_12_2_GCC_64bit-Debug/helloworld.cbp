@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="helloworld"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\Qt\;CMake Files\..\..\..\..\..\..\Qt\5.12.2\;CMake Files\..\..\..\..\..\..\Qt\5.12.2\gcc_64\;CMake Files\..\..\..\..\..\..\Qt\5.12.2\gcc_64\lib\;CMake Files\..\..\..\..\..\..\Qt\5.12.2\gcc_64\lib\cmake\;CMake Files\..\..\..\..\..\..\Qt\5.12.2\gcc_64\lib\cmake\Qt5Core\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/ninja -v all"/>
+					<CompileFile command="/usr/bin/ninja -v &quot;$file&quot;"/>
+					<Clean command="/usr/bin/ninja -v clean"/>
+					<DistClean command="/usr/bin/ninja -v clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/ninja -v edit_cache"/>
+					<CompileFile command="/usr/bin/ninja -v &quot;$file&quot;"/>
+					<Clean command="/usr/bin/ninja -v clean"/>
+					<DistClean command="/usr/bin/ninja -v clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/ninja -v rebuild_cache"/>
+					<CompileFile command="/usr/bin/ninja -v &quot;$file&quot;"/>
+					<Clean command="/usr/bin/ninja -v clean"/>
+					<DistClean command="/usr/bin/ninja -v clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="helloworld">
+				<Option output="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug/helloworld" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/helloworld"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug/helloworld_autogen/include"/>
+					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include"/>
+					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore"/>
+					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/./mkspecs/linux-g++"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/ninja -v helloworld"/>
+					<CompileFile command="/usr/bin/ninja -v &quot;$file&quot;"/>
+					<Clean command="/usr/bin/ninja -v clean"/>
+					<DistClean command="/usr/bin/ninja -v clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="helloworld/fast">
+				<Option output="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug/helloworld" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/helloworld"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug/helloworld_autogen/include"/>
+					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include"/>
+					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore"/>
+					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/./mkspecs/linux-g++"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/ninja -v helloworld/fast"/>
+					<CompileFile command="/usr/bin/ninja -v &quot;$file&quot;"/>
+					<Clean command="/usr/bin/ninja -v clean"/>
+					<DistClean command="/usr/bin/ninja -v clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="helloworld_autogen">
+				<Option working_dir="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/ninja -v helloworld_autogen"/>
+					<CompileFile command="/usr/bin/ninja -v &quot;$file&quot;"/>
+					<Clean command="/usr/bin/ninja -v clean"/>
+					<DistClean command="/usr/bin/ninja -v clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/build-helloworld-Desktop_Qt_5_12_2_GCC_64bit-Debug/helloworld_autogen/mocs_compilation.cpp">
+			<Option target="helloworld"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/helloworld/main.cpp">
+			<Option target="helloworld"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/helloworld/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/helloworld/../../../../../../Qt/5.12.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\Qt\5.12.2\gcc_64\lib\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/helloworld/../../../../../../Qt/5.12.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\Qt\5.12.2\gcc_64\lib\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/helloworld/../../../../../../Qt/5.12.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfigExtrasMkspecDir.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\Qt\5.12.2\gcc_64\lib\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/helloworld/../../../../../../Qt/5.12.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\Qt\5.12.2\gcc_64\lib\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/helloworld/../../../../../../Qt/5.12.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreMacros.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\Qt\5.12.2\gcc_64\lib\cmake\Qt5Core\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
