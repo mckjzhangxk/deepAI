@@ -12,7 +12,7 @@ void createLocalFrame(  const Vector3f& eyepoint,
 Camera::Camera():Camera(Vector3f(0,0,5),Vector3f(0,0,0),Vector3f(0,1,0)){
 
 }
-Camera::Camera(Vector3f eye,Vector3f pointTo,Vector3f up):m_oper_type(CONST_NONE){
+Camera::Camera(Vector3f eye,Vector3f pointTo,Vector3f up):m_oper_type(CONST_NONE),m_rotateMatrix(Matrix4f::identity()){
     m_eyepoint=eye;
     m_center=pointTo;
     m_up=up;
@@ -68,18 +68,28 @@ void Camera::planeTransform(Vector2f displacement){
 
     compute_viewMatrix();
 } 
+
 void Camera::rotateTransform(Vector2f displacement){
     Vector3f x,y,z;
     createLocalFrame(m_eyepoint,m_center,m_up,x,y,z);  
 
     Vector3f temp_eyepoint=m_eyepoint+displacement.x()*x+displacement.y()*y;
-    Vector3f previous_y(y);
+    Vector3f previous_y(m_up);
     createLocalFrame(temp_eyepoint,m_center,previous_y,x,y,z);
 
     float zoffset=(m_center-m_eyepoint).abs()-(m_center-temp_eyepoint).abs();
 
     m_eyepoint=temp_eyepoint+zoffset*z;
-    m_up=y;
+    // m_up=y;
+    
+    // float distance=(m_center-m_eyepoint).abs();
+    // float radian1=atan2(displacement.x(),distance);
+    // float radian2=atan2(displacement.y(),distance);
+    
+    // Matrix4f Rx=Matrix4f::rotateX(radian2);
+    // Matrix4f Ry=Matrix4f::rotateY(radian1);
+    // m_rotateMatrix=Ry*Rx*m_rotateMatrix;
+    
     compute_viewMatrix();
 }
 void Camera::compute_viewMatrix(){
@@ -94,13 +104,8 @@ void Camera::compute_viewMatrix(){
     m_viewMatrix.setCol(3,Vector4f(m_eyepoint,1));
     m_viewMatrix=m_viewMatrix.inverse();
     
-    // Matrix4f T1=Matrix4f::translation(-m_eyepoint);
-    // Matrix4f R=Matrix4f::rotation(y,-M_PI/30);
-    // Matrix4f R=Matrix4f::rotation(y,M_PI*0.11);
-    // Matrix4f R=Matrix4f::rotateY(-M_PI/3);
 
-    // Matrix4f T2=Matrix4f::translation(m_eyepoint);
-    m_viewMatrix=R*m_viewMatrix;
+    m_viewMatrix=m_rotateMatrix*m_viewMatrix;
 
 }
 

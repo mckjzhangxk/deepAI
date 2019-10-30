@@ -1,0 +1,4 @@
+/home/zhangxk/projects/deepAI/c++/qt/week1/build-basicApp-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/qt/week1/build-basicApp-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
+/home/zhangxk/projects/deepAI/c++/qt/week1/build-basicApp-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/basicApp.dir
+/home/zhangxk/projects/deepAI/c++/qt/week1/build-basicApp-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/basicApp_autogen.dir

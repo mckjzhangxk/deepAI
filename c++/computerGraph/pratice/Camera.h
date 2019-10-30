@@ -69,7 +69,7 @@ private:
     Vector3f m_center;
     Vector3f m_up;
     Matrix4f m_viewMatrix;   
-
+    Matrix4f m_rotateMatrix;
     float m_screenW;
     float m_screenH;
     //鼠标相关

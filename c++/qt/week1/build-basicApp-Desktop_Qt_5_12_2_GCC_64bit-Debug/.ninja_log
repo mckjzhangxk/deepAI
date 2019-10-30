@@ -1,0 +1,20 @@
+# ninja log v5
+0	2185	0	CMakeFiles/basicApp.dir/main.cpp.o	50a48e791ff62f08
+2186	3741	0	basicApp	89c0c06bb645681c
+1	1684	0	CMakeFiles/basicApp.dir/main.cpp.o	50a48e791ff62f08
+1684	2051	0	basicApp	89c0c06bb645681c
+2	1518	0	CMakeFiles/basicApp.dir/main.cpp.o	50a48e791ff62f08
+1518	1885	0	basicApp	89c0c06bb645681c
+1	1458	0	CMakeFiles/basicApp.dir/main.cpp.o	50a48e791ff62f08
+1458	1823	0	basicApp	89c0c06bb645681c
+1	40	0	CMakeFiles/basicApp_autogen	ec3b427d631015e7
+1	40	0	basicApp_autogen/mocs_compilation.cpp	ec3b427d631015e7
+40	57	0	CMakeFiles/basicApp.dir/basicApp_autogen/mocs_compilation.cpp.o	c8d7ac91470e6a01
+1	8	0	CMakeFiles/basicApp_autogen	ec3b427d631015e7
+1	8	0	basicApp_autogen/mocs_compilation.cpp	ec3b427d631015e7
+0	9	0	CMakeFiles/basicApp_autogen	ec3b427d631015e7
+0	9	0	basicApp_autogen/mocs_compilation.cpp	ec3b427d631015e7
+2	10	0	CMakeFiles/basicApp_autogen	ec3b427d631015e7
+2	10	0	basicApp_autogen/mocs_compilation.cpp	ec3b427d631015e7
+11	1553	0	CMakeFiles/basicApp.dir/main.cpp.o	82e76c3bd4fca840
+1553	1887	0	basicApp	e548ba32b9151779
