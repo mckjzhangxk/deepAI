@@ -41,6 +41,10 @@ public:
 			float r2=result[0],r3=result[1],t=result[2];
 			if(r2>=0&&r3>=0&&((r2+r3)<=1)&&t>tmin&&t<hit.getT()){
 					hit.set(t,m_material,interpNorm(1-r2-r3,r2,r3));
+					if(hasTex){
+						Vector2f texcoord=texCoords[0]*(1-r2-r3)+texCoords[1]*r2+texCoords[2]*r3;
+						hit.setTexCoord(texcoord);
+					}
 				return true;
 			}else
 			{

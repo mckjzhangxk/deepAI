@@ -41,7 +41,11 @@ public:
 
     //L dot normal,clamp to 0
     float rate=max(0.f,Vector3f::dot(Ldir,norm_dir));
-    Vector3f color=diffuseColor*lightColor*rate;
+    Vector3f Kd=diffuseColor;
+    if(t.valid()){
+      Kd=t(hit.texCoord[0],hit.texCoord[1]);
+    }
+    Vector3f color=Kd*lightColor*rate;
 
     //specular color
     Vector3f ray_dir=ray.getDirection().normalized();
