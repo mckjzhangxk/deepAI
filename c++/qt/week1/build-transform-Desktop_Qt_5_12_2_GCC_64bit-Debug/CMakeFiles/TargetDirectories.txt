@@ -1,0 +1,4 @@
+/home/zhangxk/projects/deepAI/c++/qt/week1/build-transform-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/qt/week1/build-transform-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
+/home/zhangxk/projects/deepAI/c++/qt/week1/build-transform-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/transform.dir
+/home/zhangxk/projects/deepAI/c++/qt/week1/build-transform-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/transform_autogen.dir
