@@ -131,7 +131,7 @@ void display(){
     
     glLoadMatrixf(camera.getViewMatrix());
 
-
+ 
     
     GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
     

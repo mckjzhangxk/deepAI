@@ -71,6 +71,41 @@ build CMakeFiles/qtopengl.dir/mainwindow.cpp.o: CXX_COMPILER__qtopengl /home/zha
   INCLUDES = -I. -I/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl -Iqtopengl_autogen/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore -isystem /home/zhangxk/Qt/5.12.2/gcc_64/./mkspecs/linux-g++ -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtOpenGL
   OBJECT_DIR = CMakeFiles/qtopengl.dir
   OBJECT_FILE_DIR = CMakeFiles/qtopengl.dir
+build CMakeFiles/qtopengl.dir/mesh.cpp.o: CXX_COMPILER__qtopengl /home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mesh.cpp || cmake_object_order_depends_target_qtopengl
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/qtopengl.dir/mesh.cpp.o.d
+  FLAGS = -g   -fPIC -std=gnu++11
+  INCLUDES = -I. -I/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl -Iqtopengl_autogen/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore -isystem /home/zhangxk/Qt/5.12.2/gcc_64/./mkspecs/linux-g++ -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtOpenGL
+  OBJECT_DIR = CMakeFiles/qtopengl.dir
+  OBJECT_FILE_DIR = CMakeFiles/qtopengl.dir
+build CMakeFiles/qtopengl.dir/draw.cpp.o: CXX_COMPILER__qtopengl /home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/draw.cpp || cmake_object_order_depends_target_qtopengl
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/qtopengl.dir/draw.cpp.o.d
+  FLAGS = -g   -fPIC -std=gnu++11
+  INCLUDES = -I. -I/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl -Iqtopengl_autogen/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore -isystem /home/zhangxk/Qt/5.12.2/gcc_64/./mkspecs/linux-g++ -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtOpenGL
+  OBJECT_DIR = CMakeFiles/qtopengl.dir
+  OBJECT_FILE_DIR = CMakeFiles/qtopengl.dir
+build CMakeFiles/qtopengl.dir/Camera.cpp.o: CXX_COMPILER__qtopengl /home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/Camera.cpp || cmake_object_order_depends_target_qtopengl
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/qtopengl.dir/Camera.cpp.o.d
+  FLAGS = -g   -fPIC -std=gnu++11
+  INCLUDES = -I. -I/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl -Iqtopengl_autogen/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore -isystem /home/zhangxk/Qt/5.12.2/gcc_64/./mkspecs/linux-g++ -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtOpenGL
+  OBJECT_DIR = CMakeFiles/qtopengl.dir
+  OBJECT_FILE_DIR = CMakeFiles/qtopengl.dir
+build CMakeFiles/qtopengl.dir/material.cpp.o: CXX_COMPILER__qtopengl /home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/material.cpp || cmake_object_order_depends_target_qtopengl
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/qtopengl.dir/material.cpp.o.d
+  FLAGS = -g   -fPIC -std=gnu++11
+  INCLUDES = -I. -I/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl -Iqtopengl_autogen/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore -isystem /home/zhangxk/Qt/5.12.2/gcc_64/./mkspecs/linux-g++ -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtOpenGL
+  OBJECT_DIR = CMakeFiles/qtopengl.dir
+  OBJECT_FILE_DIR = CMakeFiles/qtopengl.dir
+build CMakeFiles/qtopengl.dir/dialogmaterial.cpp.o: CXX_COMPILER__qtopengl /home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/dialogmaterial.cpp || cmake_object_order_depends_target_qtopengl
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/qtopengl.dir/dialogmaterial.cpp.o.d
+  FLAGS = -g   -fPIC -std=gnu++11
+  INCLUDES = -I. -I/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl -Iqtopengl_autogen/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtCore -isystem /home/zhangxk/Qt/5.12.2/gcc_64/./mkspecs/linux-g++ -isystem /home/zhangxk/Qt/5.12.2/gcc_64/include/QtOpenGL
+  OBJECT_DIR = CMakeFiles/qtopengl.dir
+  OBJECT_FILE_DIR = CMakeFiles/qtopengl.dir
 build CMakeFiles/qtopengl.dir/qtopengl_autogen/mocs_compilation.cpp.o: CXX_COMPILER__qtopengl qtopengl_autogen/mocs_compilation.cpp || cmake_object_order_depends_target_qtopengl
   DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
   DEP_FILE = CMakeFiles/qtopengl.dir/qtopengl_autogen/mocs_compilation.cpp.o.d
@@ -86,9 +121,9 @@ build CMakeFiles/qtopengl.dir/qtopengl_autogen/mocs_compilation.cpp.o: CXX_COMPI
 #############################################
 # Link the executable qtopengl
 
-build qtopengl: CXX_EXECUTABLE_LINKER__qtopengl CMakeFiles/qtopengl.dir/main.cpp.o CMakeFiles/qtopengl.dir/mainwindow.cpp.o CMakeFiles/qtopengl.dir/qtopengl_autogen/mocs_compilation.cpp.o | /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5OpenGL.so.5.12.2 /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/libGLU.so /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Widgets.so.5.12.2 /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Gui.so.5.12.2 /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Core.so.5.12.2 || qtopengl_autogen
+build qtopengl: CXX_EXECUTABLE_LINKER__qtopengl CMakeFiles/qtopengl.dir/main.cpp.o CMakeFiles/qtopengl.dir/mainwindow.cpp.o CMakeFiles/qtopengl.dir/mesh.cpp.o CMakeFiles/qtopengl.dir/draw.cpp.o CMakeFiles/qtopengl.dir/Camera.cpp.o CMakeFiles/qtopengl.dir/material.cpp.o CMakeFiles/qtopengl.dir/dialogmaterial.cpp.o CMakeFiles/qtopengl.dir/qtopengl_autogen/mocs_compilation.cpp.o | /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5OpenGL.so.5.12.2 /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/libGLU.so /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Widgets.so.5.12.2 /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Gui.so.5.12.2 /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Core.so.5.12.2 || qtopengl_autogen
   FLAGS = -g
-  LINK_LIBRARIES = -Wl,-rpath,/home/zhangxk/Qt/5.12.2/gcc_64/lib /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5OpenGL.so.5.12.2 /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/libGLU.so /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Widgets.so.5.12.2 /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Gui.so.5.12.2 /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Core.so.5.12.2
+  LINK_LIBRARIES = -Wl,-rpath,/home/zhangxk/Qt/5.12.2/gcc_64/lib /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5OpenGL.so.5.12.2 /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/libGLU.so -lvecmath /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Widgets.so.5.12.2 /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Gui.so.5.12.2 /home/zhangxk/Qt/5.12.2/gcc_64/lib/libQt5Core.so.5.12.2
   OBJECT_DIR = CMakeFiles/qtopengl.dir
   POST_BUILD = :
   PRE_LINK = :

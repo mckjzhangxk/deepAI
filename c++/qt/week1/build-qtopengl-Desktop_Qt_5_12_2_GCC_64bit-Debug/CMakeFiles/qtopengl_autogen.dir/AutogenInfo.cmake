@@ -10,8 +10,8 @@ set(AM_CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE "")
 set(AM_BUILD_DIR "/home/zhangxk/projects/deepAI/c++/qt/week1/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug/qtopengl_autogen")
 set(AM_INCLUDE_DIR "include")
 # Files
-set(AM_SOURCES "/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/main.cpp;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mainwindow.cpp")
-set(AM_HEADERS "/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mainwindow.h")
+set(AM_SOURCES "/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/Camera.cpp;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/dialogmaterial.cpp;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/draw.cpp;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/main.cpp;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mainwindow.cpp;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/material.cpp;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mesh.cpp")
+set(AM_HEADERS "/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/Camera.h;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/dialogmaterial.h;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/draw.h;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mainwindow.h;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/material.h;/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mesh.h")
 set(AM_SETTINGS_FILE "/home/zhangxk/projects/deepAI/c++/qt/week1/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/qtopengl_autogen.dir/AutogenOldSettings.txt")
 # Qt
 set(AM_QT_VERSION_MAJOR "5")

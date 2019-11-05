@@ -14,8 +14,29 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menusas">
+    <property name="title">
+     <string>sas</string>
+    </property>
+    <addaction name="actionsasa"/>
+   </widget>
+   <addaction name="menusas"/>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionsasa">
+   <property name="text">
+    <string>sasa</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -25,6 +25,17 @@ add_executable(qtopengl
   mainwindow.cpp
   mainwindow.h
   mainwindow.ui
+  mesh.h
+  mesh.cpp
+  draw.h
+  draw.cpp
+  Camera.h
+  Camera.cpp
+  material.h
+  material.cpp
+  dialogmaterial.h
+  dialogmaterial.cpp
+  dialogmaterial.ui
 )
 
 #target_link_libraries(qtopengl PRIVATE Qt5::Widgets)
@@ -34,4 +45,5 @@ add_executable(qtopengl
 
 qt5_use_modules(qtopengl Widgets OpenGL)
 target_link_libraries(qtopengl ${QT_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(qtopengl vecmath)
 

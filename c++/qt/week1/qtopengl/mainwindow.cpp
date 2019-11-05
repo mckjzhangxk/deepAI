@@ -1,63 +1,113 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+//https://qiliang.net/old/nehe_qt/lesson01.html
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow( QWidget* parent, const char* name, bool fs ): QGLWidget( parent ),ui(new Ui::MainWindow)
 {
 
-    setSurfaceType(QWindow::OpenGLSurface);
-    QSurfaceFormat format;
-    format.setProfile(QSurfaceFormat::CompatibilityProfile);
-    format.setVersion(2,1);
-    setFormat(format);
+  fullscreen = fs;
+  setGeometry( 0, 0, 640, 480 );
 
-//    m_context=new QOpenGLContext();
-//    m_context->setFormat(format);
-//    m_context->create();
-//    m_context->makeCurrent(this);
-
-//    m_functions=m_context->functions();
+  if ( fullscreen )
+    showFullScreen();
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
 }
 
-void MainWindow::paintEvent(QPaintEvent *event)
+void MainWindow::setMeshObj(Mesh *v)
+{
+    m_mesh=v;
+}
+
+void MainWindow::reflesh()
 {
     paintGL();
-}
-
-void MainWindow::initializeGL()
-{
-    //很重要，而且要放对位置，不然后面的物体会遮挡前面的物体
-   glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
-   glEnable(GL_LIGHTING);     // Enable lighting calculations
-   glEnable(GL_LIGHT0);       // Turn on light #0.
-}
-
-void MainWindow::resizeGL(int w, int h)
-{
-
+    swapBuffers();
 }
 
 void MainWindow::paintGL()
 {
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  glMatrixMode(GL_MODELVIEW);
 
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   glBegin(GL_TRIANGLES);
-    glVertex2f(0,0);
-    glColor3f(1,0,0);
-    glVertex2f(.5,0);
-    glColor3f(0,1,0);
-    glVertex2f(.5,.3);
-    glColor3f(0,0,1);
-   glEnd();
-   glFlush();
+  glLoadMatrixf(m_camera.getViewMatrix());
+  m_mesh->draw();
 }
 
-void MainWindow::resizeEvent(QResizeEvent *)
+void MainWindow::initializeGL()
+{
+    glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
+    glEnable(GL_LIGHTING);     // Enable lighting calculations
+    glEnable(GL_LIGHT0);       // Turn on light #0.
+}
+
+void MainWindow::resizeGL( int w, int h )
 {
 
+    m_camera.setDimension(w,h);
+    m_camera.perspective_projection(30,(float)w/float(h),1.f,100.f);
+    //(0,0)在左下角
+    glViewport(0,0,w,h);
+
 }
 
+void MainWindow::keyPressEvent( QKeyEvent *e )
+{
+  switch ( e->key() )
+  {
+  case Qt::Key_F2:
+    fullscreen = !fullscreen;
+    if ( fullscreen )
+    {
+      showFullScreen();
+    }
+    else
+    {
+      showNormal();
+      setGeometry( 0, 0, 640, 480 );
+    }
+    update();
+    break;
+  case Qt::Key_Escape:
+    close();
+  }
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button()==Qt::RightButton){
+        m_camera.mouseFunc(GLUT_RIGHT_BUTTON,GLUT_DOWN,event->x(),event->y());
+    }
+    else if(event->button()==Qt::LeftButton){
+        m_camera.mouseFunc(GLUT_LEFT_BUTTON,GLUT_DOWN,event->x(),event->y());
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(event->button()==Qt::RightButton){
+        m_camera.mouseFunc(GLUT_RIGHT_BUTTON,GLUT_UP,event->x(),event->y());
+    }else if(event->button()==Qt::LeftButton){
+        m_camera.mouseFunc(GLUT_LEFT_BUTTON,GLUT_UP,event->x(),event->y());
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    m_camera.motionFunc(event->x(),event->y());
+    reflesh();
+}
+
+void MainWindow::wheelEvent(QWheelEvent *event)
+{
+    if(event->angleDelta().y()>0){
+        m_camera.mouseFunc(3,0,event->x(),event->y());
+    }else{
+        m_camera.mouseFunc(4,0,event->x(),event->y());
+    }
+
+    reflesh();
+
+}
