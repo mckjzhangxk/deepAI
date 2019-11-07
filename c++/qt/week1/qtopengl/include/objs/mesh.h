@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 #include <vector>
 #include <vecmath/Vector3f.h>
 #include "draw.h"
@@ -17,16 +18,19 @@ struct Trangle{
 };
 class Mesh{
 public:
+    Mesh(){}
     Mesh(const char * filename);
-    void draw();
-    void setWired(bool );
+    void loadMesh(const char * filename);
+    void draw(bool wired=false);
+
     void set_material(Material* v);
 private:
+    void clear();
+    //m_vertexes.size==m_norms.size
     vector<Vector3f> m_vertexes;
     vector<Vector3f> m_norms;
     vector<Trangle> m_faces;
-    vector<Trangle> m_faces_normals;
-    bool wired;
+
     Material* m_material;
 };
 #endif

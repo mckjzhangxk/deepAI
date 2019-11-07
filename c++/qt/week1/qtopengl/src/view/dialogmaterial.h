@@ -2,10 +2,12 @@
 #define DIALOGMATERIAL_H
 
 #include <QDialog>
+#include <QFileDialog>
 #include <Vector4f.h>
 #include "mainwindow.h"
 #include "mesh.h"
-
+#include "light.h"
+#include <QDebug>
 namespace Ui {
 class DialogMaterial;
 }
@@ -37,11 +39,25 @@ private slots:
 
     void on_shiness_valueChanged(int value);
 
-private:
-    Ui::DialogMaterial *ui;
-    Material m_material;
-    Mesh* m_mesh;
+    void on_light_r_valueChanged(int value);
 
+    void on_light_g_valueChanged(int value);
+
+    void on_light_b_valueChanged(int value);
+
+    void on_light_pos_x_valueChanged(double arg1);
+
+    void on_light_pos_y_valueChanged(double arg1);
+
+    void on_light_pos_z_valueChanged(double arg1);
+
+    void on_toolButton_clicked();
+
+private:
+    Ui::DialogMaterial *ui;    
+    Mesh* m_mesh;
+    Material m_material;
+    Light m_light;
     MainWindow m_window;
 };
 

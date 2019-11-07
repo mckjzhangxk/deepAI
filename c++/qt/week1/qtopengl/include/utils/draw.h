@@ -11,4 +11,5 @@ using namespace std;
 pts must have 3 elements,so does norms
 */
 void drawTriangle(const vector<Vector3f > pts,const vector<Vector3f > norms);
+void drawLines(const vector<Vector3f> pts,const vector<Vector3f > norms,GLfloat linewidth);
 void drawLines(const vector<Vector3f> pts,GLfloat linewidth);

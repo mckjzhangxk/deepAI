@@ -51,6 +51,9 @@
 					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
 					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl"/>
 					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug/qtopengl_autogen/include"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/include/objs"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/include/utils"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/include/view"/>
 					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include"/>
 					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets"/>
 					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui"/>
@@ -87,6 +90,9 @@
 					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug"/>
 					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl"/>
 					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug/qtopengl_autogen/include"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/include/objs"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/include/utils"/>
+					<Add directory="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/include/view"/>
 					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include"/>
 					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include/QtWidgets"/>
 					<Add directory="/home/zhangxk/Qt/5.12.2/gcc_64/include/QtGui"/>
@@ -123,49 +129,40 @@
 		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug/qtopengl_autogen/mocs_compilation.cpp">
 			<Option target="qtopengl"/>
 		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/Camera.cpp">
-			<Option target="qtopengl"/>
-		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/Camera.h">
-			<Option target="qtopengl"/>
-		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/dialogmaterial.cpp">
-			<Option target="qtopengl"/>
-		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/dialogmaterial.h">
-			<Option target="qtopengl"/>
-		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/dialogmaterial.ui">
-			<Option target="qtopengl"/>
-		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/draw.cpp">
-			<Option target="qtopengl"/>
-		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/draw.h">
-			<Option target="qtopengl"/>
-		</Unit>
 		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/main.cpp">
 			<Option target="qtopengl"/>
 		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mainwindow.cpp">
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/objs/Camera.cpp">
 			<Option target="qtopengl"/>
 		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mainwindow.h">
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/objs/light.cpp">
 			<Option target="qtopengl"/>
 		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mainwindow.ui">
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/objs/material.cpp">
 			<Option target="qtopengl"/>
 		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/material.cpp">
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/objs/mesh.cpp">
 			<Option target="qtopengl"/>
 		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/material.h">
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/utils/draw.cpp">
 			<Option target="qtopengl"/>
 		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mesh.cpp">
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/view/dialogmaterial.cpp">
 			<Option target="qtopengl"/>
 		</Unit>
-		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/mesh.h">
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/view/dialogmaterial.h">
+			<Option target="qtopengl"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/view/dialogmaterial.ui">
+			<Option target="qtopengl"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/view/mainwindow.cpp">
+			<Option target="qtopengl"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/view/mainwindow.h">
+			<Option target="qtopengl"/>
+		</Unit>
+		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/src/view/mainwindow.ui">
 			<Option target="qtopengl"/>
 		</Unit>
 		<Unit filename="/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/CMakeLists.txt">

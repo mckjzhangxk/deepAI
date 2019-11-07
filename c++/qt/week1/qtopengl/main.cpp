@@ -1,4 +1,4 @@
-#include "dialogmaterial.h"
+#include "src/view/dialogmaterial.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

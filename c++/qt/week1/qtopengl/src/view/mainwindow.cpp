@@ -2,7 +2,7 @@
 #include "./ui_mainwindow.h"
 //https://qiliang.net/old/nehe_qt/lesson01.html
 
-MainWindow::MainWindow( QWidget* parent, const char* name, bool fs ): QGLWidget( parent ),ui(new Ui::MainWindow)
+MainWindow::MainWindow( QWidget* parent, const char* name, bool fs ): QGLWidget( parent ),m_showwire(false)
 {
 
   fullscreen = fs;
@@ -21,6 +21,11 @@ void MainWindow::setMeshObj(Mesh *v)
     m_mesh=v;
 }
 
+void MainWindow::setLight(Light *light)
+{
+    m_light=light;
+}
+
 void MainWindow::reflesh()
 {
     paintGL();
@@ -33,7 +38,8 @@ void MainWindow::paintGL()
   glMatrixMode(GL_MODELVIEW);
 
   glLoadMatrixf(m_camera.getViewMatrix());
-  m_mesh->draw();
+  m_light->setup();
+  m_mesh->draw(m_showwire);
 }
 
 void MainWindow::initializeGL()
@@ -57,6 +63,7 @@ void MainWindow::keyPressEvent( QKeyEvent *e )
 {
   switch ( e->key() )
   {
+
   case Qt::Key_F2:
     fullscreen = !fullscreen;
     if ( fullscreen )
@@ -72,7 +79,13 @@ void MainWindow::keyPressEvent( QKeyEvent *e )
     break;
   case Qt::Key_Escape:
     close();
+      break;
+   case Qt::Key_W:
+      m_showwire=!m_showwire;
+      reflesh();
+      break;
   }
+
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)

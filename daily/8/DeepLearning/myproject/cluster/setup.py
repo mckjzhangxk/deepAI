@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
      name='myai',
-     version='1.4',
+     version='1.5',
      scripts=['myai'] ,
      author="zhangxk",
      author_email="mckj_zhangxk@163@com",

@@ -1,16 +1,37 @@
 #include "mesh.h"
 
-Mesh::Mesh(const char * filename):wired(false){
+Mesh::Mesh(const char * filename){
+    loadMesh(filename);
+}
+
+
+void Mesh::set_material(Material* v)
+{
+    m_material=v;
+}
+
+void Mesh::clear()
+{
+    m_faces.clear();
+    m_vertexes.clear();
+    m_norms.clear();
+}
+
+void Mesh::loadMesh(const char *filename)
+{
+    clear();
     fstream fin(filename);
     if(!fin){
         cout<<filename<<" not exist!"<<endl;
         exit(0);
     }
-    int MAX_SIZE=1024;
-    char buf[MAX_SIZE];
-    while (fin.getline(buf,MAX_SIZE))
+
+    char bslash='/',space=' ';
+    while (!fin.eof())
     {
-        stringstream ss(buf);
+        string line;
+        getline(fin,line);
+        stringstream ss(line);
         string type;
         ss>>type;
         if(type=="v"){
@@ -19,10 +40,17 @@ Mesh::Mesh(const char * filename):wired(false){
             m_vertexes.push_back(Vector3f(v1,v2,v3));
             m_norms.push_back(Vector3f(0));
         }else if(type=="f"){
-            int a,b,c,d,e,f,g,h,i;
-            ss>>a;ss>>b;ss>>c;ss>>d;ss>>e;ss>>f;ss>>g;ss>>h;ss>>i;
-            m_faces.push_back({a-1,d-1,g-1});
-            m_faces_normals.push_back({c-1,f-1,i-1});
+            if(line.find(bslash)!=string::npos){
+                replace(line.begin(),line.end(),bslash,space);
+                ss=stringstream(line);ss>>type;
+                int a,b,c,d,e,f,g,h,i;
+                ss>>a;ss>>b;ss>>c;ss>>d;ss>>e;ss>>f;ss>>g;ss>>h;ss>>i;
+                m_faces.push_back({a-1,d-1,g-1});
+            }else{
+                 int a,b,c;
+                 ss>>a;ss>>b;ss>>c;
+                 m_faces.push_back({a-1,b-1,c-1});
+            }
         }
     }
 
@@ -31,7 +59,7 @@ Mesh::Mesh(const char * filename):wired(false){
         Vector3f v2=m_vertexes[tris.b];
         Vector3f v3=m_vertexes[tris.c];
 
-        Vector3f norm=Vector3f::cross(v2-v1,v3-v1);
+        Vector3f norm=Vector3f::cross(v2-v1,v3-v1).normalized();
         m_norms[tris.a]+=norm;
         m_norms[tris.b]+=norm;
         m_norms[tris.c]+=norm;
@@ -46,22 +74,13 @@ Mesh::Mesh(const char * filename):wired(false){
     cout<<"total face #"<<m_faces.size()<<endl;
 }
 
-void Mesh::setWired(bool bl){
-    wired=bl;
-}
 
-void Mesh::set_material(Material* v)
-{
-    m_material=v;
-}
-
-
-void Mesh::draw(){
+void Mesh::draw(bool wired){
         glPushMatrix();
         m_material->loadMaterial();
-        for(int i=0;i<m_faces.size();i++){
+        for(auto i=0;i<m_faces.size();i++){
             Trangle faces=m_faces[i];
-            Trangle norms=m_faces_normals[i];
+
 
             Vector3f v1=m_vertexes[faces.a];
             Vector3f v2=m_vertexes[faces.b];
@@ -71,7 +90,7 @@ void Mesh::draw(){
             Vector3f n3=m_norms[faces.c];
 
             if(wired){
-                drawLines({v1,v2,v3},1.f);
+                drawLines({v1,v2,v3},{n1,n2,n3},1.f);
             }else
             {
                 drawTriangle({v1,v2,v3},{n1,n2,n3});

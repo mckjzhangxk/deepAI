@@ -7,13 +7,16 @@ DialogMaterial::DialogMaterial(QWidget *parent):
     m_window(nullptr,0,false)
 {
     ui->setupUi(this);
-    m_mesh=new Mesh("/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/data/garg.obj");
+    m_mesh=new Mesh("/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/data/Model3.obj");
     m_material=Material();
     m_mesh->set_material(&m_material);
-    m_window.setMeshObj(m_mesh);
 
+
+    m_window.setMeshObj(m_mesh);
+    m_window.setLight(&m_light);
 
     m_window.show();
+    updateView();
 }
 
 DialogMaterial::~DialogMaterial()
@@ -53,6 +56,18 @@ void DialogMaterial::updateView()
     m_material.setSpecular({r,g,b,1.f});
 
     m_material.setShiness(ui->shiness->value());
+
+
+    r=(float( ui->light_r->value()))/100.;
+    g=(float( ui->light_g->value()))/100.;
+    b=(float( ui->light_b->value()))/100.;
+    m_light.setColor({r,g,b,1.f});
+
+    float x=ui->light_pos_x->value();
+    float y=ui->light_pos_y->value();
+    float z=ui->light_pos_z->value();
+    m_light.setPosition({x,y,z,1.f});
+
     m_window.reflesh();
 }
 
@@ -75,4 +90,46 @@ void DialogMaterial::on_specular_b_valueChanged(int value)
 void DialogMaterial::on_shiness_valueChanged(int value)
 {
      updateView();
+}
+
+void DialogMaterial::on_light_r_valueChanged(int value)
+{
+    updateView();
+}
+
+void DialogMaterial::on_light_g_valueChanged(int value)
+{
+    updateView();
+}
+
+void DialogMaterial::on_light_b_valueChanged(int value)
+{
+    updateView();
+}
+
+void DialogMaterial::on_light_pos_x_valueChanged(double arg1)
+{
+    updateView();
+}
+
+void DialogMaterial::on_light_pos_y_valueChanged(double arg1)
+{
+        updateView();
+}
+
+void DialogMaterial::on_light_pos_z_valueChanged(double arg1)
+{
+        updateView();
+}
+
+void DialogMaterial::on_toolButton_clicked()
+{
+    QFileDialog d;
+    QString filename=d.getOpenFileName();
+    if(filename!=""){
+        char * fc=filename.toLatin1().data();
+        qDebug()<<fc;
+        m_mesh->loadMesh(fc);
+        updateView();
+    }
 }

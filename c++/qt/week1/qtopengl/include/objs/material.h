@@ -10,6 +10,9 @@ public:
     void setAmbient(Vector4f ambient);
     void setSpecular(Vector4f specular);
     void setShiness(float shine);
+    /*
+     * setup material to opengl
+    */
     void loadMaterial();
 private:
     Vector4f m_diffuse;
