@@ -11,8 +11,13 @@ class Transform: public Object3D
 public: 
   Transform(){}
  Transform( const Matrix4f& m, Object3D* obj ):o(obj){
+    Matrix4f xx=m;
+    xx.print();
+  
     m_2local=m.inverse();
     m_2localT=m_2local.transposed();
+    m_2local.print();
+    m_2localT.print();
   }
   ~Transform(){
   }
@@ -29,8 +34,8 @@ public:
 
     bool flag=o->intersect( rnew , h , tmin);
     if(flag){
-      Vector4f norm(h.getNormal(),1);
-      Vector3f newNorm=(m_2localT*norm).normalized().xyz();
+      Vector4f norm(h.getNormal(),0);
+      Vector3f newNorm=(m_2localT*norm).xyz().normalized();
       h.set(h.getT(),h.getMaterial(),newNorm);
     }
     return flag;

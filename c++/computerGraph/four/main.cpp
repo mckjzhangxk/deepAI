@@ -95,8 +95,12 @@ int main( int argc, char* argv[] )
   float wstep=2./width;
   float hstep=2./height;
   Vector3f defaultColor=scence.getBackgroundColor();
+  //r=91,c=59
   for(int r=0;r<height;r++)
     for(int c=0;c<width;c++){
+      if(r==91 && c==59){
+        Vector3f(3);
+      }
       float x=-1+c*wstep;
       float y=-1+r*hstep;
 
@@ -117,6 +121,7 @@ int main( int argc, char* argv[] )
           depth_img.SetPixel(c,r,color_depth);     
         }
         Vector3f pixel=get_pixel_color(ray,hit,scence);
+        
         img.SetPixel(c,r,pixel);
       }else{
         img.SetPixel(c,r,defaultColor);

@@ -16,10 +16,6 @@ float.h
 cmath
 -
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Group.cpp
-Group.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Group.h
-
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Group.h
 Object3D.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Object3D.h
@@ -66,22 +62,6 @@ texture.hpp
 math.h
 -
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Mesh.cpp
-Mesh.hpp
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Mesh.hpp
-fstream
--
-iostream
--
-algorithm
--
-cstdlib
--
-utility
--
-sstream
--
-
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Mesh.hpp
 vector
 -
@@ -102,10 +82,6 @@ Hit.h
 Material.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Material.h
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Plane.cpp
-Plane.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Plane.h
-
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Plane.h
 Object3D.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Object3D.h
@@ -121,36 +97,6 @@ iostream
 -
 Vector3f.h
 -
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/SceneParser.cpp
-cstdio
--
-cstring
--
-cstdlib
--
-cmath
--
-SceneParser.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/SceneParser.h
-Camera.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Camera.h
-Light.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Light.h
-Material.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Material.h
-Object3D.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Object3D.h
-Group.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Group.h
-Sphere.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Sphere.h
-Plane.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Plane.h
-Triangle.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Triangle.h
-Transform.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Transform.h
 
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/SceneParser.h
 cassert
@@ -179,12 +125,6 @@ Triangle.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Triangle.h
 Transform.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Transform.h
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Sphere.cpp
-Sphere.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/four/Sphere.h
-math.h
--
 
 /home/zhangxk/projects/deepAI/c++/computerGraph/four/Sphere.h
 Object3D.h
