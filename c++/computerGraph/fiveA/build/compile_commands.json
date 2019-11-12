@@ -1,0 +1,77 @@
+[
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/Camera.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Camera.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Camera.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/CubeMap.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/CubeMap.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/CubeMap.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/Group.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Group.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Group.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/Image.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Image.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Image.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/Material.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Material.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Material.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/Mesh.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Mesh.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Mesh.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/Noise.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Noise.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Noise.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/PerlinNoise.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/PerlinNoise.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/PerlinNoise.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/Plane.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Plane.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Plane.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/RayTracer.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/RayTracer.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/RayTracer.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/SceneParser.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/SceneParser.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/SceneParser.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/Sphere.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Sphere.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Sphere.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/main.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/main.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/main.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/octree.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/octree.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/octree.cpp"
+},
+{
+  "directory": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build",
+  "command": "/usr/bin/g++-5     -std=c++11 -g   -o CMakeFiles/a5.dir/texture.cpp.o -c /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/texture.cpp",
+  "file": "/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/texture.cpp"
+}
+]

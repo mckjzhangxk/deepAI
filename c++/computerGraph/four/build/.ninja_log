@@ -1,0 +1,11 @@
+# ninja log v5
+0	693	0	CMakeFiles/a4.dir/Camera.cpp.o	a5df13ec70bd7692
+0	802	0	CMakeFiles/a4.dir/Plane.cpp.o	e6a7825834384720
+0	929	0	CMakeFiles/a4.dir/Image.cpp.o	b0cf6d7e3446722a
+0	952	0	CMakeFiles/a4.dir/Group.cpp.o	6c134af1f52674ee
+1	1450	0	CMakeFiles/a4.dir/SceneParser.cpp.o	c2bbf4b5143d5562
+694	1474	0	CMakeFiles/a4.dir/Sphere.cpp.o	6175ecc8e3628949
+929	1739	0	CMakeFiles/a4.dir/texture.cpp.o	13cee9f0e6fde5e8
+802	1832	0	CMakeFiles/a4.dir/main.cpp.o	92bb01055c8e36c5
+0	2069	0	CMakeFiles/a4.dir/Mesh.cpp.o	dd1aea159fe1e0de
+2069	2183	0	a4	1bae7c323210e61

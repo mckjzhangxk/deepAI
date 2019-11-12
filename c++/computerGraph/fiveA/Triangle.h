@@ -35,10 +35,12 @@ public:
 		Vector3f f=eyepoint-m_a;
 		
 		bool sigular;
-		Matrix3f minv=m.inverse(&sigular,1e-4);
+		Matrix3f minv=m.inverse(&sigular,1e-8);
+
 		if(!sigular){
 			Vector3f result=minv*f;
 			float r2=result[0],r3=result[1],t=result[2];
+
 			if(r2>=0&&r3>=0&&((r2+r3)<=1)&&t>tmin&&t<hit.getT()){
 					hit.set(t,m_material,interpNorm(1-r2-r3,r2,r3));
 					if(hasTex){

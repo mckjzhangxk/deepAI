@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Camera.cpp
-Camera.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Camera.h
-
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Camera.h
 Ray.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Ray.h
@@ -20,21 +16,11 @@ float.h
 cmath
 -
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/CubeMap.cpp
-CubeMap.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/CubeMap.h
-string
--
-
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/CubeMap.h
 texture.hpp
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/texture.hpp
 Vector3f.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Vector3f.h
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Group.cpp
-Group.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Group.h
 
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Group.h
 Object3D.h
@@ -56,31 +42,11 @@ Ray.h
 float.h
 -
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Image.cpp
-cstdlib
--
-cstdio
--
-cstring
--
-Image.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Image.h
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Image.h
-cassert
--
-vecmath.h
--
-
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Light.h
 Vector3f.h
 -
 Object3D.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Object3D.h
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Material.cpp
-Material.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Material.h
 
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Material.h
 cassert
@@ -95,22 +61,6 @@ texture.hpp
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/texture.hpp
 Noise.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Noise.h
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Mesh.cpp
-Mesh.hpp
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Mesh.hpp
-fstream
--
-iostream
--
-algorithm
--
-cstdlib
--
-utility
--
-sstream
--
 
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Mesh.hpp
 vector
@@ -126,12 +76,6 @@ Vector2f.h
 Vector3f.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Vector3f.h
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Noise.cpp
-Noise.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Noise.h
-PerlinNoise.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/PerlinNoise.h
-
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Noise.h
 vecmath.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/vecmath.h
@@ -143,22 +87,6 @@ Hit.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Hit.h
 Material.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Material.h
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/PerlinNoise.cpp
-PerlinNoise.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/PerlinNoise.h
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/PerlinNoise.h
-cmath
--
-cstdio
--
-Vector3f.h
--
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Plane.cpp
-Plane.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Plane.h
 
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Plane.h
 Object3D.h
@@ -204,36 +132,6 @@ Ray.h
 Hit.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Hit.h
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/SceneParser.cpp
-cstdio
--
-cstring
--
-cstdlib
--
-cmath
--
-SceneParser.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/SceneParser.h
-Camera.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Camera.h
-Light.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Light.h
-Material.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Material.h
-Object3D.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Object3D.h
-Group.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Group.h
-Sphere.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Sphere.h
-Plane.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Plane.h
-Triangle.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Triangle.h
-Transform.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Transform.h
-
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/SceneParser.h
 cassert
 -
@@ -263,12 +161,6 @@ Triangle.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Triangle.h
 Transform.h
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Transform.h
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Sphere.cpp
-Sphere.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Sphere.h
-math.h
--
 
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Sphere.h
 Object3D.h
@@ -312,53 +204,7 @@ cmath
 cstdlib
 -
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/main.cpp
-cassert
--
-cstdio
--
-cstdlib
--
-cstring
--
-cmath
--
-iostream
--
-SceneParser.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/SceneParser.h
-Image.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Image.h
-Camera.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Camera.h
-string.h
--
-RayTracer.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/RayTracer.h
-bitmap_image.hpp
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/bitmap_image.hpp
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/octree.cpp
-Ray.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Ray.h
-Hit.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Hit.h
-Vector3f.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Vector3f.h
-Mesh.hpp
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/Mesh.hpp
-octree.hpp
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/octree.hpp
-vector
--
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/octree.hpp
-
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/texture.cpp
-texture.hpp
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/texture.hpp
-bitmap_image.hpp
-/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/bitmap_image.hpp
 
 /home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/texture.hpp
 bitmap_image.hpp

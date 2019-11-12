@@ -35,7 +35,7 @@ public:
 		Vector3f f=eyepoint-m_a;
 		
 		bool sigular;
-		Matrix3f minv=m.inverse(&sigular,1e-4);
+        Matrix3f minv=m.inverse(&sigular,1e-6);
 		if(!sigular){
 			Vector3f result=minv*f;
 			float r2=result[0],r3=result[1],t=result[2];

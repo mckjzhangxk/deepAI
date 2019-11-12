@@ -12,63 +12,71 @@ void intersectCall(int idx, void ** arg)
 {
 	Mesh * m = (Mesh*)(arg[0]);
 	bool result = m->intersectTrig(idx);
+    if(idx==131){
+        m=m;
+        int a=1;
+        a+=1;
+
+
+    }
 	arg[1] = (void*)(((bool)arg[1])|result);
 }
 bool Mesh::intersect( const Ray& r , Hit& h , float tmin )
 {
-/*	bool result = false;
-	for( unsigned int i = 0 ; i < t.size() ; i++){
-		Triangle triangle(v[t[i][0]],
-			v[t[i][1]],v[t[i][2]],material);
-		for(int jj=0;jj<3;jj++){
-			triangle.normals[jj] = n[t[i][jj]];
+//    bool result = false;
+//    for( unsigned int i = 0 ; i < t.size() ; i++){
+//        Triangle triangle(v[t[i][0]],
+//            v[t[i][1]],v[t[i][2]],material);
+//        for(int jj=0;jj<3;jj++){
+//            triangle.normals[jj] = n[t[i][jj]];
 
-		}
-		if(texCoord.size()>0){
-			for(int jj=0;jj<3;jj++){
-				triangle.texCoords[jj] = texCoord[t[i].texID[jj]];
-			}
-			triangle.hasTex=true;
-		}
-		result |= triangle.intersect( r , h , tmin);
-	}
-	return result;
-	*/
-	ray = &r;
-	hit = &h;
-	tm = tmin;
-	void * arg[2];
-	arg[0] = this;
-	arg[1] = 0;
-	octree.arg = arg;
-	octree.termFunc = intersectCall;
-	octree.intersect(r);
-	return arg[1];
+//        }
+//        if(texCoord.size()>0){
+//            for(int jj=0;jj<3;jj++){
+//                triangle.texCoords[jj] = texCoord[t[i].texID[jj]];
+//            }
+//            triangle.hasTex=true;
+//        }
+//        bool flag=triangle.intersect( r , h , tmin);
+//        if(flag){
+//            cout<<i<<":"<<t[i][0]<<","<<t[i][1]<<","<<t[i][2]<<endl;
+//        }
+//        result |= flag;
+//    }
+//    return result;
+
+    ray = &r;
+    hit = &h;
+    tm = tmin;
+    void * arg[2];
+    arg[0] = this;
+    arg[1] = 0;
+    octree.arg = arg;
+    octree.termFunc = intersectCall;
+    octree.intersect(r);
+    return arg[1];
 }
 bool Mesh ::intersectTrig(int idx){
 	bool result = false;
-	Triangle triangle(v[t[idx][0]],
-		v[t[idx][1]],v[t[idx][2]],material);
+    Triangle triangle(v[t[idx][0]],v[t[idx][1]],v[t[idx][2]],material);
 	
-  //some shitty hack
-//change at will
-if(SMOOTH){
-
-    for(int jj=0;jj<3;jj++){
-		  triangle.normals[jj] = n[t[idx][jj]];
-	  }
-	}else{
-    
-    for(int jj=0;jj<3;jj++){
-		  triangle.normals[jj] = n[idx];
-	  }
-}
-  if(texCoord.size()>0){
-		for(int jj=0;jj<3;jj++){
-			triangle.texCoords[jj] = texCoord[t[idx].texID[jj]];
-		}
-		triangle.hasTex=true;
-	}
+    //some shitty hack
+    //change at will
+    if(SMOOTH){
+        for(int jj=0;jj<3;jj++){
+              triangle.normals[jj] = n[t[idx][jj]];
+          }
+    }else{
+        for(int jj=0;jj<3;jj++){
+           triangle.normals[jj] = n[idx];
+        }
+    }
+      if(texCoord.size()>0){
+            for(int jj=0;jj<3;jj++){
+                triangle.texCoords[jj] = texCoord[t[idx].texID[jj]];
+            }
+            triangle.hasTex=true;
+        }
 	result = triangle.intersect( *ray , *hit , tm);
 	return result;
 }

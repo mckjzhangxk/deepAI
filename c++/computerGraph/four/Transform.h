@@ -16,8 +16,6 @@ public:
   
     m_2local=m.inverse();
     m_2localT=m_2local.transposed();
-    m_2local.print();
-    m_2localT.print();
   }
   ~Transform(){
   }

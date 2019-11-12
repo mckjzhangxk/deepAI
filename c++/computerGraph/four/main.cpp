@@ -32,6 +32,7 @@ Vector3f get_pixel_color(const Ray & ray,const Hit & hit,const SceneParser & sen
   return ambient_color+diffuse_color;
 }
 #include "bitmap_image.hpp"
+
 int main( int argc, char* argv[] )
 {
   // Fill in your implementation here.
@@ -42,9 +43,9 @@ int main( int argc, char* argv[] )
   // name of the executable (in our case, "a4").
   
   
-  // char *p[14]={"./a4","-input","data/scene02_cube.txt","-size","200","200","-output","2.bmp","-normals","norm.bmp","-depth","8","12","depth.bmp"};
-  // argv=p;
-  // argc=14;
+  char *p[14]={"./a4","-input","scene06_bunny_1k.txt","-size","200","200","-output","6.bmp","-normals","norm.bmp","-depth","8","12","depth.bmp"};
+  argv=p;
+  argc=14;
 
   char *infile;
   char *outfile;
@@ -96,11 +97,8 @@ int main( int argc, char* argv[] )
   float hstep=2./height;
   Vector3f defaultColor=scence.getBackgroundColor();
   //r=91,c=59
-  for(int r=0;r<height;r++)
-    for(int c=0;c<width;c++){
-      if(r==91 && c==59){
-        Vector3f(3);
-      }
+   for(int r=0;r<height;r++)
+     for(int c=0;c<width;c++){
       float x=-1+c*wstep;
       float y=-1+r*hstep;
 
