@@ -38,9 +38,9 @@ bool Mesh::intersect( const Ray& r , Hit& h , float tmin )
 //            triangle.hasTex=true;
 //        }
 //        bool flag=triangle.intersect( r , h , tmin);
-//        if(flag){
-//            cout<<i<<":"<<t[i][0]<<","<<t[i][1]<<","<<t[i][2]<<endl;
-//        }
+////        if(flag){
+////            cout<<i<<":"<<t[i][0]<<","<<t[i][1]<<","<<t[i][2]<<endl;
+////        }
 //        result |= flag;
 //    }
 //    return result;

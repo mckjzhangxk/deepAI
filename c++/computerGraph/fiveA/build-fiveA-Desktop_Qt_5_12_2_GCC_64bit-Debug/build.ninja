@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: three
+# Project: five
 # Configuration: Debug
 # =============================================================================
 
@@ -127,6 +127,11 @@ build CMakeFiles/a5.dir/octree.cpp.o: CXX_COMPILER__a5 ../octree.cpp || cmake_ob
   FLAGS = -std=c++11 -g
   OBJECT_DIR = CMakeFiles/a5.dir
   OBJECT_FILE_DIR = CMakeFiles/a5.dir
+build CMakeFiles/a5.dir/render.cpp.o: CXX_COMPILER__a5 ../render.cpp || cmake_object_order_depends_target_a5
+  DEP_FILE = CMakeFiles/a5.dir/render.cpp.o.d
+  FLAGS = -std=c++11 -g
+  OBJECT_DIR = CMakeFiles/a5.dir
+  OBJECT_FILE_DIR = CMakeFiles/a5.dir
 build CMakeFiles/a5.dir/texture.cpp.o: CXX_COMPILER__a5 ../texture.cpp || cmake_object_order_depends_target_a5
   DEP_FILE = CMakeFiles/a5.dir/texture.cpp.o.d
   FLAGS = -std=c++11 -g
@@ -140,7 +145,7 @@ build CMakeFiles/a5.dir/texture.cpp.o: CXX_COMPILER__a5 ../texture.cpp || cmake_
 #############################################
 # Link the executable a5
 
-build a5: CXX_EXECUTABLE_LINKER__a5 CMakeFiles/a5.dir/Camera.cpp.o CMakeFiles/a5.dir/CubeMap.cpp.o CMakeFiles/a5.dir/Group.cpp.o CMakeFiles/a5.dir/Image.cpp.o CMakeFiles/a5.dir/Material.cpp.o CMakeFiles/a5.dir/Mesh.cpp.o CMakeFiles/a5.dir/Noise.cpp.o CMakeFiles/a5.dir/PerlinNoise.cpp.o CMakeFiles/a5.dir/Plane.cpp.o CMakeFiles/a5.dir/RayTracer.cpp.o CMakeFiles/a5.dir/SceneParser.cpp.o CMakeFiles/a5.dir/Sphere.cpp.o CMakeFiles/a5.dir/main.cpp.o CMakeFiles/a5.dir/octree.cpp.o CMakeFiles/a5.dir/texture.cpp.o
+build a5: CXX_EXECUTABLE_LINKER__a5 CMakeFiles/a5.dir/Camera.cpp.o CMakeFiles/a5.dir/CubeMap.cpp.o CMakeFiles/a5.dir/Group.cpp.o CMakeFiles/a5.dir/Image.cpp.o CMakeFiles/a5.dir/Material.cpp.o CMakeFiles/a5.dir/Mesh.cpp.o CMakeFiles/a5.dir/Noise.cpp.o CMakeFiles/a5.dir/PerlinNoise.cpp.o CMakeFiles/a5.dir/Plane.cpp.o CMakeFiles/a5.dir/RayTracer.cpp.o CMakeFiles/a5.dir/SceneParser.cpp.o CMakeFiles/a5.dir/Sphere.cpp.o CMakeFiles/a5.dir/main.cpp.o CMakeFiles/a5.dir/octree.cpp.o CMakeFiles/a5.dir/render.cpp.o CMakeFiles/a5.dir/texture.cpp.o
   FLAGS = -std=c++11 -g
   LINK_LIBRARIES = -lglut -lGL -lGLU -lvecmath
   OBJECT_DIR = CMakeFiles/a5.dir

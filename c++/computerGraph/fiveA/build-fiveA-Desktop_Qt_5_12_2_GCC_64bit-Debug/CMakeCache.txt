@@ -143,7 +143,7 @@ CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 CMAKE_PREFIX_PATH:STRING=/home/zhangxk/Qt/5.12.2/gcc_64
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=three
+CMAKE_PROJECT_NAME:STATIC=five
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -212,6 +212,12 @@ ProcessorCount_cmd_sysctl:FILEPATH=/sbin/sysctl
 
 //No help, variable specified on the command line.
 QT_QMAKE_EXECUTABLE:STRING=/home/zhangxk/Qt/5.12.2/gcc_64/bin/qmake
+
+//Value Computed by CMake
+five_BINARY_DIR:STATIC=/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build-fiveA-Desktop_Qt_5_12_2_GCC_64bit-Debug
+
+//Value Computed by CMake
+five_SOURCE_DIR:STATIC=/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA
 
 //Value Computed by CMake
 three_BINARY_DIR:STATIC=/home/zhangxk/projects/deepAI/c++/computerGraph/fiveA/build-fiveA-Desktop_Qt_5_12_2_GCC_64bit-Debug

@@ -20,15 +20,24 @@ Vector3f Material::Shade( const Ray& ray, const Hit& hit,
 			Vector3f texColor = t(texCoord[0],texCoord[1]);
 			kd = texColor;
 		}else{
-      kd = this->diffuseColor;
-    }
+            kd = this->diffuseColor;
+        }
 		Vector3f n = hit.getNormal().normalized();
 		//Diffuse Shading
 		if(noise.valid()){
 			kd = noise.getColor(ray.getOrigin()+ray.getDirection()*hit.getT());
 		}
 		Vector3f color = clampedDot( dirToLight ,n )*pointwiseDot( lightColor , kd);
-		return color;
+
+        //specular color
+        Vector3f ray_dir=ray.getDirection().normalized();
+        Vector3f R=-dirToLight+2*n*Vector3f::dot(n,dirToLight);
+        R.normalize();
+        float rate=pow(max(0.f,Vector3f::dot(R,-ray_dir)),shininess);
+
+        Vector3f color1=specularColor*rate;
+
+        return color;
 }
 
 Vector3f Material::pointwiseDot( const Vector3f& v1 , const Vector3f& v2 ) {

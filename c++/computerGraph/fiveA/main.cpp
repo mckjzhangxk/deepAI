@@ -11,6 +11,8 @@
 #include <string.h>
 #include "RayTracer.h"
 #include "bitmap_image.hpp"
+#include "render.h";
+
 using namespace std;
 
 struct Parse_Result
@@ -55,7 +57,7 @@ int main( int argc, char* argv[] )
   // name of the executable (in our case, "a4").
   
   
-   char *p[]={"./a5","-input","scene06_bunny_1k.txt","-size","200","200","-output","6.bmp","-bounces","0"};
+   char *p[]={"./a5","-input","scene10_sphere.txt","-size","300","300","-output","6.bmp","-bounces","2"};
    argv=p;
    argc=10;
   Parse_Result args=parse_input(argc,argv);
@@ -69,36 +71,23 @@ int main( int argc, char* argv[] )
   // pixel in your output image.
   SceneParser scence(args.infile.c_str());
   RayTracer rayTracer(&scence,args.maxBounce);
+  rayTracer.setShadows(true);
+  rayTracer.setReflection(true);
+  rayTracer.setRefraction(false);
   Camera* camera=scence.getCamera();
 
-  Image img(args.width,args.height);
 
- 
-  float wstep=2./args.width;
-  float hstep=2./args.height;
-//  for(int r=0;r<args.height;r++)
-//    for(int c=0;c<args.width;c++){
-    for(int r=56;r<57;r++)
-        for(int c=100;c<101;c++){
-      float x=-1+c*wstep;
-      float y=-1+r*hstep;
+  Render render(args.width,args.height,false,false,3,0.5);
+  render.setJitter(true);
+  render.setFilter(true);
 
-      Ray ray=camera->generateRay(Vector2f(x,y));
-      
-      Hit hit;
-      Vector3f pixel=rayTracer.traceRay(ray,0,-1,0,hit);
-      img.SetPixel(c,r,pixel);
-    }
-  img.SaveImage(args.outfile.c_str());
+  Image* img=render.run(&rayTracer,camera);
 
 
-  ///TODO: below demonstrates how to use the provided Image class
-  ///Should be removed when you start
-  // Vector3f pixelColor (1.0f,0,0);
-  // //width and height
-  // Image image( 10 , 15 );
-  // image.SetPixel( 5,5, pixelColor );
-  // image.SaveImage("demo.bmp");
+  img->SaveImage(args.outfile.c_str());
+
+
+
   return 0;
 }
 
