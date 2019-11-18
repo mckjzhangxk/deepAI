@@ -43,7 +43,8 @@ Image* Render::run(RayTracer *rayTracer, Camera *camera)
 
     float wstep=2./W;
     float hstep=2./H;
-
+//    for(int r=60;r<61;r++)
+//      for(int c=149;c<150;c++){
     for(int r=0;r<H;r++)
       for(int c=0;c<W;c++){
         float x=-1+c*wstep;

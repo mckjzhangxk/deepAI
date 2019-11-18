@@ -67,10 +67,10 @@ Vector3f RayTracer::traceRay( Ray& ray, float tmin, int bounces,
         float refr_index, Hit& hit ) const
 {
 
-
-    
-
     if(m_scence_group->intersect(ray,hit,tmin)){
+      if(refr_index>1){
+          cout<<"xx"<<endl;
+      }
       Vector3f diffColor(0.);
       //compute diffcoior color
       Vector3f hitpoint=ray.pointAtParameter(hit.getT());
@@ -87,44 +87,46 @@ Vector3f RayTracer::traceRay( Ray& ray, float tmin, int bounces,
 
       }
 
-
+      bool canRecursive=bounces<m_maxBounces;
       //secondary ray!
        Vector3f returnColor(diffColor);
-       Vector3f reflectColor(0.f);
+       Vector3f reflectColor(canRecursive*hitMaterial->getSpecularColor());
        Vector3f reflectionDirection(0.f);
+       bool haveReflect=m_show_reflection&canRecursive&(reflectColor!=Vector3f::ZERO);
 
        Vector3f refractionColor(0.f);
        Vector3f refractDirection(0);
        float index_nt=hitMaterial->getRefractionIndex();
 
+
+       bool haveRefract=m_show_refraction&canRecursive&(index_nt>0)&&(index_nt!=refr_index);
+
        //simple reflection
-       if(m_show_reflection&&bounces<m_maxBounces){
-           reflectColor=Vector3f(1.f,1.f,1.f);
+       if(haveReflect){
            reflectionDirection=mirrorDirection(hit.getNormal(),ray.getDirection());
            Ray reflectRay(hitpoint,reflectionDirection);
            Hit hit1;
-           reflectColor=reflectColor*traceRay(reflectRay,m_eps,bounces+1,refr_index,hit1);
+           Vector3f cc=traceRay(reflectRay,m_eps,bounces+1,refr_index,hit1);
+           reflectColor=reflectColor*cc;
        }
        //simple refraction
-       if(bounces<=m_maxBounces&&m_show_reflection&&m_show_refraction&&index_nt>0){
-            bool bl=transmittedDirection(hit.getNormal(),ray.getDirection(),refr_index,index_nt,refractDirection);
-            if(bl){
+       if(haveRefract){
+            haveRefract=transmittedDirection(hit.getNormal(),ray.getDirection(),refr_index,index_nt,refractDirection);
+            if(haveRefract){
                     Ray refractRay(hitpoint,refractDirection);
                     Hit hit2;
                     refractionColor=traceRay(refractRay,m_eps,bounces+1,index_nt,hit2);
             }
 
        }
-
-    if(m_show_reflection){
-        if(m_show_refraction&&index_nt>0){
-             returnColor+=blendColor(refr_index,index_nt,reflectColor,refractionColor,hit.getNormal(),reflectionDirection,refractDirection);
-        }else{
+       if(haveReflect&&haveRefract){
+            returnColor+=blendColor(refr_index,index_nt,reflectColor,refractionColor,hit.getNormal(),reflectionDirection,refractDirection);
+       }else if(haveReflect){
             returnColor+=reflectColor;
-        }
-    }
-
-     return returnColor;
+       }else if(haveRefract){
+           returnColor+=refractionColor;
+      }
+     return returnColor+m_scene->getAmbientLight();
 
     }else{
         return m_scene->getBackgroundColor(ray.getDirection());

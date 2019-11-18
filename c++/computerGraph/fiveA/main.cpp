@@ -57,7 +57,7 @@ int main( int argc, char* argv[] )
   // name of the executable (in our case, "a4").
   
   
-   char *p[]={"./a5","-input","scene10_sphere.txt","-size","300","300","-output","6.bmp","-bounces","2"};
+   char *p[]={"./a5","-input","scene10_sphere.txt","-size","300","300","-output","6.bmp","-bounces","4"};
    argv=p;
    argc=10;
   Parse_Result args=parse_input(argc,argv);
@@ -73,13 +73,13 @@ int main( int argc, char* argv[] )
   RayTracer rayTracer(&scence,args.maxBounce);
   rayTracer.setShadows(true);
   rayTracer.setReflection(true);
-  rayTracer.setRefraction(false);
+  rayTracer.setRefraction(true);
   Camera* camera=scence.getCamera();
 
 
   Render render(args.width,args.height,false,false,3,0.5);
-  render.setJitter(true);
-  render.setFilter(true);
+  render.setJitter(false);
+  render.setFilter(false);
 
   Image* img=render.run(&rayTracer,camera);
 
