@@ -98,7 +98,7 @@ Vector3f RayTracer::traceRay( Ray& ray, float tmin, int bounces,
        Vector3f returnColor(diffColor);
        Vector3f reflectColor(canRecursive*hitMaterial->getSpecularColor());
        Vector3f reflectionDirection(0.f);
-       bool haveReflect=m_show_reflection&canRecursive&(reflectColor!=Vector3f::ZERO)&outside;
+       bool haveReflect=m_show_reflection&canRecursive&(reflectColor!=Vector3f::ZERO);
 
        Vector3f refractionColor(0.f);
        Vector3f refractDirection(0);
@@ -106,10 +106,6 @@ Vector3f RayTracer::traceRay( Ray& ray, float tmin, int bounces,
 
 
        bool haveRefract=m_show_refraction&canRecursive&(index_nt>0);
-       if(haveRefract&&!outside&&(index_nt==refr_index)){
-//           index_nt=1;
-           cout<<"xx"<<endl;
-       }
        //simple reflection
        if(haveReflect){
            reflectionDirection=mirrorDirection(hit.getNormal(),ray.getDirection());
@@ -120,7 +116,9 @@ Vector3f RayTracer::traceRay( Ray& ray, float tmin, int bounces,
        }
        //simple refraction
        if(haveRefract){
-            haveRefract=transmittedDirection(hit.getNormal(),ray.getDirection(),refr_index,index_nt,refractDirection);
+            if(!outside&&refr_index==index_nt)
+                index_nt=1.0;
+            haveRefract=transmittedDirection(outside?hit.getNormal():-hit.getNormal(),ray.getDirection(),refr_index,index_nt,refractDirection);
             if(haveRefract){
                     Ray refractRay(hitpoint,refractDirection);
                     Hit hit2;
