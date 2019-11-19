@@ -42,13 +42,18 @@ bool transmittedDirection( const Vector3f& normal, const Vector3f& incoming,
     Vector3f N=normal.normalized();
     Vector3f I=incoming.normalized();
     float eta=index_n/index_nt;
+
     float dot=Vector3f::dot(N,I);
 
     float delta=1-pow(eta,2)*(1-pow(dot,2));
     if(delta<0)
         return false;
 
-    transmitted=-sqrt(delta)*N+eta*(I-dot*N);
+    Vector3f x1=-sqrt(delta)*N;
+    Vector3f x2=eta*(I-dot*N);
+//    transmitted=(-sqrt(delta)*N+eta*(I-dot*N));
+    transmitted=x1+x2;
+    return true;
 }
 
 RayTracer::RayTracer( SceneParser * scene, int max_bounces,float eps,bool shadows,bool reflection,bool refraction) :
@@ -67,10 +72,10 @@ Vector3f RayTracer::traceRay( Ray& ray, float tmin, int bounces,
         float refr_index, Hit& hit ) const
 {
 
+
     if(m_scence_group->intersect(ray,hit,tmin)){
-      if(refr_index>1){
-          cout<<"xx"<<endl;
-      }
+      bool outside=(Vector3f::dot(hit.getNormal(),ray.getDirection())<0);
+
       Vector3f diffColor(0.);
       //compute diffcoior color
       Vector3f hitpoint=ray.pointAtParameter(hit.getT());
@@ -87,20 +92,24 @@ Vector3f RayTracer::traceRay( Ray& ray, float tmin, int bounces,
 
       }
 
+
       bool canRecursive=bounces<m_maxBounces;
       //secondary ray!
        Vector3f returnColor(diffColor);
        Vector3f reflectColor(canRecursive*hitMaterial->getSpecularColor());
        Vector3f reflectionDirection(0.f);
-       bool haveReflect=m_show_reflection&canRecursive&(reflectColor!=Vector3f::ZERO);
+       bool haveReflect=m_show_reflection&canRecursive&(reflectColor!=Vector3f::ZERO)&outside;
 
        Vector3f refractionColor(0.f);
        Vector3f refractDirection(0);
        float index_nt=hitMaterial->getRefractionIndex();
 
 
-       bool haveRefract=m_show_refraction&canRecursive&(index_nt>0)&&(index_nt!=refr_index);
-
+       bool haveRefract=m_show_refraction&canRecursive&(index_nt>0);
+       if(haveRefract&&!outside&&(index_nt==refr_index)){
+//           index_nt=1;
+           cout<<"xx"<<endl;
+       }
        //simple reflection
        if(haveReflect){
            reflectionDirection=mirrorDirection(hit.getNormal(),ray.getDirection());

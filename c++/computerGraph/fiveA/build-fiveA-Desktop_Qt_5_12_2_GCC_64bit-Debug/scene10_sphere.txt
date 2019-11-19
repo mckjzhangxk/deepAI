@@ -61,6 +61,5 @@ Group {
         radius 1.0
     }
 
-
 }
 

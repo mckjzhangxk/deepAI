@@ -1,11 +1,13 @@
 #include "Sphere.h"
 #include <math.h>
 
-void quadratic_solve(float a,float b,float c,bool &solved,float & x1,float &x2){
+void quadratic_solve(float a,float b,float c,bool &solved,float & x1,float &x2,float eps=1e-2){
     float delta=b*b-4*a*c;
     if(delta<0){
         solved=false;
     }else{
+//        if(delta<eps)
+//            delta=0;
         solved=true;
         float t1=(-b+sqrt(delta))/(2*a);
         float t2=(-b-sqrt(delta))/(2*a);
@@ -22,16 +24,24 @@ bool Sphere::intersect(const Ray &ray,Hit &h, float tmin){
     float a=Vector3f::dot(light_dir,light_dir);
     float b=2*Vector3f::dot(light_dir,light_orgin-center);
     float c=Vector3f::dot(light_orgin-center,light_orgin-center)-radius*radius;
+
     bool isSolved=false;
     float t1,t2;
     quadratic_solve(a,b,c,isSolved,t1,t2);
 
-    if(isSolved && t1>tmin && t1<h.getT()){
-        Vector3f norm=(ray.pointAtParameter(t1)-center).normalized();
-        h.set(t1,material,norm);
-        return true;
-    }else
-    {
+    if(isSolved){
+
+        //ray come from outside of sphere
+        if(t1>tmin && t1<h.getT()){
+            Vector3f norm=(ray.pointAtParameter(t1)-center).normalized();
+            h.set(t1,material,norm);
+            return true;
+        }if(t1<tmin&&t2>tmin&&t2<h.getT()){//ray inside sphere
+            Vector3f norm=(ray.pointAtParameter(t2)-center).normalized();
+            h.set(t2,material,norm);
+            return true;
+        }
+    }else{
         return false;
     }
 }
