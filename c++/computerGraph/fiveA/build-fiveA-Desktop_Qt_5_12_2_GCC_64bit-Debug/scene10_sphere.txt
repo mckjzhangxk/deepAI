@@ -21,7 +21,7 @@ Lights {
 Materials {
     numMaterials 3
 	PhongMaterial {
-		diffuseColor 0.5 0.1 0.1
+		diffuseColor 0.1 0.1 0.1
 		specularColor 1 1 1
 		shininess 50
 		refractionIndex 1.3
@@ -53,7 +53,7 @@ Background {
 }
 
 Group {
-    numObjects 1
+    numObjects 4
 
     MaterialIndex 0
     Sphere {
@@ -61,10 +61,25 @@ Group {
         radius 1.0
     }
 
+    MaterialIndex 1
+    Sphere {
+	center -0.5 -0.6 0.2
+        radius 0.4
+    }
 
-
-
-
+    MaterialIndex 1
+    Transform {
+    Translate 1 0.5 -3.5
+    Scale 0.8 0.8 0.8
+    TriangleMesh {
+	obj_file cube.obj
+    }
+    }
+    MaterialIndex 2
+    Plane {
+	normal 0 1 0
+        offset -1
+    }
 
 }
 

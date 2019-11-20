@@ -111,8 +111,7 @@ Vector3f RayTracer::traceRay( Ray& ray, float tmin, int bounces,
            reflectionDirection=mirrorDirection(hit.getNormal(),ray.getDirection());
            Ray reflectRay(hitpoint,reflectionDirection);
            Hit hit1;
-           Vector3f cc=traceRay(reflectRay,m_eps,bounces+1,refr_index,hit1);
-           reflectColor=reflectColor*cc;
+           reflectColor=reflectColor*traceRay(reflectRay,m_eps,bounces+1,refr_index,hit1);
        }
        //simple refraction
        if(haveRefract){
@@ -126,14 +125,16 @@ Vector3f RayTracer::traceRay( Ray& ray, float tmin, int bounces,
             }
 
        }
+
+
        if(haveReflect&&haveRefract){
             returnColor+=blendColor(refr_index,index_nt,reflectColor,refractionColor,hit.getNormal(),reflectionDirection,refractDirection);
        }else if(haveReflect){
-            returnColor+=reflectColor;
+           returnColor+=reflectColor;
        }else if(haveRefract){
            returnColor+=refractionColor;
-      }
-     return returnColor+m_scene->getAmbientLight();
+       }
+     return returnColor;
 
     }else{
         return m_scene->getBackgroundColor(ray.getDirection());

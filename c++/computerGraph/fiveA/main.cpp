@@ -56,8 +56,8 @@ int main( int argc, char* argv[] )
   // "argument" provided to the program is actually the
   // name of the executable (in our case, "a4").
   
-  
-   char *p[]={"./a5","-input","scene10_sphere.txt","-size","300","300","-output","6.bmp","-bounces","4"};
+  //scene12_vase.txt,scene10_sphere
+   char *p[]={"./a5","-input","scene12_vase.txt","-size","300","300","-output","6.bmp","-bounces","4"};
    argv=p;
    argc=10;
   Parse_Result args=parse_input(argc,argv);
