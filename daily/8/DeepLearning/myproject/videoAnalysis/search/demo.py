@@ -135,6 +135,10 @@ class MyWidge(QtWidgets.QWidget):
         self.bn_next=next_
         self.lb_pageinfo=label_
 
+    def clickHome(self):
+        self.dataModel = self.dataModel.root()
+        self.loadImage()
+
     def clickSearch(self):
         import cv2
         filename=QtWidgets.QFileDialog().getOpenFileName()[0]
@@ -152,12 +156,14 @@ class MyWidge(QtWidgets.QWidget):
 
         imgcmp=ImageComponent(None,np.random.randint(0,255,(112,112,3),np.uint8))
         bn=ButtonComponent(None,"search",self.clickSearch)
+        bn1 = ButtonComponent(None, "Home", self.clickHome)
 
         vlayout.addStretch()
 
         vlayout.addWidget(imgcmp)
 
         vlayout.addWidget(bn)
+        vlayout.addWidget(bn1)
         vlayout.addStretch()
         vlayout.addStretch()
 
@@ -212,7 +218,11 @@ class DataModel():
         ui.setButtonState(state_1,state_2)
         self._loadContent_()
         ui.loadImage()
-
+    def root(self):
+        obj=self
+        while obj.parent is not None:
+            obj=obj.parent
+        return obj
     def search(self,filename):
 
         obj=self
@@ -249,7 +259,7 @@ class DataModel():
         return db
 def defaultSource():
     dbSource=[]
-    with open('record.sql') as fs:
+    with open('record1.sql') as fs:
         for line in fs:
             filename,indexes=line.split()
             dbSource.append((filename,eval(indexes)))

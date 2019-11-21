@@ -62,7 +62,7 @@ def extract2Output(prefix,database_output,search_output,samples=5):
                 cv2.imwrite(o, img)
 
 if __name__ == '__main__':
-    db='/home/zhangxk/AIProject/数据集与模型/arcface_dataset/faces_umd/db'
-    search='/home/zhangxk/AIProject/数据集与模型/arcface_dataset/faces_umd/sample'
-    bin='/home/zhangxk/AIProject/数据集与模型/arcface_dataset/faces_umd/train'
+    db='/home/zxk/AI/data/faces_umd/db'
+    search='/home/zxk/AI/data/faces_umd/sample'
+    bin='/home/zxk/AI/data/faces_umd/train'
     extract2Output(bin,db,search,5)

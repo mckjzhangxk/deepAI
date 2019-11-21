@@ -13,8 +13,8 @@ import glob
 from search.pq import quanizer
 import tqdm
 
-mymodel=ArcFace('../arcface/models/model','cpu')
-basepath='/home/zhangxk/AIProject/数据集与模型/arcface_dataset/faces_umd/db'
+mymodel=ArcFace('../arcface/models/model','cuda')
+basepath='/home/zxk/AI/data/faces_umd/db'
 def getFeature(imagepath):
     im=cv2.imread(imagepath)
     im=cv2.resize(im,(112,112))
