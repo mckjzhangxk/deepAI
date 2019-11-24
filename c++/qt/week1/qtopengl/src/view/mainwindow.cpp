@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <GL/glut.h>
 //https://qiliang.net/old/nehe_qt/lesson01.html
 
 MainWindow::MainWindow( QWidget* parent, const char* name, bool fs ): QGLWidget( parent ),m_showwire(false)

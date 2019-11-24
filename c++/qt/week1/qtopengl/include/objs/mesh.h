@@ -6,31 +6,29 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
-#include <vecmath/Vector3f.h>
 #include "draw.h"
+#include <vecmath.h>
 #include "material.h"
+#include "Object3D.h"
+#include "Triangle.h"
+
 using namespace std;
 
-struct Trangle{
-    int a;
-    int b;
-    int c;
+struct T{
+    int a;int b;int c;
 };
-class Mesh{
+
+class Mesh:public Object3D{
 public:
-    Mesh(){}
     Mesh(const char * filename);
     void loadMesh(const char * filename);
+    void compute_norm();
     void draw(bool wired=false);
-
-    void set_material(Material* v);
 private:
     void clear();
     //m_vertexes.size==m_norms.size
-    vector<Vector3f> m_vertexes;
-    vector<Vector3f> m_norms;
-    vector<Trangle> m_faces;
-
-    Material* m_material;
+    vector<int> m_vs;
+    vector<T> m_fs;
+    vector<Triangle> m_faces;
 };
 #endif

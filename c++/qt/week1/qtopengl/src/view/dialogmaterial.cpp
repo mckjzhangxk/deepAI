@@ -7,8 +7,9 @@ DialogMaterial::DialogMaterial(QWidget *parent):
     m_window(nullptr,0,false)
 {
     ui->setupUi(this);
-    m_mesh=new Mesh("/home/zhangxk/projects/deepAI/c++/qt/week1/qtopengl/data/Model3.obj");
     m_material=Material();
+
+    m_mesh=new Mesh("data/Model3.obj");
     m_mesh->set_material(&m_material);
 
 

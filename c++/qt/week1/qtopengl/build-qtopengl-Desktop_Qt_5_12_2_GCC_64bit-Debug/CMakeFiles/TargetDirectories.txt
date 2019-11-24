@@ -1,0 +1,4 @@
+/home/zxk/PycharmProjects/deepAI1/c++/qt/week1/qtopengl/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/qt/week1/qtopengl/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/qt/week1/qtopengl/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/qtopengl.dir
+/home/zxk/PycharmProjects/deepAI1/c++/qt/week1/qtopengl/build-qtopengl-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/qtopengl_automoc.dir
