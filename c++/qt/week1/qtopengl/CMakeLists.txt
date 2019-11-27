@@ -17,6 +17,7 @@ find_package(Qt5Widgets)
 find_package(Qt5OpenGL)
 
 
+
 # OpenGL & GLEW library
 find_package(OpenGL)
 
@@ -29,6 +30,7 @@ add_executable(qtopengl
 #  ${header}
   ${src}
  )
+
 
 
 qt5_use_modules(qtopengl Widgets OpenGL)
