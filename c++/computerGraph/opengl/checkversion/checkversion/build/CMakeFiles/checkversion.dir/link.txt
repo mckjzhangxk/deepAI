@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/checkversion.dir/main.cpp.o  -o checkversion -lglfw -lglut -lGLEW -lGL -ldl 

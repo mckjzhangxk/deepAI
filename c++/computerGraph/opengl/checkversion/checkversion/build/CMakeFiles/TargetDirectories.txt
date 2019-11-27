@@ -1,0 +1,3 @@
+/home/zhangxk/projects/deepAI/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles/rebuild_cache.dir
+/home/zhangxk/projects/deepAI/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles/edit_cache.dir
+/home/zhangxk/projects/deepAI/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles/checkversion.dir
