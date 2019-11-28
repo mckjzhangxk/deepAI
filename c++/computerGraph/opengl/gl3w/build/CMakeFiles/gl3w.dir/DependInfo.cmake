@@ -1,15 +1,15 @@
 # The set of languages for which implicit dependencies are needed:
 set(CMAKE_DEPENDS_LANGUAGES
-  "CXX"
+  "C"
   )
 # The set of files for implicit dependencies of each language:
-set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/main.cpp" "/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles/checkversion.dir/main.cpp.o"
+set(CMAKE_DEPENDS_CHECK_C
+  "/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/gl3w.c" "/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles/gl3w.dir/gl3w.c.o"
   )
-set(CMAKE_CXX_COMPILER_ID "GNU")
+set(CMAKE_C_COMPILER_ID "GNU")
 
 # The include file search paths:
-set(CMAKE_CXX_TARGET_INCLUDE_PATH
+set(CMAKE_C_TARGET_INCLUDE_PATH
   "."
   "../"
   "../include"

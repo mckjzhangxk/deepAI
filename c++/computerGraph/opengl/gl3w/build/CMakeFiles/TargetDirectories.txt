@@ -1,0 +1,3 @@
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles/rebuild_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles/gl3w.dir
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles/edit_cache.dir

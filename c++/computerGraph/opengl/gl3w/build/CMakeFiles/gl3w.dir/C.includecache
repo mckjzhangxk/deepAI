@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/GL/gl3w.h
+GL/glcorearb.h
+-
+
+../include/GL/glcorearb.h
+windows.h
+-
+KHR/khrplatform.h
+-
+
+../include/KHR/khrplatform.h
+stdint.h
+-
+inttypes.h
+-
+stdint.h
+-
+
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/gl3w.c
+GL/gl3w.h
+-
+stdlib.h
+-
+windows.h
+-
+dlfcn.h
+-
+dlfcn.h
+-
+

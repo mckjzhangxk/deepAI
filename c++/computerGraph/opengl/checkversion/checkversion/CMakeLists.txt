@@ -12,5 +12,6 @@ message("cxx compiler:${CMAKE_CXX_COMPILER}")
 
 
 add_executable(checkversion main.cpp)
-target_link_libraries(checkversion glfw glut GLEW GL dl)
+target_link_libraries(checkversion glfw3 glut GLEW GL dl)
+target_link_libraries(checkversion X11 pthread)
 

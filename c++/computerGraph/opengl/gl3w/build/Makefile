@@ -48,10 +48,10 @@ RM = /usr/local/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion
+CMAKE_SOURCE_DIR = /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/build
+CMAKE_BINARY_DIR = /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named checkversion
+# Target rules for targets named gl3w
 
 # Build rule for target.
-checkversion: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 checkversion
-.PHONY : checkversion
+gl3w: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 gl3w
+.PHONY : gl3w
 
 # fast build rule for target.
-checkversion/fast:
-	$(MAKE) -f CMakeFiles/checkversion.dir/build.make CMakeFiles/checkversion.dir/build
-.PHONY : checkversion/fast
+gl3w/fast:
+	$(MAKE) -f CMakeFiles/gl3w.dir/build.make CMakeFiles/gl3w.dir/build
+.PHONY : gl3w/fast
 
-main.o: main.cpp.o
+gl3w.o: gl3w.c.o
 
-.PHONY : main.o
+.PHONY : gl3w.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/checkversion.dir/build.make CMakeFiles/checkversion.dir/main.cpp.o
-.PHONY : main.cpp.o
+gl3w.c.o:
+	$(MAKE) -f CMakeFiles/gl3w.dir/build.make CMakeFiles/gl3w.dir/gl3w.c.o
+.PHONY : gl3w.c.o
 
-main.i: main.cpp.i
+gl3w.i: gl3w.c.i
 
-.PHONY : main.i
+.PHONY : gl3w.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/checkversion.dir/build.make CMakeFiles/checkversion.dir/main.cpp.i
-.PHONY : main.cpp.i
+gl3w.c.i:
+	$(MAKE) -f CMakeFiles/gl3w.dir/build.make CMakeFiles/gl3w.dir/gl3w.c.i
+.PHONY : gl3w.c.i
 
-main.s: main.cpp.s
+gl3w.s: gl3w.c.s
 
-.PHONY : main.s
+.PHONY : gl3w.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/checkversion.dir/build.make CMakeFiles/checkversion.dir/main.cpp.s
-.PHONY : main.cpp.s
+gl3w.c.s:
+	$(MAKE) -f CMakeFiles/gl3w.dir/build.make CMakeFiles/gl3w.dir/gl3w.c.s
+.PHONY : gl3w.c.s
 
 # Help Target
 help:
@@ -157,11 +157,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... checkversion"
+	@echo "... gl3w"
 	@echo "... edit_cache"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... gl3w.o"
+	@echo "... gl3w.i"
+	@echo "... gl3w.s"
 .PHONY : help
 
 

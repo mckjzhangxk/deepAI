@@ -44,21 +44,21 @@ RM = /usr/local/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion
+CMAKE_SOURCE_DIR = /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/build
+CMAKE_BINARY_DIR = /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build
 
 #=============================================================================
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/checkversion.dir/all
+all: CMakeFiles/gl3w.dir/all
 
 .PHONY : all
 
 # The main recursive "clean" target.
-clean: CMakeFiles/checkversion.dir/clean
+clean: CMakeFiles/gl3w.dir/clean
 
 .PHONY : clean
 
@@ -68,31 +68,31 @@ preinstall:
 .PHONY : preinstall
 
 #=============================================================================
-# Target rules for target CMakeFiles/checkversion.dir
+# Target rules for target CMakeFiles/gl3w.dir
 
 # All Build rule for target.
-CMakeFiles/checkversion.dir/all:
-	$(MAKE) -f CMakeFiles/checkversion.dir/build.make CMakeFiles/checkversion.dir/depend
-	$(MAKE) -f CMakeFiles/checkversion.dir/build.make CMakeFiles/checkversion.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles --progress-num=1,2 "Built target checkversion"
-.PHONY : CMakeFiles/checkversion.dir/all
+CMakeFiles/gl3w.dir/all:
+	$(MAKE) -f CMakeFiles/gl3w.dir/build.make CMakeFiles/gl3w.dir/depend
+	$(MAKE) -f CMakeFiles/gl3w.dir/build.make CMakeFiles/gl3w.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles --progress-num=1,2 "Built target gl3w"
+.PHONY : CMakeFiles/gl3w.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/checkversion.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/checkversion.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/build/CMakeFiles 0
-.PHONY : CMakeFiles/checkversion.dir/rule
+CMakeFiles/gl3w.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/gl3w.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/gl3w/build/CMakeFiles 0
+.PHONY : CMakeFiles/gl3w.dir/rule
 
 # Convenience name for target.
-checkversion: CMakeFiles/checkversion.dir/rule
+gl3w: CMakeFiles/gl3w.dir/rule
 
-.PHONY : checkversion
+.PHONY : gl3w
 
 # clean rule for target.
-CMakeFiles/checkversion.dir/clean:
-	$(MAKE) -f CMakeFiles/checkversion.dir/build.make CMakeFiles/checkversion.dir/clean
-.PHONY : CMakeFiles/checkversion.dir/clean
+CMakeFiles/gl3w.dir/clean:
+	$(MAKE) -f CMakeFiles/gl3w.dir/build.make CMakeFiles/gl3w.dir/clean
+.PHONY : CMakeFiles/gl3w.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

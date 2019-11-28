@@ -13,4 +13,5 @@ link_directories(lib)
 
 #add_executable(begin main.cpp myutil.cpp youtubeDemo.cpp)
 add_executable(begin main.cpp LoadShaders.cpp)
-target_link_libraries(begin glfw GL GLEW gl3w dl)
+target_link_libraries(begin glfw3 GL GLEW gl3w dl pthread)
+target_link_libraries(begin X11 Xrandr Xinerama Xi Xxf86vm Xcursor)

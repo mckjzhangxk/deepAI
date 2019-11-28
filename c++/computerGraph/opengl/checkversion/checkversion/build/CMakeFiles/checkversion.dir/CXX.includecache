@@ -24,9 +24,9 @@ inttypes.h
 stdint.h
 -
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/opengl/checkversion/checkversion/config.h
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/config.h
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/opengl/checkversion/checkversion/gl3w.c
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/gl3w.c
 GL/gl3w.h
 -
 stdlib.h
@@ -38,15 +38,15 @@ dlfcn.h
 dlfcn.h
 -
 
-/home/zhangxk/projects/deepAI/c++/computerGraph/opengl/checkversion/checkversion/main.cpp
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/main.cpp
 config.h
-/home/zhangxk/projects/deepAI/c++/computerGraph/opengl/checkversion/checkversion/config.h
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/config.h
 GL/glew.h
 -
 GL/gl3w.h
 -
 gl3w.c
-/home/zhangxk/projects/deepAI/c++/computerGraph/opengl/checkversion/checkversion/gl3w.c
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/checkversion/checkversion/gl3w.c
 GL/glut.h
 -
 GLFW/glfw3.h

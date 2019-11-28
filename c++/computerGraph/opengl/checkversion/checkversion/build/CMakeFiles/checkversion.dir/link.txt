@@ -1,1 +1,1 @@
-/usr/bin/c++     CMakeFiles/checkversion.dir/main.cpp.o  -o checkversion -lglfw -lglut -lGLEW -lGL -ldl 
+/usr/bin/c++     CMakeFiles/checkversion.dir/main.cpp.o  -o checkversion -lglfw3 -lglut -lGLEW -lGL -ldl -lX11 -lpthread 

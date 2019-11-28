@@ -67,7 +67,7 @@ display( void )
     glClearBufferfv(GL_COLOR, 0, black);
 
     glBindVertexArray( VAOs[Triangles] );
-    glDrawArrays( GL_LINES, 0, NumVertices );
+    glDrawArrays( GL_TRIANGLES, 0, NumVertices );
 }
 
 //----------------------------------------------------------------------------

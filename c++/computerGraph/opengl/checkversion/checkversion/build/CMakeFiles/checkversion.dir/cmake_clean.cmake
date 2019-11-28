@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/checkversion.dir/main.cpp.o"
-  "checkversion.pdb"
   "checkversion"
+  "checkversion.pdb"
 )
 
 # Per-language clean rules from dependency scanning.
