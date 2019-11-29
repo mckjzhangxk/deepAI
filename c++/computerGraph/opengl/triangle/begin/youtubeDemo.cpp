@@ -3,46 +3,47 @@
 
 using namespace std;
 
-float position[6]={
-    0,0,
-    0,0.5,
-    0.5,0
+float position[]={
+    -0.8,-0.8,
+    0.8,-0.8,
+    0.8,0.8,
+    -0.8,0.8,
+
+
+
 };
 GLuint buffers[1];
-string v_shadefile=
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) in vec4 position;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "gl_Position = position;\n"
-        "}\n";
-string f_shadefile=
-        "#version 330 core\n"
-        "\n"
-        "layout(location =0) out vec4 color;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "   color=vec4(1.0,0.0,0.0,1.0);\n"
-        "}\n";
+
+GLuint ibo;
+unsigned int indices[]={
+    0,1,3,
+    1,2,3
+};
+
 
 
 
 void init(){
+
     glGenBuffers(1,buffers);
     glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(float)*6,position,GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(position),position,GL_STATIC_DRAW);
     //2represent (x,y),false ->no normal,stride=bytes between 2 attribute
     glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,0);
     glEnableVertexAttribArray(0);
+
+
+    glGenBuffers(1,&ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices),indices,GL_STATIC_DRAW);
 
 }
 
 void display(){
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLES,0,3);
+//    glDrawArrays(GL_TRIANGLES,0,6);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ibo);
+    glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
 }
 
 void run(){
@@ -67,8 +68,10 @@ void run(){
     api_init();
 
     init();
+    ShaderSource source=parseShader("res/shader/myshader.shader");
+    int shader=createShader(source.vertex,source.fragment);
 
-    int shader=createShader(v_shadefile,f_shadefile);
+
     glUseProgram(shader);
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -81,7 +84,11 @@ void run(){
         /* Poll for and process events */
         glfwPollEvents();
     }
-
+    glDeleteProgram(shader);
     glfwTerminate();
 
+}
+int main( int argc, char** argv ){
+
+    run();
 }

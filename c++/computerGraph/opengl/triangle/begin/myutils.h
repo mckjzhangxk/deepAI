@@ -14,4 +14,10 @@ bool api_init();
     a program
 */
 int createShader(std::string& vsfile,std::string& fsfile);
+
+struct ShaderSource{
+    std::string vertex;
+    std::string fragment;
+};
+ShaderSource parseShader(const std::string &filename);
 #endif // MYUTILS_H

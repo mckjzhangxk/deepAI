@@ -1,4 +1,0 @@
-/home/zhangxk/projects/deepAI/c++/qt/week1/build-paint-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
-/home/zhangxk/projects/deepAI/c++/qt/week1/build-paint-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
-/home/zhangxk/projects/deepAI/c++/qt/week1/build-paint-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/paint.dir
-/home/zhangxk/projects/deepAI/c++/qt/week1/build-paint-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/paint_autogen.dir

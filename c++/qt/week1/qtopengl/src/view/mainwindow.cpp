@@ -40,6 +40,8 @@ void MainWindow::paintGL()
 
   glLoadMatrixf(m_camera.getViewMatrix());
   m_light->setup();
+  /*glFrontFace(GL_CW);
+  glCullFace(GL_FRONT);*/
   m_mesh->draw(m_showwire);
 }
 
@@ -48,13 +50,14 @@ void MainWindow::initializeGL()
     glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
     glEnable(GL_LIGHTING);     // Enable lighting calculations
     glEnable(GL_LIGHT0);       // Turn on light #0.
+    //glEnable(GL_CULL_FACE);
 }
 
 void MainWindow::resizeGL( int w, int h )
 {
 
     m_camera.setDimension(w,h);
-    m_camera.perspective_projection(30,(float)w/float(h),1.f,100.f);
+    m_camera.perspective_projection(30,(float)w/float(h),0.01f,100.f);
     //(0,0)在左下角
     glViewport(0,0,w,h);
 

@@ -1,4 +1,0 @@
-/home/zhangxk/projects/deepAI/c++/qt/week1/build-uicomp-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
-/home/zhangxk/projects/deepAI/c++/qt/week1/build-uicomp-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
-/home/zhangxk/projects/deepAI/c++/qt/week1/build-uicomp-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/uicomp.dir
-/home/zhangxk/projects/deepAI/c++/qt/week1/build-uicomp-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/uicomp_autogen.dir

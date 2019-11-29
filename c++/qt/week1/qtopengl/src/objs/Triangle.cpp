@@ -42,13 +42,15 @@ void Triangle::draw(bool wired)
         Vector3f& n1=m_normals[0];
         Vector3f& n2=m_normals[1];
         Vector3f& n3=m_normals[2];
+
         if(wired){
-            drawLines({v1,v2,v3},{n1,n2,n3},1.f);
+            glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
         }else
         {
-            drawTriangle({v1,v2,v3},{n1,n2,n3});
-        }
+            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
+        }
+        drawTriangle({v1,v2,v3},{n1,n2,n3});
 
 
 }
