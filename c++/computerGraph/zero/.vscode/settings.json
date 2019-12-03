@@ -37,5 +37,6 @@
         "typeinfo": "cpp",
         "algorithm": "cpp",
         "memory": "cpp"
-    }
+    },
+    "python.pythonPath": "/usr/bin/python3"
 }

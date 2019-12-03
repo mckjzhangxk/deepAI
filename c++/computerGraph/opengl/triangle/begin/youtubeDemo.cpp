@@ -1,5 +1,6 @@
 #include "commonHeader.h"
 #include "myutils.h"
+#include "vmath.h"
 
 using namespace std;
 
@@ -89,6 +90,9 @@ void run(){
 
 }
 int main( int argc, char** argv ){
+    vmath::mat4 t1=vmath::translate(10.f,0.f,0.f);
+    vmath::mat4 s1=vmath::scale(5.f);
+    vmath::mat4 st=s1*t1;
 
     run();
 }
