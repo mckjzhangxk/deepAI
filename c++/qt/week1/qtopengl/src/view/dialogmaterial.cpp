@@ -9,7 +9,7 @@ DialogMaterial::DialogMaterial(QWidget *parent):
     ui->setupUi(this);
     m_material=Material();
 
-    m_mesh=new Mesh("data/Model3.obj");
+    m_mesh=new Mesh("/home/zhangxk/projects/deepAI/c++/computerGraph/zero/a.obj");
     m_mesh->set_material(&m_material);
 
 
