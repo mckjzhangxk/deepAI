@@ -67,3 +67,15 @@
 2	10	0	qtopengl_autogen/mocs_compilation.cpp	6dc466ed51ec3bd1
 2	8	0	CMakeFiles/qtopengl_autogen	6dc466ed51ec3bd1
 2	8	0	qtopengl_autogen/mocs_compilation.cpp	6dc466ed51ec3bd1
+29	99	0	CMakeFiles/qtopengl_autogen	6dc466ed51ec3bd1
+29	99	0	qtopengl_autogen/mocs_compilation.cpp	6dc466ed51ec3bd1
+99	4005	0	CMakeFiles/qtopengl.dir/src/view/dialogmaterial.cpp.o	cc0b634a430f1d21
+4005	7125	0	qtopengl	93e0dcfd6a6cdeff
+2	13	0	CMakeFiles/qtopengl_autogen	6dc466ed51ec3bd1
+2	13	0	qtopengl_autogen/mocs_compilation.cpp	6dc466ed51ec3bd1
+13	2114	0	CMakeFiles/qtopengl.dir/src/view/mainwindow.cpp.o	a5f37fa200180f69
+2114	2502	0	qtopengl	93e0dcfd6a6cdeff
+4	11	0	CMakeFiles/qtopengl_autogen	6dc466ed51ec3bd1
+4	11	0	qtopengl_autogen/mocs_compilation.cpp	6dc466ed51ec3bd1
+11	1700	0	CMakeFiles/qtopengl.dir/src/view/mainwindow.cpp.o	a5f37fa200180f69
+1700	2080	0	qtopengl	93e0dcfd6a6cdeff

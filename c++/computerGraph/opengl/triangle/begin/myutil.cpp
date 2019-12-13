@@ -2,6 +2,8 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+
+
 bool api_init(){
     #ifdef USE_GLEW
         GLenum err = glewInit();
@@ -18,6 +20,19 @@ bool api_init(){
           exit(0);
         }
     #endif
+}
+void GL_ClearError(){
+    while(glGetError()!=GL_NO_ERROR){
+
+    }
+}
+bool GL_CheckError(const char*  filename,int line){
+    while(GLenum err=glGetError()){
+        std::cerr<<"OpenGL Error Occur:"<<err<<std::endl;
+        std::cerr<<"At file:"<<filename<<":"<<line<<std::endl;\
+        return  false;
+    }
+    return true;
 }
 bool checkError(int id){
     int result;

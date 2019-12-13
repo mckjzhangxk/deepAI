@@ -2,6 +2,11 @@
 #include "myutils.h"
 #include "vmath.h"
 
+#define ASSERT(x)\
+    GL_ClearError();\
+    x;\
+    GL_CheckError(__FILE__,__LINE__);
+
 using namespace std;
 
 float position[]={
@@ -43,8 +48,9 @@ void init(){
 void display(){
     glClear(GL_COLOR_BUFFER_BIT);
 //    glDrawArrays(GL_TRIANGLES,0,6);
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ibo);
-    glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
+    ASSERT(glDrawElements(GL_TRIANGLES,6,GL_INT,nullptr));
 }
 
 void run(){
@@ -53,7 +59,6 @@ void run(){
     /* Initialize the library */
     if (!glfwInit())
         return;
-
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
@@ -78,7 +83,10 @@ void run(){
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-
+        /*
+        GL_ClearError();
+        display();
+        GL_CheckError();*/
         display();
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

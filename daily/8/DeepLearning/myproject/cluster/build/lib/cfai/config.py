@@ -5,6 +5,9 @@ def defaultConfig():
     d['debug']=False
     # basepath='/home/zhangxk/projects/deepAI/daily/8/DeepLearning/myproject/cluster/cfai/test'
     basepath='/cfai/cluster'
+    if not os.path.exists(basepath):
+        os.mkdir(basepath)
+
     d['source']=os.path.join(basepath,'pre/*.json')
     d['target']=os.path.join(basepath,'tgt')
     d['logfile']=os.path.join(basepath,'log')

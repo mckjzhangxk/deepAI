@@ -20,4 +20,6 @@ struct ShaderSource{
     std::string fragment;
 };
 ShaderSource parseShader(const std::string &filename);
+void GL_ClearError();
+bool GL_CheckError(const char *  filename,int line);
 #endif // MYUTILS_H
