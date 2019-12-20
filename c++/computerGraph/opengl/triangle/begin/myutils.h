@@ -2,6 +2,10 @@
 #define MYUTILS_H
 #include "commonHeader.h"
 
+#define ASSERT(x)\
+    GL_ClearError();\
+    x;\
+    GL_CheckError(__FILE__,__LINE__);
 
 bool checkError(int id);
 bool api_init();
