@@ -1,23 +1,31 @@
 #include "commonHeader.h"
 #include "myutils.h"
 #include "vmath.h"
+#include "vertexarray.h"
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
+#include "vertexlayout.h"
+
 using namespace std;
 
 float position[]={
     -0.8,-0.8,
+    1,0,0,
     0.8,-0.8,
+    0,1,0,
     0.8,0.8,
+    0,0,1,
     -0.8,0.8,
+    1,0,0
 };
 unsigned int indices[]={
-    0,1,3,
-    1,2,3
+    0,1,2,
+    0,2,3
 };
+VertexArray * va;
 VertexBuffer *vbuffer;
 IndexBuffer  *ibuffer;
-GLuint vbo;
+//GLuint vbo;
 
 
 
@@ -26,22 +34,28 @@ GLuint vbo;
 
 void init(){
 
-    glGenVertexArrays(1,&vbo);
-    glBindVertexArray(vbo);
+//    glGenVertexArrays(1,&vbo);
+//    glBindVertexArray(vbo);
 
     //create vertex buffer,and transfer data to this buffer
-
     vbuffer=new VertexBuffer(position,sizeof (position));
     //define a layout
     //2represent (x,y),false ->no normal,stride=bytes between 2 attribute
-    glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,0);
-    glEnableVertexAttribArray(0);
+//    glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,0);
+//    glEnableVertexAttribArray(0);
 
     //create a index buffer,and transfer data to this buffer
     ibuffer=new IndexBuffer(indices,sizeof (indices)/sizeof (unsigned int));
 
+
+    VertexLayout layout;
+    layout.add(2);
+    layout.add(3);
+
+    va=new VertexArray(*vbuffer,layout);
+
     //unbind
-    glBindVertexArray(0);
+    va->unbind();
     vbuffer->ubind();
     vbuffer->ubind();
 }
@@ -49,8 +63,8 @@ void init(){
 void display(){
     glClear(GL_COLOR_BUFFER_BIT);
 //    glDrawArrays(GL_TRIANGLES,0,6);
-    glBindVertexArray(vbo);
-
+//    glBindVertexArray(vbo);
+    va->bind();
     ibuffer->bind();
     ASSERT(glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr));
 }
