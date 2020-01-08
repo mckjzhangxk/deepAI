@@ -35,7 +35,7 @@ def makeChengfGraph(filepath):
     Id2Index = {phone: i for i, phone in enumerate(nodename)}
     Index2Id = {v: k for k, v in Id2Index.items()}
 
-    G = nx.MultiGraph()
+    G = nx.Graph()
     edgenum = 0
     for edge in jsonObj['edges']:
         s = edge['source']
