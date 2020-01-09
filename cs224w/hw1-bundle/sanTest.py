@@ -1,6 +1,24 @@
 import networkx as nx
 from lavain import Community,GraphWrapper,Louvain,louvain
 import numpy as np
+
+
+def createGraph(ringNodes=4):
+    G = nx.Graph()
+
+    for i in range(ringNodes):
+        s = 4 * i
+        G.add_edge(s, s + 1, weight=1)
+        G.add_edge(s, s + 2, weight=1)
+        G.add_edge(s, s + 3, weight=1)
+        G.add_edge(s + 1, s + 2, weight=1)
+        G.add_edge(s + 1, s + 3, weight=1)
+        G.add_edge(s + 2, s + 3, weight=1)
+
+    for i in range(ringNodes):
+        G.add_edge(3+i*4, (3+i*4+2)%(4*ringNodes), weight=1)
+    return G
+
 def sanity_test1():
     G=nx.Graph()
     G.add_edge(0, 0, weight=7)
@@ -186,7 +204,36 @@ def sanity_test3():
     assert Gm1.getPairWeight(0, 1) == 3
 
     clusters=louvain(Gm)
-    print(clusters)
+
+def sanity_test4():
+    rings=32
+    G=createGraph(rings)
+    G=GraphWrapper(G)
+    clusters,graphs=louvain(G)
+
+    assert len(clusters[0].cms)==rings
+    G1=graphs[1]
+    assert len(G1.getNodes())==rings
+
+    assert G1.getTotalWeight()==rings*14
+    for n in G1.getNodes():
+        assert G1.getNodeDegree(n)==14
+        assert G1.getPairWeight(n,n)==6
+    for n in G1.getNodes():
+        nb=G1.getNodeNeibours(n)
+        assert len(nb)==3
+        assert nb[n]==6
+        assert nb[(n+1)%rings] == 1
+        assert nb[(n-1)%rings] == 1
+
+    G2=graphs[2]
+    assert len(G2.getNodes())==rings//2
+    for n in G2.getNodes():
+        assert G2.getNodeDegree(n)==28
+        assert G2.getPairWeight(n,n)==13
+
+    print(clusters[1].get_community_members())
 sanity_test1()
 sanity_test2()
 sanity_test3()
+sanity_test4()

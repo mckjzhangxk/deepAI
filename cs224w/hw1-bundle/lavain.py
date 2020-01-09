@@ -38,6 +38,14 @@ class GraphWrapper():
         for (e1,e2),w in edges.items():
             G.add_edge(e1,e2,weight=w)
         return GraphWrapper(G,self.weight)
+
+    def print(self):
+        print('-------------------------------')
+        for n in self.getNodes():
+            dg=self.getNodeDegree(n)
+            sf=2*self.getPairWeight(n,n)
+            print('node %d,degree %f,self-loop %f'%(n,dg,sf))
+        print('-------------------------------')
 class Community():
     def __init__(self, G, node):
         '''
@@ -122,6 +130,8 @@ class Louvain():
         old_community = self.node_community[:]
         while True:
             rnd = np.random.permutation(self.nodes)
+            # print('random:', rnd)
+            rnd=self.nodes[:]
             for node in rnd:
                 ci = self.node_community[node]
                 C = self.cms[ci]
@@ -161,10 +171,10 @@ class Louvain():
             self.cms = [self.cms[i] for i in mask]
             self.node_community = [mask_dict[k] for k in self.node_community]
 
-            edges = self.aggresive_community()
+            edges = self.aggregate_community()
             return self.G.newGraph(edges)
 
-    def aggresive_community(self):
+    def aggregate_community(self):
         from _collections import defaultdict
 
         edges=defaultdict(float)
@@ -179,9 +189,16 @@ class Louvain():
 
         return edges
 
-
+    def get_community_members(self):
+        return [cm.members for cm in self.cms]
+    def print(self):
+        print('-------------community------------------')
+        for c,cm in enumerate(self.cms):
+            print('community %d,member %d'%(c,len(cm.members)))
+        print('-------------------------------')
 def louvain(G):
     clusters=[]
+    graphs=[G]
     while True:
         model=Louvain(G)
         G=model.run_one_level()
@@ -189,11 +206,16 @@ def louvain(G):
             break
         else:
             clusters.append(model)
-    return clusters
+            graphs.append(G)
+    return clusters,graphs
 if __name__ == '__main__':
     from utils import makeChengfGraph
-    G, Id2Index, Index2Id, _ = makeChengfGraph('data/15608544362450.json')
+    G, Id2Index, Index2Id, _ = makeChengfGraph('data/myzxk.json')
 
     Gm=GraphWrapper(G)
-    clusters=louvain(Gm)
-    print(clusters)
+    clusters,graphs=louvain(Gm)
+
+    for cs in clusters:
+        cs.print()
+
+

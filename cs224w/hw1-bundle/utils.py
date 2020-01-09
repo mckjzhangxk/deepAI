@@ -43,7 +43,7 @@ def makeChengfGraph(filepath):
         weight=edge['size'] if 'size' in edge else 1.0
         weight=weight if weight>0 else 1.0
 
-        weight=1.0
+        # weight=1.0
 
         # print('xxxxxxxxxxxxxxxx',weight)
         sid = Id2Index[s]
