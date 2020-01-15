@@ -1,0 +1,12 @@
+http://blog.sina.com.cn/s/blog_6ea58f530102vnh0.html
+http://frograbbit.lofter.com/post/bfe8b_4895d36
+定义宏
+\def\eq1{y=\frac{x}{3x+x+1}}
+\usepackage{graphicx}
+ \includegraphics[width=2in]{imgs/cnn.png}
+
+定义表
+\begin{tabular}{ccccccc}
+$x$ & 1& 2& 3& 4& 5&6 \\ \hline
+$f(x)$ & 11&12&13&14&15&16
+\end{tabular}
