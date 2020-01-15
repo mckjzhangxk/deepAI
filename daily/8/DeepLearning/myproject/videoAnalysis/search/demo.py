@@ -259,7 +259,7 @@ class DataModel():
         return db
 def defaultSource():
     dbSource=[]
-    with open('record1.sql') as fs:
+    with open('record.sql') as fs:
         for line in fs:
             filename,indexes=line.split()
             dbSource.append((filename,eval(indexes)))
