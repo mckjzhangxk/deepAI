@@ -1,0 +1,9 @@
+README.md
+dokr
+setup.py
+myfirstzxk.egg-info/PKG-INFO
+myfirstzxk.egg-info/SOURCES.txt
+myfirstzxk.egg-info/dependency_links.txt
+myfirstzxk.egg-info/top_level.txt
+myzxk/__init__.py
+myzxk/hello.py
