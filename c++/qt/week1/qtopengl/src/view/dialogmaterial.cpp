@@ -9,7 +9,7 @@ DialogMaterial::DialogMaterial(QWidget *parent):
     ui->setupUi(this);
     m_material=Material();
 
-    m_mesh=new Mesh("/home/zhangxk/AIProject/pytorch_coma/template/template.obj");
+    m_mesh=new Mesh("/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/two/data/MODEL1.obj");
     m_mesh->set_material(&m_material);
 
 

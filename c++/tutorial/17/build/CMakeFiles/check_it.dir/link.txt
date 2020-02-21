@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/check_it.dir/check_it.cpp.o  -o ../bin/check_it 

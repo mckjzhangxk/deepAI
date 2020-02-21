@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="begin" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/ninja -v all" />
+            <CompileFile command="/usr/bin/ninja -v &quot;$file&quot;" />
+            <Clean command="/usr/bin/ninja -v clean" />
+            <DistClean command="/usr/bin/ninja -v clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="edit_cache">
+         <Option working_dir="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/ninja -v edit_cache" />
+            <CompileFile command="/usr/bin/ninja -v &quot;$file&quot;" />
+            <Clean command="/usr/bin/ninja -v clean" />
+            <DistClean command="/usr/bin/ninja -v clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/ninja -v rebuild_cache" />
+            <CompileFile command="/usr/bin/ninja -v &quot;$file&quot;" />
+            <Clean command="/usr/bin/ninja -v clean" />
+            <DistClean command="/usr/bin/ninja -v clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="begin">
+         <Option output="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug/begin" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin" />
+            <Add directory="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/include" />
+            <Add directory="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/5" />
+            <Add directory="/usr/include/c++/5/backward" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/5" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/ninja -v begin" />
+            <CompileFile command="/usr/bin/ninja -v &quot;$file&quot;" />
+            <Clean command="/usr/bin/ninja -v clean" />
+            <DistClean command="/usr/bin/ninja -v clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="begin/fast">
+         <Option output="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug/begin" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin" />
+            <Add directory="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/include" />
+            <Add directory="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/5" />
+            <Add directory="/usr/include/c++/5/backward" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/5" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/ninja -v begin/fast" />
+            <CompileFile command="/usr/bin/ninja -v &quot;$file&quot;" />
+            <Clean command="/usr/bin/ninja -v clean" />
+            <DistClean command="/usr/bin/ninja -v clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/indexbuffer.cpp">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/indexbuffer.h">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/myutil.cpp">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/vertexarray.cpp">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/vertexarray.h">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/vertexbuffer.cpp">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/vertexbuffer.h">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/vertexlayout.cpp">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/vertexlayout.h">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/youtubeDemo.cpp">
+         <Option target="begin"/>
+      </Unit>
+      <Unit filename="/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/begin/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>

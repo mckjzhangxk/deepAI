@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/input_status.dir/input_status.cpp.o  -o ../bin/input_status 

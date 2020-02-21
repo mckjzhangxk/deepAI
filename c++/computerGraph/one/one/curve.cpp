@@ -88,24 +88,24 @@ Curve evalBezier( const vector< Vector3f >& P, unsigned steps )
     cerr << "\t>>> evalBezier has been called with the following input:" << endl;
 
     cerr << "\t>>> Control points (type vector< Vector3f >): "<< endl;
-    for( unsigned i = 0; i < P.size(); ++i )
-    {
-        // cerr << "\t>>> " << P[i] << endl;
-        // P[i].print();
-    }
+    // for( unsigned i = 0; i < P.size(); ++i )
+    // {
+    //     // cerr << "\t>>> " << P[i] << endl;
+    //     // P[i].print();
+    // }
 
     cerr << "\t>>> Steps (type steps): " << steps << endl;
     // cerr << "\t>>> Returning empty curve." << endl;
 
     // Right now this will just return this empty curve.
-    Curve R(steps+1);
+    Curve R;
 
     Vector3f B=initBiNormal(P);
     int offset=0;
 
-    while (offset<P.size()-1)
+    while (offset<P.size()-3)
     {
-        for(unsigned s=0;s<steps+1;s++){
+        for(unsigned s=0;s<steps;s++){
             float t=s/(float(steps));
             float weight_V[4]={
                 pow(1-t,3),
@@ -139,12 +139,15 @@ Curve evalBezier( const vector< Vector3f >& P, unsigned steps )
             B.normalize();
             p.B=B;
             
-            R[s]=p;
+            R.push_back(p);
         }
         offset+=3;
     }
     
     
+    for(CurvePoint pt :R){
+        pt.V.print();
+    }
 
     return R;
 }
@@ -186,7 +189,7 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
         for(unsigned j=0;j<4;j++)
             cp4.push_back(P[i+j]);
         //4控制点,产生steps+1点吧
-        for(unsigned s=0;s<steps+1;s++){
+        for(unsigned s=0;s<steps;s++){
             float t=s/(float(steps));
             float weight_V[4]={
                 pow(1-t,3)/6.0,
@@ -201,9 +204,8 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
                 0.5*(-3*pow(t,2)+2*t+1),
                 0.5*pow(t,2)
             };
-            struct CurvePoint p;
-            p.V=Vector3f();
-            p.T=Vector3f();
+            CurvePoint p;
+            
             //4个控制点的不同加权 是新点和新切线方向
             for(unsigned j=0;j<4;j++){
                 p.V+=cp4[j]*weight_V[j];
@@ -220,8 +222,7 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
             B=Vector3f::cross(p.T,p.N).normalized();
             p.B=B;
             //面貌需要舍弃。。。
-            if(i==0 ||s>0)
-                ret.push_back(p);
+            ret.push_back(p);
         }
     }
     // vector<Vector3f> Pnew;

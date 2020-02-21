@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/zxk/PycharmProjects/deepAI1/c++/tutorial/17/getline.cpp
+fstream
+-
+iostream
+-
+sstream
+-
+string
+-
+

@@ -57,9 +57,9 @@ int main( int argc, char* argv[] )
   // name of the executable (in our case, "a4").
   
   //scene12_vase.txt,scene10_sphere
-   char *p[]={"./a5","-input","scene12_vase.txt","-size","300","300","-output","6.bmp","-bounces","4"};
+   /*char *p[]={"./a5","-input","scene12_vase.txt","-size","300","300","-output","6.bmp","-bounces","4"};
    argv=p;
-   argc=10;
+   argc=10;*/
   Parse_Result args=parse_input(argc,argv);
 
 

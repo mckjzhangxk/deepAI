@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/get_getline.dir/get_getline.cpp.o  -o ../bin/get_getline 

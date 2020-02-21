@@ -1,0 +1,7 @@
+# ninja log v5
+1	310	0	CMakeFiles/begin.dir/indexbuffer.cpp.o	cf605e6f9f5b06bf
+0	319	0	CMakeFiles/begin.dir/vertexbuffer.cpp.o	833fbab3b609508b
+1	372	0	CMakeFiles/begin.dir/vertexlayout.cpp.o	1a36458d8305853b
+1	374	0	CMakeFiles/begin.dir/vertexarray.cpp.o	9b11213b322d8ee2
+0	379	0	CMakeFiles/begin.dir/myutil.cpp.o	33a0f69234326dc9
+0	439	0	CMakeFiles/begin.dir/youtubeDemo.cpp.o	97a2019e4f5a5ddd

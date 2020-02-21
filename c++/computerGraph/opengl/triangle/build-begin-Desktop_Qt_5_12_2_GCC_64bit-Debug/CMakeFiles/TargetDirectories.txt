@@ -1,0 +1,3 @@
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/computerGraph/opengl/triangle/build-begin-Desktop_Qt_5_12_2_GCC_64bit-Debug/CMakeFiles/begin.dir
