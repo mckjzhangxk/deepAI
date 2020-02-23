@@ -9,7 +9,7 @@ bool PpmIoStrategy::Write(const std::string& file_name,
                           const ImageData& data) const {
     std::ofstream fout(file_name);
     fout << "P3" << endl;
-    fout << data.rows << "  " << data.cols << endl;
+    fout << data.cols << "  " << data.rows << endl;
     fout << data.max_val << endl;
 
     int r, g, b;
@@ -47,7 +47,7 @@ ImageData PpmIoStrategy::Read(const std::string& file_name) const {
     }
     //rows,cols
     std::stringstream stream(line);
-    stream >> data.rows >> data.cols;
+    stream >> data.cols >> data.rows;
 
     //maxvalue
     fin.getline(line, N);
