@@ -40,6 +40,7 @@ ImageData PngIoStrategy::Read(const std::string& file_name) const {
             blue[idx] = image[r][c].blue;
         }
     }
+
     image_data.data = {red, green, blue};
     return image_data;
 }

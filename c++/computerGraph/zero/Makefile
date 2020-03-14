@@ -1,13 +1,13 @@
 INCFLAGS  = -I /usr/include/GL
 INCFLAGS += -I include/vecmath
 
-LINKFLAGS  = -lglut -lGL -lGLU -lvecmath
+LINKFLAGS  = -lglut -lGL -lGLU
 
 
 
 CFLAGS    = -O2 -std=c++11
 CC        = g++
-SRCS      = *.cpp
+SRCS      = *.cpp vecmath/*.cpp
 # OBJS      = $(SRCS:.cpp=.o)
 PROG      = a0
 
