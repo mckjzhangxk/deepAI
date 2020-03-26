@@ -1,3 +1,0 @@
-/home/zhangxk/projects/deepAI/c++/computerGraph/vecmath/build/CMakeFiles/rebuild_cache.dir
-/home/zhangxk/projects/deepAI/c++/computerGraph/vecmath/build/CMakeFiles/edit_cache.dir
-/home/zhangxk/projects/deepAI/c++/computerGraph/vecmath/build/CMakeFiles/vecmath.dir

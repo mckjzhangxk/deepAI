@@ -1,0 +1,4 @@
+/home/zxk/PycharmProjects/deepAI1/c++/tutorial/share_library/build/CMakeFiles/rebuild_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/tutorial/share_library/build/CMakeFiles/hello.dir
+/home/zxk/PycharmProjects/deepAI1/c++/tutorial/share_library/build/CMakeFiles/edit_cache.dir
+/home/zxk/PycharmProjects/deepAI1/c++/tutorial/share_library/build/CMakeFiles/main.dir

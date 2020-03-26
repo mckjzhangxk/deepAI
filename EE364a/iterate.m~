@@ -1,0 +1,4 @@
+n=1000;
+e=ones(n,1);
+A=spdiags([-e 2*e -2],[-1 0 1],n,1);
+P=spdiags
