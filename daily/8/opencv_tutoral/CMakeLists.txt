@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.0)
+project(OpenCV_TUTOR)
+
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+set(LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O0")
+
+set(CMAKE_BUILD_TYPE Debug)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+find_package(OpenCV 3 REQUIRED)
+message(STATUS ${OpenCV_INCLUDE_DIRS})
+message(STATUS ${OpenCV_LIBS})
+
+include_directories(core)
+add_subdirectory(basic)
+add_subdirectory(binary_images)
+add_subdirectory(filter_template)

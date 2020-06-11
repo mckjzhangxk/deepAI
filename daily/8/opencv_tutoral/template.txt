@@ -1,0 +1,16 @@
+#include <cstdlib>
+
+#include "Image.h"
+#include "gui.h"
+
+static void callback(int value, void *userdata) {
+    AppProp *p = (AppProp *)userdata;
+}
+int main() {
+    char *filename = "/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/bin/book/binary/ocr2.png";
+    iotool::Image I(filename, 1);
+    AppProp p = {"", 128, 255, &I};
+
+    SliderWindow(p, callback);
+    cv::waitKey();
+}

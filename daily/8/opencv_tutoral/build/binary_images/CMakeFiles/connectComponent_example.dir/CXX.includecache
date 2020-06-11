@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../core/Image.h
+common.h
+../core/common.h
+
+../core/common.h
+opencv2/imgproc.hpp
+-
+opencv2/opencv.hpp
+-
+
+../core/gui.h
+common.h
+../core/common.h
+
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/binary_images/connectComponent_example.cpp
+cstdlib
+-
+Image.h
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/binary_images/Image.h
+gui.h
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/binary_images/gui.h
+

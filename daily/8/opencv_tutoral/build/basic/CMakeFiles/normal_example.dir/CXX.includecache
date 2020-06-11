@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../core/common.h
+opencv2/imgproc.hpp
+-
+opencv2/opencv.hpp
+-
+
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/basic/normal_example.cpp
+cmath
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/basic/cmath
+common.h
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/basic/common.h
+iostream
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/basic/iostream
+

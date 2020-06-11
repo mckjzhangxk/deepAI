@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../core/Image.h
+common.h
+../core/common.h
+
+../core/Matching.h
+Image.h
+../core/Image.h
+common.h
+../core/common.h
+
+../core/common.h
+opencv2/imgproc.hpp
+-
+opencv2/opencv.hpp
+-
+
+../core/gui.h
+common.h
+../core/common.h
+
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/filter_template/tm_search.cpp
+cstdlib
+-
+Image.h
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/filter_template/Image.h
+Matching.h
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/filter_template/Matching.h
+gui.h
+/home/zxk/PycharmProjects/deepAI1/daily/8/opencv_tutoral/filter_template/gui.h
+
