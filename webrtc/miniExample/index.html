@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Realtime communication with WebRTC</title>
+
+
+  
+</head>
+
+<body>
+
+  <h1>Realtime communication with WebRTC</h1>
+
+
+</div>
+
+  <!-- This file is automatically added/served when running "node index.js". -->
+
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  
+<video id="myvideo" autoplay playsinline></video><br/>
+
+  <span>我的SDP</span><textarea id="mysdp" style="width: 500px;height: 300px;"></textarea>
+  <span>收到的SDP</span><textarea id="yousdp"  style="width: 500px;height: 300px;"></textarea>
+  
+    <h1 id="isOk" style="visibility: hidden;">可正常通信</h1>
+  <input type="text" id="inp_data"></textarea>
+  <input type="text" id="outp_data"></textarea>
+
+  <button onclick="openCamera()">openCamera</button>
+
+  <button onclick="firstPerson()">first one</button>
+  <button onclick="firstGetSDP()">first get sdp</button>
+  
+  <button onclick="secondGetSDP()">sendond one</button>
+  <button onclick="send()">send Message</button>
+  <script>
+        let LOG=console.log;
+        var  peer;
+        var peer_dc;
+        var peer_stream;
+        function send(){
+                peer_dc.send(inp_data.value)
+                inp_data.value=''
+        }
+        function firstPerson(){
+            const lc=new RTCPeerConnection()
+            const dc=lc.createDataChannel('channel');
+            dc.onopen=e=>LOG('channelopen');
+            dc.onclose=e=>LOG('channel closed');
+            dc.onmessage=e=>{
+                outp_data.value=e.data
+            };
+
+
+            lc.onicecandidate=e=>LOG('new SDP',mysdp.value=JSON.stringify(lc.localDescription));
+            lc.addStream(peer_stream)
+
+            lc.createOffer().then(o=>lc.setLocalDescription(o)).then(a=>LOG('success create offer'))
+
+            peer=lc;
+            peer_dc=dc;
+
+
+
+        }
+
+
+        function firstGetSDP(){
+                const sdp=JSON.parse(yousdp.value);
+                peer.setRemoteDescription(sdp)
+        }
+
+        function secondGetSDP(){
+            const  sdp=JSON.parse(yousdp.value);
+            secondPerson(sdp);
+        }
+
+        function secondPerson(sdp){
+            const rc=new RTCPeerConnection()
+            peer=rc;
+            var dc;
+            rc.ondatachannel=e=>{
+                
+                dc=e.channel;
+                dc.onopen=x=>LOG('channelopen');
+                dc.onclose=x=>LOG('channel closed');
+                dc.onmessage=x=>{
+                    outp_data.value=x.data
+                }
+                peer_dc=dc
+            }
+            rc.onaddstream=event=>{
+                peer_stream=event.stream;
+                myvideo.srcObject=peer_stream
+            }
+
+            rc.onicecandidate=e=>LOG('new SDP',mysdp.value=JSON.stringify(rc.localDescription));
+            rc.setRemoteDescription(sdp)
+            rc.createAnswer().then(o=>rc.setLocalDescription(o)).then(a=>LOG('success create answer'))
+        }
+
+
+
+        function openCamera(){
+            navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{
+                peer_stream=stream;
+                myvideo.srcObject=stream
+            })
+        }
+  </script>
+
+</body>
+
+</html>

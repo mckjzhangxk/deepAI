@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <title>VideoChat</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.js"></script>
+      <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+      <style>
+          .ok{
+              width: 100%;
+              height: 30px;
+              background-color: green;
+          }
+          .cancle{
+              width: 100%;
+              height: 30px;
+              background-color: red;
+          }
+      </style>
+</head>
+<div>
+    <div class="cancle" id="yourstatus">对方是否上线</div>
+    <br/>
+    <div class='cancle' id="notifyOthers">我通知对方</div>
+    <br />
+    <div class='cancle' id="receivestatus">收到对方的通知</div>
+</div>
+     
+
+    <div>
+        房间号:<input type="text" value="room1" id="roomNum"/>
+        用户名:<input type="text" value="" id="username"/>
+        <button onclick="signalCall()" id="enterBtn">进入</button>
+        <button onclick="hangeup()" disabled id="hangeupBth">挂断</button>
+    </div>
+    <div>
+        <video id="myvideo" autoplay  playsinline></video>
+        <video id="yourvideo" autoplay  playsinline></video>
+    </div>
+ 
+
+
+    <script>
+        let socket;
+
+        function signalCall(){
+            if(!socket)
+                socket=new io(location.origin);
+            socket.on('join',data=>{
+                console.log(data)
+                yourstatus.className='ok'
+   
+                callOthers()
+
+        
+            })
+
+            socket.on('joined',data=>{
+                console.log(data)
+                initLocalPeer()
+
+                isCreator=false;
+                yourstatus.className='ok'
+            })
+
+            socket.on('message',data=>{
+                var msgType=data['type']
+                var sdp=data['sdp']
+
+                if(msgType=='offer'){
+                    localRTC.setRemoteDescription(sdp)
+                    receivestatus.className='ok'
+                    localRTC.addStream(localStream)
+                    callCreator();
+                    hangeupBth.disabled=false;
+                }else if(msgType=='answer'){
+                localRTC.setRemoteDescription(sdp)
+                receivestatus.className='ok'
+                hangeupBth.disabled=false;
+        
+                }else if(msgType=='candidate'){
+
+                    localRTC.addIceCandidate(new RTCIceCandidate({
+                                candidate: data.candidate,
+                                sdpMLineIndex: data.label,
+                                sdpMid: data.id
+                     }));
+                }
+
+                
+            })
+           
+            socket.on('bye',()=>{
+                console.log('getbye')
+                someoneLeave()
+            })
+
+            socket.emit('createOrJoin',{
+                'room':roomNum.value,
+                'username':username.value
+            })
+
+            enterBtn.disabled=true
+            hangeupBth.disabled=false
+        }
+    
+        function hangeup(){
+            if(socket)
+                socket.close();
+            socket=null;
+
+            releasePeer()
+
+                            //ui 
+            yourvideo.srcObject=null;
+             yourstatus.className='cancle'
+                notifyOthers.className='cancle'
+                receivestatus.className='cancle'
+                hangeupBth.disabled=true;
+                enterBtn.disabled=false;
+        }
+        function someoneLeave(){
+            releasePeer();
+
+            yourvideo.srcObject=null;
+           
+            yourstatus.className='cancle'
+            notifyOthers.className='cancle'
+            receivestatus.className='cancle'
+        }
+    </script>
+
+    <script>
+            let localStream;
+            let localRTC;
+            let remoteStream;
+            let isCreator=true;
+
+
+            function initLocalPeer(){
+   
+                localRTC=new RTCPeerConnection()
+                localRTC.onicecandidate=e=>{
+                        console.log(e)
+                        if(e.candidate){
+                            socket.emit('message',{
+                               type:'candidate',
+                               sdp:'',
+                               label: e.candidate.sdpMLineIndex,
+                                id: e.candidate.sdpMid,
+                                candidate: e.candidate.candidate
+                            })
+                        }
+                }
+                localRTC.onaddstream=event=>{
+                    remoteStream=event.stream;
+                    yourvideo.srcObject=remoteStream
+                }
+            }
+
+            function releasePeer(){
+                if(localRTC){
+                    localRTC.close()
+                    localRTC=null
+                }
+                remoteStream=null;
+            }
+            function opencamera(){
+                navigator.mediaDevices.getUserMedia({video:true,audio:true})
+                .then(stream=>{
+                    myvideo.srcObject=stream;
+                    localStream=stream;
+                })
+            }
+
+            function callOthers(){
+
+ 
+                initLocalPeer();
+                localRTC.addStream(localStream)
+
+                localRTC.createOffer().then(o=>{
+                    return localRTC.setLocalDescription(o);
+                }).then(()=>{
+                    socket.emit('message',{
+                        'sdp':localRTC.localDescription,
+                        'type':'offer'
+                    })
+                    notifyOthers.className='ok'
+                })
+            }
+
+
+            function callCreator(){
+                localRTC.createAnswer().then(a=>{
+                    localRTC.setLocalDescription(a);
+                    console.log(a)
+                    socket.emit('message',
+                    {
+                        'sdp':a,
+                        'type':'answer'
+                    }
+                    );
+                    notifyOthers.className='ok'
+                })
+            }
+
+            opencamera()
+    </script>
+</html>
