@@ -1,6 +1,14 @@
-const app=require('express')()
+const express=require('express')
+const app=express()
 const server=require('http').createServer(app)
 const port=3001
+
+
+
+
+//设置静态路径，这样html引用的css,js文件才能找到
+app.use(express.static('.'))
+
 
 app.get('/',(req,res)=>{
   res.sendFile(__dirname + '/chat.html');
@@ -33,12 +41,25 @@ function showRoomInfo(roomname){
   console.log(`room=${roomname},#=${current.length}`)
 }
 
-
 sio.on('connection',(socket)=>{
 
     console.log('connect:'+socket.id)
   
     socket.on('createOrJoin',(data)=>{
+
+      /**
+       * data里面必须有room字段，用于表示加入或在创建的房间
+       * 
+       * 全局字典里面如果有这个room
+       * 1)是加入room
+       *    A.检查本socket是否已经加入了room
+       *    B.如果A不成立
+       *      B.1）通知已经加入room的所有成员(event=join)
+       *      B.2）通知这个新加入者((event=join,并且把他加入到room.list中)
+       * 2)否则是创建room
+       *   把socketid,data作为一个object，保存到当前room中(list)
+       *  
+      */
       var room=data['room']
       
       if(room in rooms){
@@ -70,6 +91,13 @@ sio.on('connection',(socket)=>{
   })
 
   socket.on('message',(data)=>{
+       /**
+        * 把 消息转发给 【和个成员同room】的【其他
+        * 成员】
+        * 这里需要一个【反转表socket_room】
+        * 根据socket.id就可以找出 【其他room成员】
+        * 
+       */
         var room=socket_room[socket.id]
         if(room in rooms){
           let peers=rooms[room]
@@ -83,9 +111,18 @@ sio.on('connection',(socket)=>{
         }
   })
       socket.on('disconnect',()=>{
+        /**
+         * 当收到有人 断开socket的时候：
+         * 
+         * 1）通知与这个socket同房间的成员【event=bye】
+         * 2) 从房间 【移除】这个成员(room表+反转表)
+         * 3)如果【房间人数=0】，移除这个房间。
+        */
       console.log('disconnected:'+socket.id)
       
       var roomName=socket_room[socket.id]
+      delete socket_room[socket.id]
+
       var peers=rooms[roomName]
       
       if(!peers) return;
@@ -99,7 +136,7 @@ sio.on('connection',(socket)=>{
         }
       }
       if(delIndex>=0)
-        peers.splice(delIndex)
+        peers.splice(delIndex,1)
       
       showRoomInfo(roomName);
 

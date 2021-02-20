@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+       
+          <title>VideoChat</title>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.js"></script>
+          <!-- 为了让所有平台都可以支持webrtc,引入这个js -->
+          <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+          <link href="css/style.css" rel="stylesheet"/>
+         <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+         <script src="https://kit.fontawesome.com/5ab677aefc.js" crossorigin="anonymous"></script>
+    </head>
+
+
+
+
+    <div class="mainContainer">
+        
+        <div class="mainLeft">
+ 
+                <div id="video-grid">
+                    <video id="myvideo"></video>
+                    <video id="yourvideo" autoplay  playsinline></video>
+                </div>
+                <div id="video-control">
+
+                    <div class="controlBlock">
+                        <div style="display: flex;align-items: center;justify-content: center;">
+                            <input type="text" value="" id="username"  style="border: none;background: transparent;color: wheat;margin: 10px;" placeholder="输入用户名"/>
+                        </div>
+                    </div>
+
+                    <div class="controlBlock">
+                            <!-- <div class="controlButton">
+                                <i class="fa fa-microphone" aria-hidden="true"></i> 
+                                <span>语音</span>
+                            </div> -->
+                            <div class="controlButton openOrCloseAudio"  onclick="openOrCloseClick('audio')">
+                                <i class="fas fa-microphone-slash stop"></i>
+                                <span class="stop">静音</span>
+                            </div>
+
+                            <div class="controlButton openOrCloseVideo" onclick="openOrCloseClick('video')">
+                                <i class="fas fa-video-slash stop"></i>
+                                <span span class="stop">关闭视频</span>
+                            </div>
+ 
+
+                            <div class="controlButton callOrHangup" onclick="onCallClick()">
+                                <i class="fa fa-phone" aria-hidden="true"></i>
+                                <span>连线</span>
+                            </div>
+
+                            
+                            <div class="controlButton" onclick="showOrHideChat()">
+                                <i class="fa fa-comments" aria-hidden="true"></i>
+                                <span>聊天</span>
+                            </div>
+
+                    </div>
+                    
+
+                    <div class="controlBlock">
+                        <div id="videoStatus">
+                            <div class="cancle" id="yourstatus">对方是否上线</div>
+                            <div class='cancle' id="notifyOthers">我通知对方</div>
+                            <div class='cancle' id="receivestatus">收到对方的通知</div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="mainRight">
+             
+            <div class="chatHeader">
+                <h6>聊天</h6>
+            </div>
+            <div class="chatContent">
+                <ul>
+                    <!-- <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li> -->
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                    <li class="messageItem">aa</li>
+                </ul>
+            </div>
+            <div class="chatInput">
+                <input id="messageInput" type="text" value=""  placeholder="你想说些什么？"/>
+            </div>
+        </div>
+    </div>
+ 
+ 
+    <script src="js/client.js"></script>
+ 
+</html>

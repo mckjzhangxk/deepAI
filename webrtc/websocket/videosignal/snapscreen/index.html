@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapScreen</title>
+</head>
+<body>
+        <button onclick="startCapture()">捕获屏幕</button>
+        <button onclick="stop()">stop</button>
+        
+        <video id="videoElement" autoplay></video>
+
+        <pre id="logElement">
+
+        </pre>
+        <script>
+            console.log=message=>logElement.innerHtml+=`<span class="info">${message}</span><br />`
+            console.error=message=>logElement.innerHtml+=`<span class="info">${message}</span><br />`
+            let options={
+                video:{cursor:"always"},
+            }
+
+            
+         
+            
+            
+            
+            async function  initAudioTrack(){
+                var audioOption={ audio:{
+                    echoCancellation:true,
+                    noiseSuppression:true,
+                    sampleRate:44100
+                }}
+
+                var tmp=await navigator.mediaDevices.getUserMedia(audioOption)
+                var audioTrack=tmp.getAudioTracks()[0]
+
+                return audioTrack
+            }
+
+
+            let localStream
+            async function startCapture(){
+                try{
+                    localStream=await navigator.mediaDevices.getDisplayMedia(options);
+                    let audioTrack=await initAudioTrack()
+
+                    localStream.addTrack(audioTrack)
+                    videoElement.srcObject=localStream
+                }catch(err){
+                    console.error(err)
+                }
+            }
+
+            function stop(){
+                var tracks= videoElement.srcObject.getTracks()
+
+                tracks.forEach(e => {
+                    e.stop()
+                });
+                localStream=null;
+                videoElement.srcObject=null
+            }
+        </script>
+</body>
+</html>

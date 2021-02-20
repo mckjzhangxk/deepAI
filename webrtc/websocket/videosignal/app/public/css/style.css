@@ -1,0 +1,122 @@
+.ok{
+    width: 120px;  
+    margin-top: 3px;
+    margin-bottom: 3px;
+    background-color: #33ff3330;
+}
+.cancle{
+    width: 120px;  
+    margin-top: 3px;
+    margin-bottom: 3px;
+    background-color: #ff778830;
+}
+
+.mainContainer{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+}
+
+.mainLeft{
+    flex: 0.8;
+
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainRight{
+    flex: 0.2;
+    display: flex;
+    flex-direction: column;
+    background: #242324;
+}
+.chatHeader{
+    font-size: 28px;
+    text-align: center;
+    border-left: 1px solid;
+}
+.chatHeader h6{
+    color: aliceblue;
+    margin: 0;
+    padding: 0;
+}
+.chatContent{
+    flex-grow: 1;
+    /* overflow-y 表示当 child的高度超过了 我，我添加进度条 */
+    /* 只有设置这个属性的div, scrollHeight和client Height不同 */
+    overflow-y: auto;
+}
+.chatContent ul{
+     
+    color: wheat;
+}
+.messageItem{
+    list-style: none;
+}
+.chatInput{
+    padding: 20px 10px;
+    display: flex;
+}
+.chatInput input{
+    border: none;
+    color: wheat;
+    background: transparent;
+    flex-grow: 1;
+}
+#videoStatus{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+    font-size: 10px;
+}
+#video-grid{
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#video-control{
+    background: #211f1f;
+    width: 100%;
+    
+    margin: 10px;
+    margin-bottom: 0px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+}
+
+.controlBlock{
+    display: flex;
+     
+}
+.controlButton{
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+ 
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    min-width: 100px;
+}
+
+.controlButton i{
+    font-size: 24px;
+}
+.controlButton:hover{
+    background-color: #5E5E5E;
+    border-radius: 10px;
+}
+.controlButton  .stop{
+    color: red;
+}
+video{
+ width: 48%;
+ max-width: 100%;
+}
