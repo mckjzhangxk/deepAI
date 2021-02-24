@@ -8,6 +8,25 @@ let isCreator=true;
 
 let roomNum='room1'
 
+var pcConfig = {
+    'iceServers': [
+        // {
+        //     'urls':'stun:stun.mathai.xyz:3478'
+        // }
+    // {
+    //   'urls': 'stun:stun.l.google.com:19302'
+    // }
+    // ,
+    // {
+	// 'urls':'stun:stun.services.mozilla.com'
+    // }
+    // ,
+    {
+    	'urls':'stun:stun.voipstunt.com'
+    }
+    ]
+  };
+// var pcConfig = null
 
 /**
  * @param {String} HTML representing a single element
@@ -227,7 +246,7 @@ const showOrHideChat=()=>{
             */
 
  
-            localRTC=new RTCPeerConnection()
+            localRTC=new RTCPeerConnection(pcConfig)
             if(isCreator){
                             dataChannel=localRTC.createDataChannel('chatChannel')
                             setDataChannelEvent()
@@ -280,7 +299,7 @@ const showOrHideChat=()=>{
            //new3 静音
             myvideo.muted=true
 
-            navigator.mediaDevices.getUserMedia({video:true,audio:{
+           navigator.mediaDevices.getUserMedia({video:true,audio:{
                 echoCancellation: true,
                 noiseSuppression: true,
                 sampleRate: 44100
@@ -319,15 +338,15 @@ const showOrHideChat=()=>{
             localRTC.addStream(localStream)
             
             localRTC.createOffer().then(o=>{
-                return localRTC.setLocalDescription(o);
-            }).then(()=>{
-                socket.emit('message',{
-                    'sdp':localRTC.localDescription,
+                localRTC.setLocalDescription(o);
+		socket.emit('message',{
+                    'sdp':o,
                     'type':'offer'
                 })
-                
                 notifyOthers.className='ok'
+
             })
+                
             
         }
 

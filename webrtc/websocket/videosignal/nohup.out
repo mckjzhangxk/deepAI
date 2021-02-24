@@ -1,0 +1,4 @@
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+2021-02-23 22:26:12,726 [  18413]   WARN - .diagnostic.PerformanceWatcher - UI was frozen for 7589ms, details saved to /home/zxk/.cache/JetBrains/IdeaIC2020.3/log/threadDumps-freeze-20210223-222610-IC-203.7148.57-ZipFile.getEntry-7sec 
+2021-02-23 22:26:25,117 [  30804]   WARN -        #com.intellij.idea.Main - can't parse gsettings line: @a(ss) [] 
+2021-02-23 22:53:08,743 [1634430]   WARN - .diagnostic.PerformanceWatcher - UI was frozen for 21057ms, details saved to /home/zxk/.cache/JetBrains/IdeaIC2020.3/log/threadDumps-freeze-20210223-225252-IC-203.7148.57-X11InputMethodBase.isCompositionEnabledNative-21sec 

@@ -2,13 +2,15 @@
     width: 120px;  
     margin-top: 3px;
     margin-bottom: 3px;
+    color: green;
     background-color: #33ff3330;
 }
 .cancle{
     width: 120px;  
     margin-top: 3px;
     margin-bottom: 3px;
-    background-color: #ff778830;
+    color: red;
+    background-color: #ff7788ff
 }
 
 .mainContainer{
