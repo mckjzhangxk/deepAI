@@ -4,13 +4,13 @@ const server=require('http').createServer(app)
 const port=3001
 
 
-app.get('/uuid',(req,res)=>{
-  res.redirect(`/video/uuid-${21232}`)
-})
-app.get('/uuid:room',(req,res)=>{
-  console.log(req.params.room)
-  res.send('uuid')
-})
+// app.get('/uuid',(req,res)=>{
+//   res.redirect(`/video/uuid-${21232}`)
+// })
+// app.get('/uuid:room',(req,res)=>{
+//   console.log(req.params.room)
+//   res.send('uuid')
+// })
 
 
 //new1:设置静态路径，这样html引用的css,js文件才能找到

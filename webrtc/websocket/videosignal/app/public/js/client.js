@@ -148,6 +148,8 @@ const showOrHideChat=()=>{
         
                 }else if(msgType=='candidate'){
 
+                    
+                    
                     localRTC.addIceCandidate(new RTCIceCandidate({
                                 candidate: data.candidate,
                                 sdpMLineIndex: data.label,
@@ -248,7 +250,14 @@ const showOrHideChat=()=>{
  
             localRTC=new RTCPeerConnection(pcConfig)
             if(isCreator){
+                const dataChannelOptions = {
+                    id:1000,
+                    negotiated:true,
+                    ordered: false, // do not guarantee order
+                    maxPacketLifeTime: 3000, // in milliseconds
+                  };
                             dataChannel=localRTC.createDataChannel('chatChannel')
+
                             setDataChannelEvent()
             }else{
                 localRTC.ondatachannel=e=>{
