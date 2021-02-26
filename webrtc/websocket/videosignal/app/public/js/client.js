@@ -285,6 +285,8 @@ const showOrHideChat=()=>{
             }
         }
 
+
+
         function releasePeer(){
             /**
              * 关闭peer2peer的connection，
@@ -301,6 +303,30 @@ const showOrHideChat=()=>{
             }
             remoteStream=null;
         }
+        
+        async function  getCustomStream(){
+           var cameraStream= await navigator.mediaDevices.getUserMedia({video:true,audio:{
+                echoCancellation: true,
+                noiseSuppression: true,
+                sampleRate: 44100
+            }})
+             
+            await  document.querySelector("#filevideo").play()
+            var movieStream=await filevideo.captureStream(0)
+
+            return [
+                {
+                    name:'摄像头',
+                    stream:cameraStream
+                },
+                {
+                    name:'电影',
+                    stream:movieStream
+                }
+            ]
+
+        }
+        
         function opencamera(){
             /**
              * 打开摄像头
@@ -308,6 +334,7 @@ const showOrHideChat=()=>{
            //new3 静音
             myvideo.muted=true
 
+            
            navigator.mediaDevices.getUserMedia({video:true,audio:{
                 echoCancellation: true,
                 noiseSuppression: true,
@@ -434,8 +461,44 @@ const showOrHideChat=()=>{
 
 
 
-        opencamera()
+        function loadLocalStream(s){
+            localStream=s
 
+            // myvideo.muted=true
+            myvideo.srcObject=localStream;
+            myvideo.addEventListener('loadedmetadata',()=>{
+                myvideo.play()
+            })
+
+        }
+        // opencamera()
+        let videoRources=null;
+       (async()=>{
+
+        videoRources=await getCustomStream()
+        var options=''
+        for(var source of videoRources){
+            options+=` <option value="${source.name}">${source.name}</option>`
+        }
+        document.querySelector("#videoSourceSelect").innerHTML=options
+        document.querySelector("#videoSourceSelect").addEventListener('change',(e)=>{
+           var selectSourceName=document.querySelector("#videoSourceSelect").value
+            for(var s of videoRources){
+                if(s.name==selectSourceName){
+                    loadLocalStream(s.stream)
+                    if(localRTC!=null){
+                        hangeup()
+                        signalCall()
+                    }
+                    break;
+                }
+            }
+        })
+
+        loadLocalStream(videoRources[0].stream)
+
+         
+        //聊天
         messageInput.addEventListener('keydown',e=>{
             if(e.keyCode==13&&messageInput.value.trim()!=''){
                 var msg=messageInput.value.trim()
@@ -447,3 +510,8 @@ const showOrHideChat=()=>{
                 }
             }
         })
+
+       })()
+ 
+
+

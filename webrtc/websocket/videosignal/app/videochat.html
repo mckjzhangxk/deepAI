@@ -17,11 +17,19 @@
 
 
     <div class="mainContainer">
-        
+
+        <video id="filevideo" class="localVideo" playsinline autoplay controls loop muted style="display: none;">
+            <source src="video/chrome.webm" type="video/webm"/>
+            <source src="video/chrome.mp4" type="video/mp4"/>
+            <p>This browser does not support the video element.</p>
+        </video>
+
         <div class="mainLeft">
  
                 <div id="video-grid">
-                    <video id="myvideo"></video>
+                    
+ 
+                    <video id="myvideo"  class="localVideo" ></video>
                     <video id="yourvideo" autoplay  playsinline></video>
                 </div>
                 <div id="video-control">
@@ -29,6 +37,9 @@
                     <div class="controlBlock">
                         <div style="display: flex;align-items: center;justify-content: center;">
                             <input type="text" value="" id="username"  style="border: none;background: transparent;color: wheat;margin: 10px;" placeholder="输入用户名"/>
+                            <select name="cars" id="videoSourceSelect">
+   
+                              </select>
                         </div>
                     </div>
 
