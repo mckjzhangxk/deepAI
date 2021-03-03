@@ -6,7 +6,12 @@ let dataChannel=null
 
 let isCreator=true;
 
-let roomNum='room1'
+queryString=location.search
+const urlParams = new URLSearchParams(queryString);
+let roomNum=urlParams.get('room')?urlParams.get('room'):'room1'
+let userid=urlParams.get('user')?urlParams.get('user'):'test'
+
+username.value=userid
 
 var pcConfig = {
     'iceServers': [
@@ -170,7 +175,7 @@ const showOrHideChat=()=>{
             //创建这主动发起事件
             socket.emit('createOrJoin',{
                 'room':roomNum,
-                'username':username.value
+                'username':userid
             })
 
             setHangupButton()
@@ -464,7 +469,7 @@ const showOrHideChat=()=>{
         function loadLocalStream(s){
             localStream=s
 
-            // myvideo.muted=true
+            myvideo.muted=true
             myvideo.srcObject=localStream;
             myvideo.addEventListener('loadedmetadata',()=>{
                 myvideo.play()
