@@ -11,14 +11,39 @@
       margin: 0;
     }
   </style>
+<link href="css/toolbar.css"    rel="stylesheet">
   <script src="public/js/p5.min.js"></script>
-  <script src="public/js/addons/p5.sound.min.js"></script>
-  <script src="js/sketch.js"></script>
+   
 </head>
 
-<body>
+<body  id="ex1">
+  <div  class="toolbar" role="toolbar">
+    <div class="toolbar-item" role="button" tabindex="0" onclick="clear();zhangxk.clear();setup()">新的一页</div>
+    <div class="toolbar-item selected" role="button" tabindex="0" onclick="mode=MODE_EDIT">铅笔</div>
+    <div class="toolbar-item" role="button" tabindex="0" onclick="mode=MODE_CLEAR">橡皮</div> 
+    <div class="toolbar-item" role="button" tabindex="0" onclick="mode=MODE_MOVE">滑动</div>   
+    <div class="toolbar-item" role="button" tabindex="0" onclick="document.getElementsByTagName('body')[0].requestFullscreen()">全屏</div>   
+
+     
+  </div>
+<div id='logdiv'>sss</div>
+
+
   <main>
   </main>
+  <script src="js/utils.js"></script>
+  <script src="js/toolbar.js"></script>
+  <script src="js/easycanvas.js"></script>
+  <script src="js/sketch.js"></script>
+
+  <script>
+let ex1Toolbar=null;
+
+window.addEventListener('load', function () {
+  var ex1 = document.getElementById('ex1');
+   ex1Toolbar = new aria.Toolbar(ex1.querySelector('[role="toolbar"]'));
+});
+  </script>
 </body>
 
 </html>
