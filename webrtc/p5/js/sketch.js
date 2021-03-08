@@ -27,7 +27,15 @@ function windowResized() {
   setup();
 }
 
-function mousePressed() {
+function mousePressed(e) {
+  if(e.button==2){
+    var p1=createElement('div','<div class="toolbar-item" role="button" tabindex="0" onclick="clear();zhangxk.clear();setup()">新的一页</div>');
+    p1.position(e.x-50,e.y-p1.size().height)
+  
+    p1.mousePressed(eb=>{
+      p1.remove(1)
+    })
+  }
   if (mode != MODE_MOVE) {
     currentPath = new zhangxk.Path(penColor, penWeight);
     currentPath.context = pathContext;
@@ -40,6 +48,7 @@ function mousePressed() {
   }
 }
 function mouseReleased() {
+ 
   if (currentPath) zhangxk.addDrawObject(currentPath);
   currentPath = null;
 }
