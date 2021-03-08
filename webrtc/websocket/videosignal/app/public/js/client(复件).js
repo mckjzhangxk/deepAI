@@ -453,49 +453,32 @@ function loadLocalStream(s) {
     myvideo.play();
   });
 }
-
-(async() => {
-  let videoResources = zhangxk.getAllMediaTrack()["video"];
-  let audioResources = zhangxk.getAllMediaTrack()["audio"];
-
-  let _videoSourceSelect = document.querySelector("#videoSourceSelect");
-  let _audioSourceSelect = document.querySelector("#audioSourceSelect");
-
-  for (var ii of [
-    { res: videoResources, ui: _videoSourceSelect },
-    { res: audioResources, ui: _audioSourceSelect },
-  ]) {
-    let _res = ii.res,
-      _ui = ii.ui;
-    for (var source of _res) {
-      let opt = htmlToElement(
-        `<option value="${source.name}">${source.name}</option>`
-      );
-      opt.data = source;
-      _ui.appendChild(opt);
-    }
+// opencamera()
+let videoRources = null;
+(async () => {
+  videoRources = await getCustomStream();
+  var options = "";
+  for (var source of videoRources) {
+    options += ` <option value="${source.name}">${source.name}</option>`;
   }
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  _videoSourceSelect.addEventListener("change", (e) => {
-    let sdata = videoSourceSelect.options[videoSourceSelect.selectedIndex].data;
-    sdata.getTrack().then((track)=>{
-            var stream=new MediaStream()
-            stream.addTrack(track);
-            stream.addTrack(localStream.getAudioTracks()[0]);
-            
-            loadLocalStream(stream);
-            if (localRTC != null) {
+  document.querySelector("#videoSourceSelect").innerHTML = options;
+  document
+    .querySelector("#videoSourceSelect")
+    .addEventListener("change", (e) => {
+      var selectSourceName = document.querySelector("#videoSourceSelect").value;
+      for (var s of videoRources) {
+        if (s.name == selectSourceName) {
+          loadLocalStream(s.stream);
+          if (localRTC != null) {
             hangeup();
             signalCall();
-            }
-    })
+          }
+          break;
+        }
+      }
+    });
 
-  });
-
-  let v1=await  videoResources[0].getTrack(),a1=await  audioResources[0].getTrack()
-  var stream_init = zhangxk.createStream(v1,a1);
-  loadLocalStream(stream_init);
+  loadLocalStream(videoRources[0].stream);
 
   //聊天
   messageInput.addEventListener("keydown", (e) => {
