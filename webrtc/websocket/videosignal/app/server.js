@@ -23,6 +23,9 @@ app.use(express.static(`${__dirname}/public`))
 app.get('/videochat',(req,res)=>{
   res.sendFile(__dirname + '/videochat.html');
 })
+app.get('/canvas',(req,res)=>{
+  res.sendFile(__dirname + '/canvas.html');
+})
 
 server.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
