@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p5.js example</title>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+
+<link href="css/bootstrap.min.css"    rel="stylesheet">
+<link href="css/toolbar.css"    rel="stylesheet">
+  <script src="public/js/p5.min.js"></script>
+   
+</head>
+
+<body  id="ex1">
+  
+<div class="btn-toolbar btn-group-vertical" role="toolbar" style="padding: 5px;background:#eeeeee;width:fit-content;border: 1px solid grey;">
+  <div class="btn-toolbar-slider btn-group me-2 btn-primary" style="height:30px;">
+  
+  </div>
+  <div class="btn-group me-2" role="group" >
+    <button type="button" class="btn btn-outline-primary" onclick="clear();zhangxk.clear();setup()">新的一页</button>
+  </div>
+  <div class="btn-group me-2" role="group">
+    <button type="button" class="btn btn-outline-primary"  onclick="mode=MODE_EDIT">铅笔</button>
+    <button type="button" class="btn btn-outline-primary" onclick="mode=MODE_CLEAR">橡皮</button>
+  </div>
+  <!-- <div class="btn-group me-2" role="group" >
+    <button type="button" class="btn btn-outline-primary" onclick="mode=MODE_MOVE">滑动</button>
+  </div> -->
+  <div class="btn-group me-2" role="group" >
+    <button type="button" class="btn btn-outline-primary" onclick="mode=MODE_MOVE">撤销</button>
+  </div>
+  <div class="btn-group" role="group" id="weightGroup"></div>
+  <div class="btn-group" role="group" id="colorGroup"></div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-primary" onclick="document.getElementsByTagName('body')[0].requestFullscreen()">全屏</button>
+  </div>
+  
+</div>
+
+
+     
+  </div>
+<div id='logdiv'>sss</div>
+
+
+  <main>
+  </main>
+  <script src="js/utils.js"></script>
+  <script src="js/toolbar.js"></script>
+  <script src="js/easycanvas.js"></script>
+  <script src="js/a.js"></script>
+
+  <script>
+let ex1Toolbar=null;
+
+// window.addEventListener('load', function () {
+//   var ex1 = document.getElementById('ex1');
+//    ex1Toolbar = new aria.Toolbar(ex1.querySelector('[role="toolbar"]'));
+// });
+  </script>
+</body>
+
+</html>
