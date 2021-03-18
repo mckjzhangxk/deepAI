@@ -50,6 +50,7 @@ function setup() {
   // slider.position(10, 10);
   // slider.style('width', '80px');
   slider.input((e) => {
+    alert(e)
     e.preventDefault()
   })
   

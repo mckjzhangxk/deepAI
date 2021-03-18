@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="./css/katex.css" rel="stylesheet">
+    </llink>
+    <link href="./css/quill.snow.css" rel="stylesheet">
+    </llink>
+    <script src="./js/katex.js"></script>
+    <script src="./js/quill.js"></script>
+    <style>
+        #editor {
+            width: 80%;
+            height: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Create the editor container -->
+    <div id="editor"></div>
+    <button onclick="clickHandler()">保存</button>
+    <div id="uploadpage"></div>
+    <a id="check" href="#" target="_black">查看保存的页面</a>
+</body>
+
+<script>
+    let toolbarOptions = [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        [{ 'script': 'sub' }, { 'script': 'super' }],
+        ['image', 'formula'],
+        [{ color: [] }, { background: []}]
+    ];
+
+    let quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            // toolbar: '#toolbar'
+            toolbar: toolbarOptions,
+        }
+    });
+
+    // var toolbar = quill.getModule('toolbar');
+    // toolbar.addHandler('image', (value)=>{
+    //     console.log(value)
+    // });
+    var delta = {
+        ops: [
+            { insert: 'Gandalf', attributes: { bold: true } },
+            { insert: ' the ' },
+            { insert: 'Grey', attributes: { color: '#cccccc' } }
+        ]
+    }
+    // quill.setContents(delta)
+
+    function clickHandler() {
+        var html = quill.root.innerHTML;
+
+
+        document.querySelector('#uploadpage').innerHTML = html
+        fetch('http://192.168.1.36:7001/tempUploadPage', {
+            method: 'POST', body: html
+        }).then(a => a.text()).then((a) => {
+            document.querySelector('#check').href = a
+        })
+    }
+</script>
+
+</html>

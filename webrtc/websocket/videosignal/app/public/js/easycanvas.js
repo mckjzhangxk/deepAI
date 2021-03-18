@@ -101,3 +101,25 @@ zhangxk.Path = class {
     }
   }
 };
+
+
+zhangxk.Image=class{
+  constructor(img,x,y){
+    this.img=img
+    this.x=x
+    this.y=y
+    this.context = null;
+  }
+
+  draw() {
+    let W=this.img.width;
+    let  H=this.img.height*W/this.img.width
+    this.context.image(this.img,this.x,this.y,W,H);
+    console.log('draw')
+  }
+  render() {
+    if (this.context) {
+      image(this.context, 0, 0);
+    }
+  }
+}
