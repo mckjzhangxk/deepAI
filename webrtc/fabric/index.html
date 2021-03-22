@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/fabric.min.js"></script>
+</head>
+
+<body>
+    <p>line1</p>
+    <p>line2</p>
+    <button onclick="clearCanvas()">clearCanvas</button>
+    <button onclick="addRect()">addRect</button>
+    &nbsp;&nbsp;&nbsp;
+    <canvas id="mycanvas" width="1024" height="768"></canvas>
+     
+    <script>
+
+        function initCanvas(id) {
+            let cvEL = document.getElementById(id);
+
+            const cv = new fabric.Canvas(id, {
+                width: cvEL.width,
+                height: cvEL.height,
+                selection: false,
+                backgroundColor: 'green',
+                // isDrawingMode:true
+            });
+            return cv;
+        }
+
+        function setBackground(cv, url) {
+            fabric.Image.fromURL(url, (img) => {
+                cv.backgroundImage = img;
+                cv.renderAll();
+            })
+        }
+        function setPanEvent(cv) {
+            let isPress = false;
+            cv.on('mouse:move', (e) => {
+                if (isPress) {
+                    e = e.e;
+                    cv.relativePan(new fabric.Point(e.movementX, e.movementY));
+
+                }
+            })
+            cv.on('mouse:down', (e) => {
+                isPress = true;
+            })
+            cv.on('mouse:up', (e) => {
+                isPress = false;
+            })
+        }
+
+        function clearCanvas(){
+            cv.getObjects().forEach(o=>{
+                cv.remove(o);
+            })
+        }
+
+        function addRect(){
+            let center=cv.getCenter()
+             const rect=new fabric.Rect({
+                 width:100,
+                 height:100,
+                 fill:'#ff00ff',
+                 lockScalingX:true,
+                 lockScalingY:true,
+                 lockMovementX :true,
+                 lockMovementY :true,
+                 
+                 
+                 top:center.top,
+                 left:center.left,
+ 
+                 originX:'center',
+                 originY:'center',
+                 cornerColor:'#000000',
+                 objectCaching:false
+             })
+             rect.on('selected',()=>{
+                 rect.fill='#ff0000'
+             })
+             rect.on('deselected',()=>{
+                 rect.fill='#ff00ff'
+             })
+             
+             rect.on('mousedown',()=>{
+                    console.log('mousedown')
+             })
+             rect.on('mouseover',()=>{
+                    console.log('event:mouseover')
+             })
+
+             cv.add(rect);
+             cv.renderAll()
+        }
+        let cv = initCanvas('mycanvas');
+        setBackground(cv, 'https://pics5.baidu.com/feed/30adcbef76094b3697fec826b82345d18f109d80.jpeg?token=1559f981c05803ee61741327bced808c&s=B28A27E032FC6B9E94A0441F0300D0D2')
+        // setPanEvent(cv);
+        // cv.renderAll();
+
+
+
+
+    </script>
+</body>
+
+</html>

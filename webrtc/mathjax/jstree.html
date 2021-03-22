@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="js/themes/default/style.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+    <script src="js/jstree.js"></script>
+</head>
+
+<body>
+    <button id="btnCreate" onclick="addNew()">添加</button>
+    <button onclick="editNew()">编辑</button>
+    <button onclick="deleteNode()">删除</button>
+    <div id="jstreeDir" style="width: 20%;"></div>
+</body>
+<script>
+
+
+    fetch('https://192.168.1.36:8443/restapi/chapterdb/st.json').then(a=>a.json()).then(console.log)
+    function uuidv4() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+
+    let treeData = [
+        { 'text': 'Simple root node', 'url': 'baidu.com', },
+        {
+            'text': 'Root node 2',
+            'data': { name: '1' },
+            'isQuesion': true,
+            'state': {
+                'opened': true,
+                'selected': true
+            },
+            'children': [
+                { 'text': 'Child 1', 'data': 'baidu.com', data: { name: '2' } },
+                { 'text': 'Child 2' }
+            ]
+        }
+    ]
+    $(function () {
+
+
+        $('#jstreeDir').jstree({
+            'core': {
+                'check_callback': true,
+                'data': treeData,
+                "themes" : { "stripes" : true },
+            },
+            "plugins": [
+                "contextmenu", "dnd", "search",
+                "state", "types", "wholerow"
+            ]
+        });
+    });
+
+    $('#jstreeDir').on("select_node.jstree", function (e, data) {
+        console.log(data.node.original)
+        // return false
+        
+    })
+
+    function addNew() {
+        var ref = $('#jstreeDir').jstree();
+        var sel = ref.get_selected();
+        if (!sel.length) { return false; }
+        sel = sel[0];
+        sel = ref.create_node(sel, { "id": uuidv4(), 'text': '' }, 'last', function (e) {
+        });
+
+        if (sel) {
+            ref.edit(sel, '请输入名字', function (e) {
+                console.log(e)
+                ref.get_node(sel).original.text = e.text;
+            });
+        }
+    }
+
+
+    function editNew() {
+        var ref = $('#jstreeDir').jstree();
+        var sel = ref.get_selected();
+
+        if (!sel.length) { return false; }
+        sel = sel[0];
+        if (sel) {
+            ref.edit(sel, ref.get_node(sel).original.text, function (e) {
+                console.log(e)
+                ref.get_node(sel).original.text = e.text
+            });
+        }
+    }
+
+    function deleteNode() {
+        var ref = $('#jstreeDir').jstree(true),
+            sel = ref.get_selected();
+        if (!sel.length) { return false; }
+        ref.delete_node(sel);
+    }
+
+
+</script>
+
+</html>

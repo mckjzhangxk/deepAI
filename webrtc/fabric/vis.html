@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/vis-network.min.js" type="text/javascript"></script>
+    <style type="text/css">
+        #maincontainer {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+        }
+
+        #mynetwork {
+            flex-direction: column;
+            flex: 0.65;
+            border: 1px solid lightgray;
+        }
+
+        #leftTree {
+            flex-direction: column;
+            flex: 0.15;
+        }
+
+        #rightPannel {
+            flex-direction: column;
+            flex: 0.2;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="maincontainer">
+        <div id="leftTree"></div>
+
+        <div id="mynetwork"></div>
+        <div id="rightPannel">
+            <div>
+                <button onclick="xx()">移动</button><button onclick="removeEdge()">删除</button>
+            </div>
+
+
+        </div>
+    </div>
+
+</body>
+<script>
+    var nodes = new vis.DataSet([
+        { id: 1, label: "Node 1", value: 1, color: "#97C2FC", fixed: true, physics: false, value: 1 },
+        { id: 2, label: "Node 2", value: 1, color: "#FFFF00", fixed: true, physics: false, value: 2 },
+        { id: 3, label: "Node 3", value: 1, color: "#FB7E81", fixed: true, physics: false, value: 3 },
+        { id: 4, label: "Node 4", value: 1, color: "#FB7E81", fixed: true, physics: false, value: 4 },
+        { id: 5, label: "Node 5", value: 1, color: "#FB7E81", fixed: true, physics: false, value: 5 },
+    ]);
+
+    // create an array with edges
+    var edges = new vis.DataSet([
+        { from: 1, to: 3, arrows: "to", value: 0.5 },
+        { from: 1, to: 2, arrows: "to", value: 0.5 },
+        { from: 2, to: 4, arrows: "to", value: 0.5 },
+        { from: 2, to: 5, arrows: "to", value: 0.5 },
+    ]);
+    function getEdgesOfNode(from, to) {
+        return edges.get().filter(function (edge) {
+            return edge.from === from && edge.to === to;
+        });
+    }
+    function getConnectedOfNode(from) {
+        return edges.get().filter(function (edge) {
+            return edge.from == from;
+        });
+    }
+    function fixNode(nodeId, fixed) {
+
+        let node = nodes.get(nodeId);
+        if (arguments.length == 1) {
+            fixed = !node.fixed;
+        }
+        node.fixed = fixed;
+        nodes.update(node)
+    }
+    edges.on('*', function (e) {
+        console.log({ e })
+    })
+    var container = document.getElementById("mynetwork");
+    var data = {
+        nodes: nodes,
+        edges: edges,
+    };
+    var options = {
+        nodes: {
+            shape: "box",
+            scaling: {
+                customScalingFunction: function (min, max, total, value) {
+                    return value / total;
+                },
+                min: 1,
+                max: 10,
+            },
+        },
+        edges: {
+            smooth: {
+                type: "continuous",
+            }, scaling: {
+                customScalingFunction: function (min, max, total, value) {
+                    return value *0.5;
+                }
+            },
+        },
+        interaction: { hover: true },
+        manipulation: {
+            enabled: true,
+        },
+
+    };
+    let network = new vis.Network(container, data, options);
+    network.on("controlNodeDragEnd", function (params) {
+        // console.log("controlNodeDragEnd Event:", params);
+        let from = params.controlEdge.from
+        let to = params.controlEdge.to
+
+        if (from && to) {
+            console.log(`${from},${to}`)
+            console.log(getEdgesOfNode(from, to))
+            let e = getEdgesOfNode(from, to)[0];
+            e.arrows = "to"
+            edges.update(e)
+        }
+    });
+
+    network.on("selectNode", function (params) {
+        // console.log("selectNode Event:", params);
+        // params.event.preventDefault()
+        node = network.getSelectedNodes();
+        if (node.length == 0) return
+        previousNode = node[0]
+
+        fixNode(node[0], false);
+
+        console.log(getConnectedOfNode(node[0]));
+
+    });
+
+    network.on("selectEdge", function (params) {
+        // console.log("selectEdge Event:", params);
+    });
+
+    network.on('deselectNode', function (params) {
+        fixNode(previousNode, true)
+        previousNode = null;
+    });
+
+
+
+    function removeEdge() {
+        let edgeId = network.getSelectedEdges();
+        if (edgeId.length == 0) return
+        edgeId = edgeId[0];
+        edges.remove(edgeId)
+    }
+    let previousNode = null;
+</script>
+
+</html>
