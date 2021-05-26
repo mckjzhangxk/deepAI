@@ -12,38 +12,19 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 
 @SpringBootApplication
 @EnableWebSocket
-public class KurentoApplication implements WebSocketConfigurer {
+public class KurentoApplication{
 
 
 
-    @Bean
-    public HelloHandler handler()
-    {
-        return new HelloHandler();
-    }
 
 
-    @Bean
-    public KurentoClient kurentoClient()
-    {
-        KurentoClient kurentoClient = KurentoClient.create();
-        return kurentoClient;
-    }
-    @Bean
-    public  MyService myService(){
-        return new MyService();
-    }
+
+
     @Bean
     public ServletServerContainerFactoryBean createServletServerContainerFactoryBean() {
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
         container.setMaxTextMessageBufferSize(32768);
         return container;
-    }
-
-
-    @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(handler(),"/helloworld");
     }
 
 

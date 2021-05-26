@@ -1,4 +1,4 @@
-package com.example.kurento.kurento;
+package com.example.kurento.kurento.service;
 
 /**
  * Created by mathai on 21-5-25.

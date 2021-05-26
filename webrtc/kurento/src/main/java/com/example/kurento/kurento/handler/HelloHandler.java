@@ -1,8 +1,8 @@
-package com.example.kurento.kurento;
+package com.example.kurento.kurento.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
+import com.example.kurento.kurento.service.MyService;
 import org.kurento.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
@@ -10,7 +10,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import javax.websocket.Session;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,47 +24,61 @@ public class HelloHandler extends TextWebSocketHandler {
     private  KurentoClient kurento;
     private Map<String,WebRtcEndpoint> dict=new HashMap<>();
 
+    private void onOffer(WebSocketSession session,JSONObject m){
+        MediaPipeline mediaPipeline = kurento.createMediaPipeline();
+        //创建webrtc element
+        WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(mediaPipeline).build();
+        webRtcEndpoint.setName("张小楷");
+
+        dict.put(session.getId(),webRtcEndpoint);
+
+
+        //创建answer
+        String sdpAnswer =webRtcEndpoint.processOffer(m.getString("sdpOffer"));
+
+        //回复answer
+        JSONObject answermessage = new JSONObject();
+        answermessage.put("id", "PROCESS_SDP_ANSWER");
+        answermessage.put("sdpAnswer", sdpAnswer);
+        sendMessage(session, answermessage.toJSONString());
+
+        //source->sink
+        webRtcEndpoint.connect(webRtcEndpoint);
+
+
+        initWebRtcBasetListeners(session,webRtcEndpoint);
+        initWebRtcEventListeners(session,webRtcEndpoint);
+        webRtcEndpoint.gatherCandidates();
+
+    }
+    private void  onRemoteCandidate(WebSocketSession session,JSONObject m){
+
+        WebRtcEndpoint webRtcEndpoint = dict.get(session.getId());
+        JSONObject candidate = m.getJSONObject("candidate");
+
+        IceCandidate iceCandidate=new IceCandidate(candidate.getString("candidate"),candidate.getString("sdpMid"),candidate.getInteger("sdpMLineIndex"));
+        webRtcEndpoint.addIceCandidate(iceCandidate);
+    }
+    private void stop(WebSocketSession session){
+        String sessionId = session.getId();
+        if(dict.containsKey(sessionId)){
+            dict.get(sessionId).release();
+            dict.remove(sessionId);
+        }
+
+    }
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-
 
         JSONObject p= JSON.parseObject(message.getPayload());
         String messageId = p.getString("id");
 
-
-
         switch (messageId){
             case "PROCESS_SDP_OFFER":
-                MediaPipeline mediaPipeline = kurento.createMediaPipeline();
-                //创建webrtc element
-                WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(mediaPipeline).build();
-                dict.put(session.getId(),webRtcEndpoint);
-
-
-                //创建answer
-                String sdpAnswer =webRtcEndpoint.processOffer(p.getString("sdpOffer"));
-                JSONObject answermessage = new JSONObject();
-                answermessage.put("id", "PROCESS_SDP_ANSWER");
-                answermessage.put("sdpAnswer", sdpAnswer);
-                //通知客户端
-                sendMessage(session, answermessage.toJSONString());
-
-
-                //source->sink
-                webRtcEndpoint.connect(webRtcEndpoint);
-
-
-                initWebRtcBasetListeners(session,webRtcEndpoint);
-                initWebRtcEventListeners(session,webRtcEndpoint);
-                webRtcEndpoint.gatherCandidates();
+                onOffer(session,p);
                 break;
             case "ADD_ICE_CANDIDATE":
-
-                WebRtcEndpoint webRtcEndpoint1 = dict.get(session.getId());
-                JSONObject candidate = p.getJSONObject("candidate");
-
-                IceCandidate iceCandidate=new IceCandidate(candidate.getString("candidate"),candidate.getString("sdpMid"),candidate.getInteger("sdpMLineIndex"));
-                webRtcEndpoint1.addIceCandidate(iceCandidate);
+                onRemoteCandidate(session,p);
                 break;
             case "STOP":
                 stop(session);
@@ -141,19 +154,25 @@ public class HelloHandler extends TextWebSocketHandler {
         rtcEndpoint.addMediaFlowInStateChangeListener(new EventListener<MediaFlowInStateChangeEvent>() {
             @Override
             public void onEvent(MediaFlowInStateChangeEvent mediaFlowInStateChangeEvent) {
+                System.out.println("流入==============================");
                 String SourceName = mediaFlowInStateChangeEvent.getSource().getName();
                 String padName = mediaFlowInStateChangeEvent.getPadName();
                 System.out.println(mediaFlowInStateChangeEvent.getMediaType());
-                System.out.println("sourceName:"+SourceName);
+                System.out.println("sourceName:" + SourceName);
+                System.out.println("==============================");
 
-                System.out.println("padName:"+padName);
             }
         });
 
         rtcEndpoint.addMediaFlowOutStateChangeListener(new EventListener<MediaFlowOutStateChangeEvent>() {
             @Override
             public void onEvent(MediaFlowOutStateChangeEvent mediaFlowOutStateChangeEvent) {
-
+                System.out.println("流出==============================");
+                String SourceName = mediaFlowOutStateChangeEvent.getSource().getName();
+                String padName = mediaFlowOutStateChangeEvent.getPadName();
+                System.out.println(mediaFlowOutStateChangeEvent.getMediaType());
+                System.out.println("sourceName:"+SourceName);
+                System.out.println("==============================");
             }
         });
     }
@@ -167,12 +186,5 @@ public class HelloHandler extends TextWebSocketHandler {
         }
     }
 
-    private void stop(WebSocketSession session){
-        String sessionId = session.getId();
-        if(dict.containsKey(sessionId)){
-            dict.get(sessionId).release();
-            dict.remove(sessionId);
-        }
 
-    }
 }
