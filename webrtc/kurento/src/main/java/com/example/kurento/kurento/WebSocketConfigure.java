@@ -1,5 +1,6 @@
 package com.example.kurento.kurento;
 
+import com.example.kurento.kurento.handler.BroadcastHandler;
 import com.example.kurento.kurento.handler.HelloHandler;
 import com.example.kurento.kurento.service.MyService;
 import org.kurento.client.KurentoClient;
@@ -15,10 +16,13 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @Configuration
 public class WebSocketConfigure implements WebSocketConfigurer {
     @Bean
-    WebSocketHandler getHandler(){
+    WebSocketHandler getHelloWorldHandler(){
         return new HelloHandler();
     }
-
+    @Bean
+    WebSocketHandler getBroadcastHandler(){
+        return new BroadcastHandler();
+    }
 
 
     @Bean
@@ -34,6 +38,10 @@ public class WebSocketConfigure implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(getHandler(),"/helloworld");
+        registry.addHandler(getHelloWorldHandler(),"/helloworld");
+        registry.addHandler(getBroadcastHandler(),"/call");
     }
+
+
+
 }
