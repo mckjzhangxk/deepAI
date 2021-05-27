@@ -6,6 +6,7 @@ import org.kurento.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
@@ -58,7 +59,18 @@ public class BroadcastHandler extends TextWebSocketHandler {
             case "onIceCandidate":
                 onIceCandidate(session, p);
                 break;
+            case "viewer":
+                onViewer(session, p);
+                break;
+            case "stop":
+                stop(session);
         }
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+
+        stop(session);
     }
 
     private void onIceCandidate(WebSocketSession session, JSONObject p) {
@@ -72,6 +84,7 @@ public class BroadcastHandler extends TextWebSocketHandler {
             UserSession userSession = users.get(sessionId);
             if(userSession==null)return;
             userSession.getWebRtcEndpoint().addIceCandidate(iceCandidate);
+            LOGGER.info("receive viewer candidate{}:",iceCandidate.getCandidate());
         }
 
 
@@ -96,17 +109,72 @@ public class BroadcastHandler extends TextWebSocketHandler {
 
             //response
             response.put("response","accepted");
-
-            sendMessage(session,response);
         }else if(president_session.getSession().getId().equals(session.getId())){
             response.put("response","rejected");
             response.put("message","你已经是主讲了");
-            sendMessage(session,response);
+
         }else {
             response.put("response","rejected");
             response.put("message","本room已经有主讲了");
         }
+        sendMessage(session,response);
     }
+
+
+
+    private void onViewer(WebSocketSession session, JSONObject p) {
+        String sdpOffer = p.getString("sdpOffer");
+        JSONObject response = new JSONObject();
+        response.put("id","viewerResponse");
+
+
+        if(pipeline!=null){
+
+            WebRtcEndpoint webRtcEndpoint=new WebRtcEndpoint.Builder(pipeline).build();
+            response.put("sdpAnswer",webRtcEndpoint.processOffer(sdpOffer));
+
+            UserSession currentUser = new UserSession(session, webRtcEndpoint);
+
+            users.put(session.getId(),currentUser);
+
+            initWebRtc(currentUser);
+
+            president_session.getWebRtcEndpoint().connect(webRtcEndpoint);
+
+            response.put("response","accepted");
+
+
+        }else {
+            response.put("response","rejected");
+            response.put("message","room的主讲没有上线");
+        }
+        sendMessage(session,response);
+
+    }
+
+    private void stop(WebSocketSession session) {
+        if(president_session!=null&&session.getId().equals(president_session.getSession().getId())){
+            president_session.getWebRtcEndpoint().release();
+            pipeline.release();
+            //通知其他人
+
+            for(UserSession ss:users.values()){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id","stopCommunication");
+                sendMessage(ss.getSession(), jsonObject);
+            }
+            president_session=null;
+            pipeline=null;
+            users.clear();
+        }else {
+            UserSession viewSession = users.get(session.getId());
+            if(viewSession!=null){
+                viewSession.getWebRtcEndpoint().release();
+                users.remove(session.getId());
+            }
+        }
+    }
+
 
     private void initWebRtc(UserSession userSession){;
         WebRtcEndpoint webRtcEndpoint=userSession.getWebRtcEndpoint();
