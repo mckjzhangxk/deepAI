@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../public/js/p5.min.js"></script>
+
+</head>
+
+<body>
+
+    <script>
+        let theta = 0;
+        let myp5 = new p5(function (p) {
+            p.w = 500
+            p.h = 500
+            p.xmin = -2;
+            p.xmax = 2;
+            p.iters = 200;
+            p.cx = 0
+            p.cy = -0.8
+
+            p.setup = function () {
+                p.createCanvas(p.w, p.h)
+
+
+                p.pixelDensity(1);
+                p.colorMode(p.HSB);
+                p.drawMondelBot();
+
+            }
+
+            p.drawMondelBot = function () {
+
+                p.loadPixels();
+                for (let i = 0; i < p.h; i++) {
+                    for (let j = 0; j < p.w; j++) {
+                        let x = p.map(j, 0, p.w, p.xmin, p.xmax)
+                        let y = p.map(i, 0, p.h, p.xmin, p.xmax)
+
+                        let zx = x;
+                        let zy = y;
+
+                        let n = 0;
+
+                        while (n < p.iters) {
+                            //bug 
+                            // zx = zx * zx - zy * zy;
+                            // zy = 2 * zx * zy;
+
+                            //
+                            _zx = zx * zx - zy * zy;
+                            _zy = 2 * zx * zy;
+
+                            zx = _zx + p.cx;
+                            zy = _zy + p.cy;
+
+                            if ((zx * zx + zy * zy) > 16)
+                                break
+                            n += 1
+                        }
+
+
+                        let ii = 4 * (j + i * p.w)
+
+                        let bright = p.map(n, 0, p.iters, 0, 1);
+                        bright = p.sqrt(bright);
+                        // bright =p.sqrt(bright);
+
+
+
+                        let c = p.color(p.map(bright, 0, 1, 0, 360), 100, 100);
+
+                        if (n == p.iters)
+                            c = p.color(0);
+
+
+                        p.pixels[ii] = c.levels[0];
+                        p.pixels[ii + 1] = c.levels[1];;
+                        p.pixels[ii + 2] = c.levels[2];;
+                        p.pixels[ii + 3] = 255;
+
+                    }
+                }
+                p.updatePixels();
+            }
+
+
+            p.draw = function () {
+                p.colorMode(p.HSB);
+
+                // p.cx=p.map(p.mouseX,0,p.width,-1,1);
+                // p.cy=p.map(p.mouseY,0,p.height,-1,1);
+                p.cx=p.cos(theta)
+                p.cy=p.sin(3*theta+80)
+
+                // p.cx = -0.7269
+                // p.cy = 0.1889
+                theta+=0.03
+
+                p.drawMondelBot();
+
+            }
+        })
+    </script>
+</body>
+
+</html>

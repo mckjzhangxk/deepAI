@@ -1,0 +1,188 @@
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+2021-05-27 20:51:51,867 [  25070]   WARN - .diagnostic.PerformanceWatcher - UI was frozen for 8071ms, details saved to /home/zxk/.cache/JetBrains/IdeaIC2020.3/log/threadDumps-freeze-20210527-205148-IC-203.7148.57-RandomAccessFile.readBytes-8sec 
+2021-05-27 20:52:08,218 [  41421]   WARN -        #com.intellij.idea.Main - can't parse gsettings line: @a(ss) [] 
+2021-05-27 20:53:17,335 [ 110538]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project kurento 
+2021-05-27 20:53:19,104 [ 112307]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project kurento 
+2021-05-27 20:53:25,249 [ 118452]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project kurento 
+2021-05-27 20:53:33,241 [ 126444]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project kurento 
+2021-05-27 20:55:30,821 [ 244024]   WARN - s.ui.configuration.SdkDetector - No version is returned for detected SDK IDEA JDK at /home/zxk/software/idea-IC-203.7148.57 
+2021-05-27 20:59:05,274 [ 458477]  ERROR - stubs.StubProcessingHelperBase - Stub index points to a file without PSI: file = file:///home/zxk/deepAI/webrtc/kurento/src/test/java/com/example/kurento/kurento, file type = com.intellij.openapi.fileTypes.UnknownFileType@4d71d814, indexed file type = com.intellij.ide.highlighter.JavaClassFileType@40c045df, used scope = com.intellij.psi.impl.search.JavaSourceFilterScope[Project Files] 
+java.lang.Throwable: Stub index points to a file without PSI: file = file:///home/zxk/deepAI/webrtc/kurento/src/test/java/com/example/kurento/kurento, file type = com.intellij.openapi.fileTypes.UnknownFileType@4d71d814, indexed file type = com.intellij.ide.highlighter.JavaClassFileType@40c045df, used scope = com.intellij.psi.impl.search.JavaSourceFilterScope[Project Files]
+	at com.intellij.openapi.diagnostic.Logger.error(Logger.java:159)
+	at com.intellij.psi.stubs.StubProcessingHelperBase.processStubsInFile(StubProcessingHelperBase.java:52)
+	at com.intellij.psi.stubs.StubIndexImpl.lambda$processElements$2(StubIndexImpl.java:291)
+	at com.intellij.psi.stubs.StubIndexImpl.processElements(StubIndexImpl.java:327)
+	at com.intellij.psi.impl.PsiShortNamesCacheImpl.processClassesWithName(PsiShortNamesCacheImpl.java:201)
+	at com.intellij.psi.impl.CompositeShortNamesCache.processClassesWithName(CompositeShortNamesCache.java:239)
+	at com.intellij.ide.util.gotoByName.DefaultClassNavigationContributor.lambda$processElementsWithName$1(DefaultClassNavigationContributor.java:75)
+	at com.intellij.util.indexing.FileBasedIndex.lambda$ignoreDumbMode$0(FileBasedIndex.java:179)
+	at com.intellij.openapi.util.RecursionManager$1.computePreventingRecursion(RecursionManager.java:111)
+	at com.intellij.util.indexing.FileBasedIndexEx.ignoreDumbMode(FileBasedIndexEx.java:543)
+	at com.intellij.util.indexing.FileBasedIndex.ignoreDumbMode(FileBasedIndex.java:178)
+	at com.intellij.ide.util.gotoByName.DefaultClassNavigationContributor.processElementsWithName(DefaultClassNavigationContributor.java:74)
+	at com.intellij.ide.util.gotoByName.ContributorsBasedGotoByModel.lambda$getElementsByName$4(ContributorsBasedGotoByModel.java:187)
+	at com.intellij.concurrency.JobLauncherImpl.lambda$processImmediatelyIfTooFew$2(JobLauncherImpl.java:142)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.registerIndicatorAndRun(CoreProgressManager.java:658)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.executeProcessUnderProgress(CoreProgressManager.java:610)
+	at com.intellij.openapi.progress.impl.ProgressManagerImpl.executeProcessUnderProgress(ProgressManagerImpl.java:65)
+	at com.intellij.concurrency.JobLauncherImpl.lambda$processImmediatelyIfTooFew$3(JobLauncherImpl.java:138)
+	at com.intellij.openapi.application.impl.ApplicationImpl.runReadAction(ApplicationImpl.java:855)
+	at com.intellij.concurrency.JobLauncherImpl.processImmediatelyIfTooFew(JobLauncherImpl.java:149)
+	at com.intellij.concurrency.JobLauncherImpl.invokeConcurrentlyUnderProgress(JobLauncherImpl.java:45)
+	at com.intellij.concurrency.JobLauncher.invokeConcurrentlyUnderProgress(JobLauncher.java:48)
+	at com.intellij.ide.util.gotoByName.ContributorsBasedGotoByModel.getElementsByName(ContributorsBasedGotoByModel.java:227)
+	at com.intellij.ide.util.gotoByName.DefaultChooseByNameItemProvider.processByNames(DefaultChooseByNameItemProvider.java:288)
+	at com.intellij.ide.util.gotoByName.DefaultChooseByNameItemProvider.filterElements(DefaultChooseByNameItemProvider.java:151)
+	at com.intellij.ide.util.gotoByName.DefaultChooseByNameItemProvider.lambda$filterElementsWithWeights$3(DefaultChooseByNameItemProvider.java:109)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.computePrioritized(CoreProgressManager.java:773)
+	at com.intellij.ide.util.gotoByName.DefaultChooseByNameItemProvider.filterElementsWithWeights(DefaultChooseByNameItemProvider.java:108)
+	at com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor.lambda$fetchWeightedElements$4(AbstractGotoSEContributor.java:290)
+	at com.intellij.openapi.application.impl.ApplicationImpl.tryRunReadAction(ApplicationImpl.java:1137)
+	at com.intellij.openapi.progress.util.ProgressIndicatorUtils.lambda$runInReadActionWithWriteActionPriority$0(ProgressIndicatorUtils.java:76)
+	at com.intellij.openapi.progress.util.ProgressIndicatorUtils.runActionAndCancelBeforeWrite(ProgressIndicatorUtils.java:152)
+	at com.intellij.openapi.progress.util.ProgressIndicatorUtils.lambda$runWithWriteActionPriority$1(ProgressIndicatorUtils.java:113)
+	at com.intellij.openapi.progress.ProgressManager.lambda$runProcess$0(ProgressManager.java:59)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.lambda$runProcess$2(CoreProgressManager.java:178)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.registerIndicatorAndRun(CoreProgressManager.java:658)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.executeProcessUnderProgress(CoreProgressManager.java:610)
+	at com.intellij.openapi.progress.impl.ProgressManagerImpl.executeProcessUnderProgress(ProgressManagerImpl.java:65)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.runProcess(CoreProgressManager.java:165)
+	at com.intellij.openapi.progress.ProgressManager.runProcess(ProgressManager.java:59)
+	at com.intellij.openapi.progress.util.ProgressIndicatorUtils.runWithWriteActionPriority(ProgressIndicatorUtils.java:110)
+	at com.intellij.openapi.progress.util.ProgressIndicatorUtils.runInReadActionWithWriteActionPriority(ProgressIndicatorUtils.java:76)
+	at com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor.fetchWeightedElements(AbstractGotoSEContributor.java:316)
+	at com.intellij.ide.actions.searcheverywhere.MixedResultsSearcher$ContributorSearchTask.run(MixedResultsSearcher.java:179)
+	at com.intellij.util.ConcurrencyUtil.runUnderThreadName(ConcurrencyUtil.java:208)
+	at com.intellij.util.ConcurrencyUtil.lambda$underThreadNameRunnable$3(ConcurrencyUtil.java:196)
+	at com.intellij.util.RunnableCallable.call(RunnableCallable.java:20)
+	at com.intellij.util.RunnableCallable.call(RunnableCallable.java:11)
+	at com.intellij.openapi.application.impl.ApplicationImpl$1.call(ApplicationImpl.java:270)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:668)
+	at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:665)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1.run(Executors.java:665)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+2021-05-27 20:59:05,277 [ 458480]  ERROR - stubs.StubProcessingHelperBase - IntelliJ IDEA 2020.3.2  Build #IC-203.7148.57 
+2021-05-27 20:59:05,277 [ 458480]  ERROR - stubs.StubProcessingHelperBase - JDK: 11.0.9.1; VM: OpenJDK 64-Bit Server VM; Vendor: JetBrains s.r.o. 
+2021-05-27 20:59:05,277 [ 458480]  ERROR - stubs.StubProcessingHelperBase - OS: Linux 
+2021-05-27 20:59:05,278 [ 458481]  ERROR - stubs.StubProcessingHelperBase - Last Action: EditorBackSpace 
+2021-05-27 21:05:44,450 [ 857653]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project kurento-magic-mirror 
+2021-05-27 21:05:59,475 [ 872678]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project kurento-magic-mirror 
+2021-05-27 21:06:00,053 [ 873256]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.plugins:maven-eclipse-plugin::2.10, was also in node: null 
+2021-05-27 21:06:17,202 [ 890405]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.wagon:wagon-provider-api::2.1, was also in node: null 
+2021-05-27 21:06:17,203 [ 890406]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.codehaus.plexus:plexus-archiver::2.6.3, was also in node: null 
+2021-05-27 21:06:17,204 [ 890407]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.codehaus.plexus:plexus-io::2.1.3, was also in node: null 
+2021-05-27 21:06:17,204 [ 890407]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.commons:commons-compress::1.8.1, was also in node: null 
+2021-05-27 21:06:17,204 [ 890407]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.codehaus.plexus:plexus-utils::3.0.20, was also in node: null 
+2021-05-27 21:06:17,205 [ 890408]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.codehaus.plexus:plexus-interactivity-jline::1.0-alpha-5, was also in node: null 
+2021-05-27 21:06:17,205 [ 890408]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading jline:jline::0.9.1, was also in node: null 
+2021-05-27 21:06:17,205 [ 890408]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-archiver::2.5, was also in node: null 
+2021-05-27 21:06:17,206 [ 890409]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.codehaus.plexus:plexus-resources::1.0-alpha-7, was also in node: null 
+2021-05-27 21:06:17,206 [ 890409]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading biz.aQute:bndlib::0.0.145, was also in node: null 
+2021-05-27 21:06:17,206 [ 890409]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.shared:maven-osgi::0.2.0, was also in node: null 
+2021-05-27 21:06:17,207 [ 890410]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.eclipse.core:resources::3.3.0-v20070604, was also in node: null 
+2021-05-27 21:06:22,613 [ 895816]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.plugins:maven-antrun-plugin::3.0.0, was also in node: null 
+2021-05-27 21:06:32,943 [ 906146]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-plugin-api::3.0.5, was also in node: null 
+2021-05-27 21:06:32,944 [ 906147]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-model::3.0.5, was also in node: null 
+2021-05-27 21:06:32,944 [ 906147]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.sonatype.sisu:sisu-inject-plexus::2.3.0, was also in node: null 
+2021-05-27 21:06:32,945 [ 906148]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.sonatype.sisu:sisu-inject-bean::2.3.0, was also in node: null 
+2021-05-27 21:06:32,945 [ 906148]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.sonatype.sisu:sisu-guava::0.9.9, was also in node: null 
+2021-05-27 21:06:32,946 [ 906149]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-core::3.0.5, was also in node: null 
+2021-05-27 21:06:32,946 [ 906149]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-settings::3.0.5, was also in node: null 
+2021-05-27 21:06:32,947 [ 906150]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-settings-builder::3.0.5, was also in node: null 
+2021-05-27 21:06:32,947 [ 906150]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-repository-metadata::3.0.5, was also in node: null 
+2021-05-27 21:06:32,948 [ 906151]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-model-builder::3.0.5, was also in node: null 
+2021-05-27 21:06:32,948 [ 906151]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-aether-provider::3.0.5, was also in node: null 
+2021-05-27 21:06:32,949 [ 906152]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.sonatype.aether:aether-spi::1.13.1, was also in node: null 
+2021-05-27 21:06:32,949 [ 906152]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.sonatype.aether:aether-impl::1.13.1, was also in node: null 
+2021-05-27 21:06:32,950 [ 906153]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.sonatype.aether:aether-api::1.13.1, was also in node: null 
+2021-05-27 21:06:32,950 [ 906153]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.sonatype.aether:aether-util::1.13.1, was also in node: null 
+2021-05-27 21:06:32,951 [ 906154]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven:maven-artifact::3.0.5, was also in node: null 
+2021-05-27 21:06:32,953 [ 906156]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.ant:ant::1.9.14, was also in node: null 
+2021-05-27 21:06:32,953 [ 906156]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.ant:ant-launcher::1.9.14, was also in node: null 
+2021-05-27 21:06:36,410 [ 909613]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.plugins:maven-deploy-plugin::3.0.0-M1, was also in node: null 
+2021-05-27 21:06:37,702 [ 910905]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.plugins:maven-site-plugin::3.9.1, was also in node: null 
+2021-05-27 21:06:41,033 [ 914236]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project kurento-magic-mirror 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.reporting:maven-reporting-exec::1.5.1, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.codehaus.plexus:plexus-i18n::1.0-beta-10, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-sink-api::1.9.1, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-logging-api::1.9.1, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-core::1.9.1, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.codehaus.plexus:plexus-container-default::1.7.1, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.xbean:xbean-reflect::3.7, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.google.collections:google-collections::1.0, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.httpcomponents:httpclient::4.5.8, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.httpcomponents:httpcore::4.4.11, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-module-xhtml::1.9.1, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-module-xhtml5::1.9.1, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-module-apt::1.9.1, was also in node: null 
+2021-05-27 21:07:12,408 [ 945611]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-module-xdoc::1.9.1, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-module-fml::1.9.1, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-module-markdown::1.9.1, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-all::0.42.14, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark::0.42.14, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-abbreviation::0.42.14, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-admonition::0.42.14, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-anchorlink::0.42.14, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-aside::0.42.14, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-attributes::0.42.14, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-autolink::0.42.14, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.nibor.autolink:autolink::0.6.0, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-definition::0.42.14, was also in node: null 
+2021-05-27 21:07:12,409 [ 945612]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-emoji::0.42.14, was also in node: null 
+2021-05-27 21:07:12,410 [ 945613]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-enumerated-reference::0.42.14, was also in node: null 
+2021-05-27 21:07:12,410 [ 945613]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-escaped-character::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-footnotes::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-gfm-issues::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-gfm-strikethrough::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-gfm-tables::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-gfm-tasklist::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-gfm-users::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-gitlab::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-jekyll-front-matter::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-jekyll-tag::0.42.14, was also in node: null 
+2021-05-27 21:07:12,411 [ 945614]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-media-tags::0.42.14, was also in node: null 
+2021-05-27 21:07:12,412 [ 945615]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-macros::0.42.14, was also in node: null 
+2021-05-27 21:07:12,412 [ 945615]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-ins::0.42.14, was also in node: null 
+2021-05-27 21:07:12,412 [ 945615]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-xwiki-macros::0.42.14, was also in node: null 
+2021-05-27 21:07:12,412 [ 945615]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-superscript::0.42.14, was also in node: null 
+2021-05-27 21:07:12,412 [ 945615]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-tables::0.42.14, was also in node: null 
+2021-05-27 21:07:12,413 [ 945616]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-toc::0.42.14, was also in node: null 
+2021-05-27 21:07:12,413 [ 945616]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-typographic::0.42.14, was also in node: null 
+2021-05-27 21:07:12,413 [ 945616]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-wikilink::0.42.14, was also in node: null 
+2021-05-27 21:07:12,414 [ 945617]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-yaml-front-matter::0.42.14, was also in node: null 
+2021-05-27 21:07:12,414 [ 945617]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-ext-youtube-embedded::0.42.14, was also in node: null 
+2021-05-27 21:07:12,414 [ 945617]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-formatter::0.42.14, was also in node: null 
+2021-05-27 21:07:12,414 [ 945617]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-html-parser::0.42.14, was also in node: null 
+2021-05-27 21:07:12,414 [ 945617]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.jsoup:jsoup::1.10.2, was also in node: null 
+2021-05-27 21:07:12,415 [ 945618]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-jira-converter::0.42.14, was also in node: null 
+2021-05-27 21:07:12,415 [ 945618]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-profile-pegdown::0.42.14, was also in node: null 
+2021-05-27 21:07:12,415 [ 945618]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-util::0.42.14, was also in node: null 
+2021-05-27 21:07:12,415 [ 945618]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading com.vladsch.flexmark:flexmark-youtrack-converter::0.42.14, was also in node: null 
+2021-05-27 21:07:12,415 [ 945618]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-module-confluence::1.9.1, was also in node: null 
+2021-05-27 21:07:12,416 [ 945619]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-module-docbook-simple::1.9.1, was also in node: null 
+2021-05-27 21:07:12,416 [ 945619]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-module-twiki::1.9.1, was also in node: null 
+2021-05-27 21:07:12,416 [ 945619]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-decoration-model::1.9.2, was also in node: null 
+2021-05-27 21:07:12,416 [ 945619]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-site-renderer::1.9.2, was also in node: null 
+2021-05-27 21:07:12,417 [ 945620]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-skin-model::1.9.2, was also in node: null 
+2021-05-27 21:07:12,417 [ 945620]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.codehaus.plexus:plexus-velocity::1.2, was also in node: null 
+2021-05-27 21:07:12,417 [ 945620]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.velocity:velocity::1.7, was also in node: null 
+2021-05-27 21:07:12,417 [ 945620]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading commons-collections:commons-collections::3.2.2, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.doxia:doxia-integration-tools::1.9.2, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.apache.maven.wagon:wagon-provider-api::3.3.1, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.eclipse.jetty:jetty-server::9.2.29.v20191105, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading javax.servlet:javax.servlet-api::3.1.0, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.eclipse.jetty:jetty-http::9.2.29.v20191105, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.eclipse.jetty:jetty-io::9.2.29.v20191105, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.eclipse.jetty:jetty-servlet::9.2.29.v20191105, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.eclipse.jetty:jetty-security::9.2.29.v20191105, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.eclipse.jetty:jetty-webapp::9.2.29.v20191105, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.eclipse.jetty:jetty-xml::9.2.29.v20191105, was also in node: null 
+2021-05-27 21:07:12,419 [ 945622]   WARN - lij.build.BuildTreeConsoleView - start event id collision found:Downloading org.eclipse.jetty:jetty-util::9.2.29.v20191105, was also in node: null 
+2021-05-27 21:08:39,568 [1032771]   WARN - ConfigurableExtensionPointUtil - ignore deprecated groupId: language for id: preferences.language.Kotlin.scripting 
+2021-05-27 21:08:39,621 [1032824]   WARN - ConfigurableExtensionPointUtil - use other group instead of unexpected one: build.android 
+2021-05-27 21:09:04,436 [1057639]   WARN - tions.ex.ConfigurableCardPanel - auto-dispose 'Java Compiler' id=reference.projectsettings.compiler.javacompiler 
+2021-05-27 21:09:04,436 [1057639]   WARN - tions.ex.ConfigurableCardPanel - auto-dispose 'Java Compiler' id=reference.projectsettings.compiler.javacompiler 

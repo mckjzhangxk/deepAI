@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../public/js/p5.min.js"></script>
+
+</head>
+
+<body>
+
+    <script>
+        let myp5 = new p5(function (p) {
+            p.w = 300
+            p.h = 300
+            p.xmin = -1.1;
+            p.xmax = 1.1;
+            p.iters = 255;
+
+            p.setup = function () {
+                p.createCanvas(p.w, p.h)
+
+
+                p.pixelDensity(1);
+                p.colorMode(p.HSL,100);
+                p.drawMondelBot();
+                 
+            }
+
+            p.drawMondelBot = function () {
+
+                p.loadPixels();
+                for (let i = 0; i < p.h; i++) {
+                    for (let j = 0; j < p.w; j++) {
+                        let x = p.map(j, 0, p.w, p.xmin, p.xmax)
+                        let y = p.map(i, 0, p.h, p.xmin, p.xmax)
+
+                        let zx = x;
+                        let zy = y;
+
+                        let n = 0;
+
+                        while (n < p.iters) {
+                            //bug 
+                            // zx = zx * zx - zy * zy;
+                            // zy = 2 * zx * zy;
+
+                            //
+                            _zx = zx * zx - zy * zy + x;
+                            _zy = 2 * zx * zy + y;
+
+                            zx = _zx;
+                            zy = _zy;
+
+                            if ((zx * zx + zy * zy) > 16)
+                                break
+                            n += 1
+                        }
+
+
+                        let ii = 4 * (j + i * p.w)
+
+                        let bright = p.map(n, 0, p.iters, 0, 1);
+                        bright = p.map(p.sqrt(bright), 0, 1, 0, 100);
+                        if (n == p.iters)
+                            bright = 0;
+
+                        let c = p.color(bright, 50,70);
+                        // p.print(c)
+                        p.pixels[ii] = c.levels[0];
+                        p.pixels[ii + 1] = c.levels[1];;
+                        p.pixels[ii + 2] = c.levels[2];;
+                        p.pixels[ii + 3] = 255;
+
+                    }
+                }
+                p.updatePixels();
+            }
+        })
+    </script>
+</body>
+
+</html>

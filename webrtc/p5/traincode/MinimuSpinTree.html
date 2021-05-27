@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../public/js/p5.min.js"></script>
+
+    <script>
+        let nodes = []
+        function setup() {
+            createCanvas(500, 500);
+        }
+
+        function mousePressed() {
+            nodes.push(createVector(mouseX, mouseY));
+        }
+        function draw() {
+            background(255)
+            for (let i = 0; i < nodes.length; i++) {
+                let circle = nodes[i];
+                fill(255, 128, 100)
+                strokeWeight(2)
+                color(255, 255, 255)
+                ellipse(circle.x, circle.y, 10, 10)
+            }
+
+            let reached = [nodes[0]]
+            let unreached = []
+            for (let i = 1; i < nodes.length; i++) {
+                unreached.push(nodes[i])
+            }
+
+            while (unreached.length > 0) {
+                let rIndex = 0
+                let uIndex = 0;
+
+                let miniWeight = 1000
+                for (let i = 0; i < reached.length; i++) {
+                    let nodeA = reached[i]
+
+                    for (let j = 0; j < unreached.length; j++) {
+                        let nodeB = unreached[j];
+                        let d = dist(nodeA.x, nodeA.y, nodeB.x, nodeB.y)
+                        if (d < miniWeight) {
+                            miniWeight = d;
+                            rIndex = i;
+                            uIndex = j;
+                        }
+                    }
+                }
+
+
+                let nodeA = reached[rIndex]
+                let nodeB = unreached[uIndex];
+
+                unreached.splice(uIndex, 1)
+                reached.push(nodeB);
+                 
+                strokeWeight(2)
+                line(nodeA.x, nodeA.y, nodeB.x, nodeB.y)
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>

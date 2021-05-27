@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../public/js/p5.min.js"></script>
+    
+    <script>
+         
+        function setup(){
+            createCanvas(500,500);
+
+            let hs=[]
+            let count=0;
+            while(hs.length<300&&count<1000){
+                count+=1;
+                let circle={
+                    x:random(width),
+                    y:random(height),
+                    r:random(10,30)
+                }
+                let overlay=false;
+                for(let j=0;j<hs.length;j++){
+                    let other=hs[j]
+                    if(dist(other.x,other.y,circle.x,circle.y)<(circle.r+other.r)){
+                        overlay=true;
+                        break;
+                    }
+                }
+                if(!overlay)
+                    hs.push(circle)
+            }
+
+            for(let i=0;i<hs.length;i++){
+                let circle=hs[i];
+                fill(random(0,256),random(0,256),random(0,256),100)
+                noStroke()
+                ellipse(circle.x,circle.y,circle.r*2,circle.r*2)
+            }
+        }
+        function draw(){
+
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

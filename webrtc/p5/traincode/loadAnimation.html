@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../public/js/p5.min.js"></script>
+    <script src="../public/js/p5.sound.js"></script>
+    <script>
+
+
+        function sketch(p) {
+            p.w = p.windowWidth / 2;
+            p.h = p.windowHeight / 2;
+            p.pp = 0;
+
+            p.song = null;
+            p.preload = function () {
+
+            }
+            p.setup = function () {
+                p.createCanvas(p.w, p.h);
+                p.background(128);
+
+                let btn = p.createButton('播放');
+                btn.mousePressed(()=>{
+                    p.song.play()
+                })
+                
+                p.song = p.loadSound('data/PS-4-scramble.wav', function (s) {
+
+                }, function () { }, function (progress) {
+                    p.pp = progress;
+                });
+            }
+            p.draw = function () {
+
+                p.loadDrawing();
+
+            }
+
+            p.loadDrawing = function () {
+                p.background(128);
+
+                p.push();
+                p.noStroke();
+                p.fill(255);
+                p.translate(p.w / 2 - p.w / 4, p.h / 2 - 10);
+                p.rect(3, 0, p.pp * p.w / 2, 20);
+                p.pop();
+
+                p.push();
+                p.strokeWeight(4);
+                p.stroke(50);
+                p.noFill();
+                p.translate(p.w / 2 - p.w / 4, p.h / 2 - 10);
+                p.rect(0, 0, p.w / 2, 20);
+                p.pop();
+            }
+        }
+        let myp5 = new p5(sketch);
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
