@@ -42,8 +42,15 @@ public class HelloHandler extends TextWebSocketHandler {
         answermessage.put("sdpAnswer", sdpAnswer);
         sendMessage(session, answermessage.toJSONString());
 
+
+        FaceOverlayFilter faceOverlayFilter = new FaceOverlayFilter.Builder(mediaPipeline).build();
+        faceOverlayFilter.setOverlayedImage("https://192.168.1.36:8443/helloworld/img/mario-wings.png", -0.35F, -1.2F, 1.6F, 1.6F);
+
+        webRtcEndpoint.connect(faceOverlayFilter);
+        faceOverlayFilter.connect(webRtcEndpoint);
+
         //source->sink
-        webRtcEndpoint.connect(webRtcEndpoint);
+//        webRtcEndpoint.connect(webRtcEndpoint);
 
 
         initWebRtcBasetListeners(session,webRtcEndpoint);

@@ -1,4 +1,4 @@
-var ws = new WebSocket("wss://" + location.host + "/one2one");
+var ws = new WebSocket("wss://" + location.host + "/one2one2");
 var videoInput;
 var videoOutput;
 var webRtcPeer;
@@ -93,7 +93,13 @@ let vueapp = new Vue({
         ar.poster = "./img/webrtc.png";
         ar.style.background = "";
       }
+      // webRtcPeer.dispose();
     },
+
+    replay:function(){
+
+      sendMessage({id:"play"});
+    }
   },
 });
 

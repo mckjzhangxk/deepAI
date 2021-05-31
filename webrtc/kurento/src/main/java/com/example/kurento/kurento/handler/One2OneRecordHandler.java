@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -19,14 +18,36 @@ import java.io.IOException;
  */
 
 
-public class One2OneHandler extends TextWebSocketHandler {
+public class One2OneRecordHandler extends TextWebSocketHandler {
     class UserSession {
-        public UserSession(WebSocketSession session, WebRtcEndpoint webRtcEndpoint, String sdpOffer) {
+        public UserSession(WebSocketSession session, WebRtcEndpoint webRtcEndpoint,RecorderEndpoint record, String sdpOffer) {
             this.session = session;
             this.webRtcEndpoint = webRtcEndpoint;
+            this.recorderEndpoint=record;
             this.sdpOffer = sdpOffer;
         }
 
+
+        public void connectAndRecord(){
+            this.webRtcEndpoint.connect(recorderEndpoint);
+            recorderEndpoint.record();
+        }
+
+        public void release(){
+            if(recorderEndpoint!=null){
+                recorderEndpoint.release();
+            }
+            if(webRtcEndpoint!=null){
+                webRtcEndpoint.release();
+            }
+        }
+
+        public void disconnect(){
+            if(webRtcEndpoint!=null){
+                recorderEndpoint.stop();
+                webRtcEndpoint.disconnect(recorderEndpoint);
+            }
+        }
         public WebRtcEndpoint getWebRtcEndpoint() {
             return webRtcEndpoint;
         }
@@ -51,7 +72,9 @@ public class One2OneHandler extends TextWebSocketHandler {
             this.sdpOffer = sdpOffer;
         }
 
+
         private WebRtcEndpoint webRtcEndpoint;
+        private RecorderEndpoint recorderEndpoint;
         private WebSocketSession session;
         private String sdpOffer;
     }
@@ -70,7 +93,49 @@ public class One2OneHandler extends TextWebSocketHandler {
             case "stop":
                 onStop(session);
                 break;
+            case "play":
+                onPlay(session);
+                break;
         }
+    }
+
+    private void onPlay(WebSocketSession session) {
+        String id = session.getId();
+
+        UserSession[] sesss={user1,user2};
+
+
+        if (user2 != null && user1 != null) {
+            user2.getWebRtcEndpoint().disconnect(user1.getWebRtcEndpoint());
+            user1.getWebRtcEndpoint().disconnect(user2.getWebRtcEndpoint());
+        }
+
+        UserSession selectSession=null;
+
+
+        //看自己的 记录
+        for(UserSession u:sesss){
+            if(u!=null&&u.getSession().getId().equals(id)){
+               selectSession=u;
+            }
+        }
+
+        PlayerEndpoint playerEndpoint=new PlayerEndpoint.Builder(pipeline,getFileUri(session)).build();
+        final UserSession finalSelectSession = selectSession;
+        playerEndpoint.addEndOfStreamListener(new EventListener<EndOfStreamEvent>() {
+            @Override
+            public void onEvent(EndOfStreamEvent endOfStreamEvent) {
+                playerEndpoint.disconnect(finalSelectSession.getWebRtcEndpoint());
+
+            }
+        });
+        if(selectSession!=null){
+
+            selectSession.disconnect();
+            playerEndpoint.connect(selectSession.getWebRtcEndpoint());
+            playerEndpoint.play();
+        }
+
     }
 
     @Override
@@ -85,7 +150,7 @@ public class One2OneHandler extends TextWebSocketHandler {
                 webRtcEndpoint.disconnect(user2.getWebRtcEndpoint());
                 user2.getWebRtcEndpoint().disconnect(webRtcEndpoint);
             }
-            webRtcEndpoint.release();
+            user1.release();
             user1 = null;
         } else if (user2 != null && user2.getSession().getId().equals(session.getId())) {
             WebRtcEndpoint webRtcEndpoint = user2.getWebRtcEndpoint();
@@ -93,7 +158,7 @@ public class One2OneHandler extends TextWebSocketHandler {
                 webRtcEndpoint.disconnect(user1.getWebRtcEndpoint());
                 user1.getWebRtcEndpoint().disconnect(webRtcEndpoint);
             }
-            webRtcEndpoint.release();
+            user2.release();
             user2 = null;
         }
     }
@@ -109,6 +174,10 @@ public class One2OneHandler extends TextWebSocketHandler {
         }
     }
 
+
+    private String getFileUri(WebSocketSession session){
+        return "file:///tmp/"+session.getId()+".webm";
+    }
     private void onJoin(WebSocketSession session, JSONObject p) {
         JSONObject result = new JSONObject();
         result.put("id", "onJoin");
@@ -118,7 +187,8 @@ public class One2OneHandler extends TextWebSocketHandler {
         if (user1 == null) {
 
             WebRtcEndpoint rtc1 = new WebRtcEndpoint.Builder(pipeline).build();
-            user1 = new UserSession(session, rtc1, p.getString("sdpOffer"));
+            RecorderEndpoint recorderEndpoint=new RecorderEndpoint.Builder(pipeline,getFileUri(session)).build();
+            user1 = new UserSession(session, rtc1,recorderEndpoint, p.getString("sdpOffer"));
 
             String sdpAnswer = initWebRTC(user1);
             result.put("message", "用户A");
@@ -126,7 +196,8 @@ public class One2OneHandler extends TextWebSocketHandler {
             tryConnect();
         } else if (user2 == null && !user1.getSession().getId().equals(session.getId())) {
             WebRtcEndpoint rtc2 = new WebRtcEndpoint.Builder(pipeline).build();
-            user2 = new UserSession(session, rtc2, p.getString("sdpOffer"));
+            RecorderEndpoint recorderEndpoint=new RecorderEndpoint.Builder(pipeline,getFileUri(session)).build();
+            user2 = new UserSession(session,rtc2,recorderEndpoint, p.getString("sdpOffer"));
             String sdpAnswer = initWebRTC(user2);
             result.put("message", "用户B");
             result.put("sdpAnswer", sdpAnswer);
@@ -142,6 +213,9 @@ public class One2OneHandler extends TextWebSocketHandler {
         if (user2 != null && user1 != null) {
             user2.getWebRtcEndpoint().connect(user1.getWebRtcEndpoint());
             user1.getWebRtcEndpoint().connect(user2.getWebRtcEndpoint());
+
+            user1.connectAndRecord();
+            user2.connectAndRecord();
         }
     }
 
@@ -186,5 +260,5 @@ public class One2OneHandler extends TextWebSocketHandler {
     @Autowired
     private KurentoClient kurento;
 
-    public static final Logger logger = LoggerFactory.getLogger(One2OneHandler.class);
+    public static final Logger logger = LoggerFactory.getLogger(One2OneRecordHandler.class);
 }

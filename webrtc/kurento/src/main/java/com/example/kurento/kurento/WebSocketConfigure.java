@@ -3,6 +3,7 @@ package com.example.kurento.kurento;
 import com.example.kurento.kurento.handler.BroadcastHandler;
 import com.example.kurento.kurento.handler.HelloHandler;
 import com.example.kurento.kurento.handler.One2OneHandler;
+import com.example.kurento.kurento.handler.One2OneRecordHandler;
 import com.example.kurento.kurento.service.MyService;
 import org.kurento.client.KurentoClient;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,10 @@ public class WebSocketConfigure implements WebSocketConfigurer {
     WebSocketHandler getOne2OneHandler(){
         return new One2OneHandler();
     }
-
+    @Bean
+    WebSocketHandler getOne2OneAdvanceHandler(){
+        return new One2OneRecordHandler();
+    }
     @Bean
     public KurentoClient kurentoClient()
     {
@@ -45,6 +49,7 @@ public class WebSocketConfigure implements WebSocketConfigurer {
         registry.addHandler(getHelloWorldHandler(),"/helloworld");
         registry.addHandler(getBroadcastHandler(),"/call");
         registry.addHandler(getOne2OneHandler(),"/one2one");
+        registry.addHandler(getOne2OneAdvanceHandler(),"/one2one2");
     }
 
 
