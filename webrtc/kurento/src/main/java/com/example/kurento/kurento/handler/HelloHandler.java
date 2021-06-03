@@ -13,6 +13,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by mathai on 21-5-25.
@@ -22,7 +23,7 @@ public class HelloHandler extends TextWebSocketHandler {
     private MyService service;
     @Autowired
     private  KurentoClient kurento;
-    private Map<String,WebRtcEndpoint> dict=new HashMap<>();
+    private Map<String,WebRtcEndpoint> dict=new ConcurrentHashMap<>();
 
     private void onOffer(WebSocketSession session,JSONObject m){
         MediaPipeline mediaPipeline = kurento.createMediaPipeline();
