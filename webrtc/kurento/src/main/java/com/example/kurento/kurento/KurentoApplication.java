@@ -15,11 +15,6 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 public class KurentoApplication{
 
 
-
-
-
-
-
     @Bean
     public ServletServerContainerFactoryBean createServletServerContainerFactoryBean() {
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
