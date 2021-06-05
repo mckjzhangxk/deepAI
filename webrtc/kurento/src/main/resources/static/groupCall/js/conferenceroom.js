@@ -134,7 +134,7 @@ function leaveRoom() {
 	document.getElementById('join').style.display = 'block';
 	document.getElementById('room').style.display = 'none';
 
-	ws.close();
+	// ws.close();
 }
 
 function receiveVideo(sender) {

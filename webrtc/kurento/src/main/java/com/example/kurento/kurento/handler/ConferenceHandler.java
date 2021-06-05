@@ -28,6 +28,7 @@ public class ConferenceHandler extends TextWebSocketHandler {
             this.session = session;
             this.name = name;
             this.sendPoint = new WebRtcEndpoint.Builder(pipeline).build();
+            this.sendPoint.setName("sender_"+name);
             initWebRtcListener(name,sendPoint,session);
             this.pipeline=pipeline;
         }
@@ -54,13 +55,15 @@ public class ConferenceHandler extends TextWebSocketHandler {
 
         public void connect( UserSession other) {
             WebRtcEndpoint recvEndPoint = new WebRtcEndpoint.Builder(pipeline).build();
+            recvEndPoint.setName("recv_"+name+"_from"+"_"+other.name);
             recvPoints.put(other.name, recvEndPoint);
+
             other.sendPoint.connect(recvEndPoint);
             initWebRtcListener(other.name, recvEndPoint, session);
 
 
-
             WebRtcEndpoint o_recvEndPoint = new WebRtcEndpoint.Builder(pipeline).build();
+            o_recvEndPoint.setName("recv_"+other.name+"_from_"+name);
             other.recvPoints.put(name, o_recvEndPoint);
             sendPoint.connect(o_recvEndPoint);
 
@@ -70,7 +73,7 @@ public class ConferenceHandler extends TextWebSocketHandler {
         }
 
         public void disconnect(UserSession user) {
-            WebRtcEndpoint webRtcEndpoint = recvPoints.remove(user.getId());
+            WebRtcEndpoint webRtcEndpoint = recvPoints.remove(user.name);
             if (webRtcEndpoint == null) return;
             webRtcEndpoint.release();
         }
@@ -85,12 +88,14 @@ public class ConferenceHandler extends TextWebSocketHandler {
                 e.release();
             }
         }
-        public WebRtcEndpoint getWebRtcBySessionId(String sessionId) {
-            if(sessionId.equals(session.getId()))
+        public WebRtcEndpoint getWebRtcByName(String name) {
+            if(name.equals(this.name)){
                 return sendPoint;
+            }
+
             else {
                 for(String w:recvPoints.keySet()){
-                    if(w.equals(sessionId))
+                    if(w.equals(name))
                         return recvPoints.get(w);
                 }
             }
@@ -122,11 +127,12 @@ public class ConferenceHandler extends TextWebSocketHandler {
             UserSession user = users.get(sessionId);
             if (user == null) return null;
 
-            WebRtcEndpoint rtc = user.getWebRtcBySessionId(sessionId);
+            WebRtcEndpoint rtc = user.getWebRtcByName(name);
             if(rtc==null) return null;
 
+            logger.info("============================webrct {}============================",rtc.getName());
 
-            String sdpAnswer = rtc.processAnswer(sdpOffer);
+            String sdpAnswer = rtc.processOffer(sdpOffer);
             rtc.gatherCandidates();
 
             return sdpAnswer;
@@ -190,7 +196,10 @@ public class ConferenceHandler extends TextWebSocketHandler {
     class RoomManager {
         Room get(String name) {
             Room room = rooms.get(name);
-            if (room == null) room = new Room(name);
+            if (room == null){
+                room = new Room(name);
+                rooms.put(name,room);
+            }
             return room;
         }
 
@@ -262,7 +271,7 @@ public class ConferenceHandler extends TextWebSocketHandler {
 
         JSONObject otherMsg = new JSONObject();
         otherMsg.put("id", "newParticipantArrived");
-        myMsg.put("name", _name);
+        otherMsg.put("name", _name);
 
         for (int i = 0; i < others_names.size(); i++) {
             String name = others_names.getString(i);
@@ -277,6 +286,7 @@ public class ConferenceHandler extends TextWebSocketHandler {
         String sdpOffer = msgJson.getString("sdpOffer");
 
         Room room = manager.getRoomBySessionId(session.getId());
+
         String sdpAnswer =room.join(session,name, sdpOffer);
         JSONObject answerJson = new JSONObject();
 
