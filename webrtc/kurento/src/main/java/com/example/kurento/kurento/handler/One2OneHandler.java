@@ -74,7 +74,13 @@ public class One2OneHandler extends TextWebSocketHandler {
     }
 
     @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        logger.info("new Connection arrived to one2one {}",session.getId());
+    }
+
+    @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        logger.info("Connection exit one2one {}",session.getId());
         onStop(session);
     }
 
@@ -123,6 +129,7 @@ public class One2OneHandler extends TextWebSocketHandler {
             String sdpAnswer = initWebRTC(user1);
             result.put("message", "用户A");
             result.put("sdpAnswer", sdpAnswer);
+
             tryConnect();
         } else if (user2 == null && !user1.getSession().getId().equals(session.getId())) {
             WebRtcEndpoint rtc2 = new WebRtcEndpoint.Builder(pipeline).build();
