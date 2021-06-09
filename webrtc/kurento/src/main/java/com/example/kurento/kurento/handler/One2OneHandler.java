@@ -129,7 +129,7 @@ public class One2OneHandler extends TextWebSocketHandler {
             String sdpAnswer = initWebRTC(user1);
             result.put("message", "用户A");
             result.put("sdpAnswer", sdpAnswer);
-            
+
             tryConnect();
         } else if (user2 == null && !user1.getSession().getId().equals(session.getId())) {
             WebRtcEndpoint rtc2 = new WebRtcEndpoint.Builder(pipeline).build();
