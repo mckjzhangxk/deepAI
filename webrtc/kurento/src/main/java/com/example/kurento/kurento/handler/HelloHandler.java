@@ -24,11 +24,13 @@ public class HelloHandler extends TextWebSocketHandler {
     @Autowired
     private  KurentoClient kurento;
     private Map<String,WebRtcEndpoint> dict=new ConcurrentHashMap<>();
-
+    private MediaPipeline pipeline;
     private void onOffer(WebSocketSession session,JSONObject m){
-        MediaPipeline mediaPipeline = kurento.createMediaPipeline();
+        if(pipeline==null)
+            pipeline=kurento.createMediaPipeline();
+
         //创建webrtc element
-        WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(mediaPipeline).build();
+        WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
         webRtcEndpoint.setName("张小楷");
 
         dict.put(session.getId(),webRtcEndpoint);
@@ -44,14 +46,14 @@ public class HelloHandler extends TextWebSocketHandler {
         sendMessage(session, answermessage.toJSONString());
 
 
-        FaceOverlayFilter faceOverlayFilter = new FaceOverlayFilter.Builder(mediaPipeline).build();
-        faceOverlayFilter.setOverlayedImage("https://192.168.1.36:8443/helloworld/img/mario-wings.png", -0.35F, -1.2F, 1.6F, 1.6F);
+//        FaceOverlayFilter faceOverlayFilter = new FaceOverlayFilter.Builder(mediaPipeline).build();
+//        faceOverlayFilter.setOverlayedImage("https://192.168.1.36:8443/helloworld/img/mario-wings.png", -0.35F, -1.2F, 1.6F, 1.6F);
 
-        webRtcEndpoint.connect(faceOverlayFilter);
-        faceOverlayFilter.connect(webRtcEndpoint);
+//        webRtcEndpoint.connect(faceOverlayFilter);
+//        faceOverlayFilter.connect(webRtcEndpoint);
 
         //source->sink
-//        webRtcEndpoint.connect(webRtcEndpoint);
+        webRtcEndpoint.connect(webRtcEndpoint);
 
 
         initWebRtcBasetListeners(session,webRtcEndpoint);
@@ -85,10 +87,10 @@ public class HelloHandler extends TextWebSocketHandler {
             case "PROCESS_SDP_OFFER":
                 onOffer(session,p);
                 break;
-            case "ADD_ICE_CANDIDATE":
+            case "candidate":
                 onRemoteCandidate(session,p);
                 break;
-            case "STOP":
+            case "stop":
                 stop(session);
                 break;
         }
@@ -124,7 +126,7 @@ public class HelloHandler extends TextWebSocketHandler {
                 p.put("sdpMLineIndex",sdpMLineIndex);
 
                 JSONObject message = new JSONObject();
-                message.put("id", "ADD_ICE_CANDIDATE");
+                message.put("id", "candidate");
                 message.put("candidate", p);
 
 

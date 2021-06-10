@@ -105,7 +105,10 @@ public class One2OneHandler extends TextWebSocketHandler {
     }
 
     private void onCandidate(WebSocketSession session, JSONObject p) {
-        IceCandidate iceCandidate = JSON.toJavaObject(p.getJSONObject("candidate"), IceCandidate.class);
+        JSONObject candidate = p.getJSONObject("candidate");
+        IceCandidate iceCandidate=new IceCandidate(candidate.getString("candidate"),candidate.getString("sdpMid"),candidate.getInteger("sdpMLineIndex"));
+
+//        IceCandidate iceCandidate = JSON.toJavaObject(p.getJSONObject("candidate"), IceCandidate.class);
         if (session.getId().equals(user1.getSession().getId())) {
             user1.getWebRtcEndpoint().addIceCandidate(iceCandidate);
             logger.info("user1 add candidate {}", iceCandidate);
@@ -126,11 +129,14 @@ public class One2OneHandler extends TextWebSocketHandler {
             WebRtcEndpoint rtc1 = new WebRtcEndpoint.Builder(pipeline).build();
             user1 = new UserSession(session, rtc1, p.getString("sdpOffer"));
 
+
+
             String sdpAnswer = initWebRTC(user1);
             result.put("message", "用户A");
             result.put("sdpAnswer", sdpAnswer);
 
-            tryConnect();
+            rtc1.connect(rtc1);
+//            tryConnect();
         } else if (user2 == null && !user1.getSession().getId().equals(session.getId())) {
             WebRtcEndpoint rtc2 = new WebRtcEndpoint.Builder(pipeline).build();
             user2 = new UserSession(session, rtc2, p.getString("sdpOffer"));
@@ -156,6 +162,8 @@ public class One2OneHandler extends TextWebSocketHandler {
         WebRtcEndpoint webRtcEndpoint = u.getWebRtcEndpoint();
         WebSocketSession session = u.getSession();
 
+        //forget create answer
+        String sdpAnswer = webRtcEndpoint.processOffer(u.getSdpOffer());
         webRtcEndpoint.addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
             @Override
             public void onEvent(IceCandidateFoundEvent event) {
@@ -166,11 +174,53 @@ public class One2OneHandler extends TextWebSocketHandler {
             }
         });
 
-        //forget create answer
+        webRtcEndpoint.addMediaFlowInStateChangeListener(new EventListener<MediaFlowInStateChangeEvent>() {
+            @Override
+            public void onEvent(MediaFlowInStateChangeEvent mediaFlowInStateChangeEvent) {
+                System.out.println("流入==============================");
+                String SourceName = mediaFlowInStateChangeEvent.getSource().getName();
+                String padName = mediaFlowInStateChangeEvent.getPadName();
+                System.out.println(mediaFlowInStateChangeEvent.getMediaType());
+                System.out.println("sourceName:" + SourceName);
+                System.out.println("==============================");
 
-        String sdpAnswer = webRtcEndpoint.processOffer(u.getSdpOffer());
+            }
+        });
+
+        webRtcEndpoint.addMediaFlowOutStateChangeListener(new EventListener<MediaFlowOutStateChangeEvent>() {
+            @Override
+            public void onEvent(MediaFlowOutStateChangeEvent mediaFlowOutStateChangeEvent) {
+                System.out.println("流出==============================");
+                String SourceName = mediaFlowOutStateChangeEvent.getSource().getName();
+                String padName = mediaFlowOutStateChangeEvent.getPadName();
+                System.out.println(mediaFlowOutStateChangeEvent.getMediaType());
+                System.out.println("sourceName:"+SourceName);
+                System.out.println("==============================");
+            }
+        });
+        //收集完成ice
+        webRtcEndpoint.addIceGatheringDoneListener(new EventListener<IceGatheringDoneEvent>() {
+            @Override
+            public void onEvent(IceGatheringDoneEvent iceGatheringDoneEvent) {
+                System.out.println("收集完成ICE");
+            }
+        });
 
 
+        webRtcEndpoint.addNewCandidatePairSelectedListener(new EventListener<NewCandidatePairSelectedEvent>() {
+            @Override
+            public void onEvent(NewCandidatePairSelectedEvent newCandidatePairSelectedEvent) {
+                String streamID = newCandidatePairSelectedEvent.getCandidatePair().getStreamID();
+                String localCandidate = newCandidatePairSelectedEvent.getCandidatePair().getLocalCandidate();
+                String remoteCandidate = newCandidatePairSelectedEvent.getCandidatePair().getRemoteCandidate();
+
+                System.out.println("切换线路");
+                System.out.println("streamId="+streamID);
+                System.out.println("local="+localCandidate);
+                System.out.println("remote="+remoteCandidate);
+
+            }
+        });
         webRtcEndpoint.gatherCandidates();
 
 
