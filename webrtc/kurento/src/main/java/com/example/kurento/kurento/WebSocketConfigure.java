@@ -19,6 +19,10 @@ public class WebSocketConfigure implements WebSocketConfigurer {
         return new HelloHandler();
     }
     @Bean
+    WebSocketHandler getOne2OneDebugHandler(){
+        return new One2OneDebugHandler();
+    }
+    @Bean
     WebSocketHandler getBroadcastHandler(){
         return new BroadcastHandler();
     }
@@ -50,6 +54,9 @@ public class WebSocketConfigure implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(getHelloWorldHandler(),"/helloworld");
+        registry.addHandler(getOne2OneDebugHandler(),"/one2oneDebug");
+
+
         registry.addHandler(getBroadcastHandler(),"/call");
         registry.addHandler(getOne2OneHandler(),"/one2one");
         registry.addHandler(getOne2OneAdvanceHandler(),"/one2one2");
