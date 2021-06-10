@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -85,11 +84,14 @@ public class One2OneHandler extends TextWebSocketHandler {
     }
 
     private void onStop(WebSocketSession session) {
+        JSONObject stopMessage=new JSONObject();
+        stopMessage.put("id","stop");
         if (user1 != null && user1.getSession().getId().equals(session.getId())) {
             WebRtcEndpoint webRtcEndpoint = user1.getWebRtcEndpoint();
             if (user2 != null) {
                 webRtcEndpoint.disconnect(user2.getWebRtcEndpoint());
                 user2.getWebRtcEndpoint().disconnect(webRtcEndpoint);
+                sendMessage(user2.getSession(),stopMessage);
             }
             webRtcEndpoint.release();
             user1 = null;
@@ -98,6 +100,7 @@ public class One2OneHandler extends TextWebSocketHandler {
             if (user1 != null) {
                 webRtcEndpoint.disconnect(user1.getWebRtcEndpoint());
                 user1.getWebRtcEndpoint().disconnect(webRtcEndpoint);
+                sendMessage(user1.getSession(),stopMessage);
             }
             webRtcEndpoint.release();
             user2 = null;
@@ -128,27 +131,22 @@ public class One2OneHandler extends TextWebSocketHandler {
 
             WebRtcEndpoint rtc1 = new WebRtcEndpoint.Builder(pipeline).build();
             user1 = new UserSession(session, rtc1, p.getString("sdpOffer"));
-
-
-
-            String sdpAnswer = initWebRTC(user1);
             result.put("message", "用户A");
-            result.put("sdpAnswer", sdpAnswer);
-
-            rtc1.connect(rtc1);
-//            tryConnect();
+            initWebRTC(user1,result);
+            tryConnect();
         } else if (user2 == null && !user1.getSession().getId().equals(session.getId())) {
             WebRtcEndpoint rtc2 = new WebRtcEndpoint.Builder(pipeline).build();
             user2 = new UserSession(session, rtc2, p.getString("sdpOffer"));
-            String sdpAnswer = initWebRTC(user2);
             result.put("message", "用户B");
-            result.put("sdpAnswer", sdpAnswer);
+            initWebRTC(user2,result);
             tryConnect();
         } else {
             result.put("result", "rejected");
             result.put("message", "聊天室满了");
+            sendMessage(session, result);
         }
-        sendMessage(session, result);
+
+
     }
 
     void tryConnect() {
@@ -158,12 +156,15 @@ public class One2OneHandler extends TextWebSocketHandler {
         }
     }
 
-    private String initWebRTC(UserSession u) {
+    private void initWebRTC(UserSession u, JSONObject result) {
         WebRtcEndpoint webRtcEndpoint = u.getWebRtcEndpoint();
         WebSocketSession session = u.getSession();
 
         //forget create answer
         String sdpAnswer = webRtcEndpoint.processOffer(u.getSdpOffer());
+        result.put("sdpAnswer",sdpAnswer);
+        sendMessage(session,result);
+
         webRtcEndpoint.addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
             @Override
             public void onEvent(IceCandidateFoundEvent event) {
@@ -223,8 +224,6 @@ public class One2OneHandler extends TextWebSocketHandler {
         });
         webRtcEndpoint.gatherCandidates();
 
-
-        return sdpAnswer;
     }
 
     synchronized void sendMessage(WebSocketSession session, JSONObject m) {
