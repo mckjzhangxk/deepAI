@@ -182,6 +182,15 @@ public class ConferenceHandler extends TextWebSocketHandler {
 
         }
 
+        public void addCandidate(String sessionId,String name,JSONObject candidate){
+            IceCandidate ice=JSON.toJavaObject(candidate,IceCandidate.class);
+
+            UserSession userSession = users.get(sessionId);
+            WebRtcEndpoint webRtcEndpoint = userSession.getWebRtcByName(name);
+            webRtcEndpoint.addIceCandidate(ice);
+
+
+        }
         public boolean contains(String id) {
             return users.containsKey(id);
         }
@@ -219,7 +228,7 @@ public class ConferenceHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         JSONObject msgJson = JSONObject.parseObject(message.getPayload());
         String messageId = msgJson.getString("id");
-
+        System.out.println(messageId);
         switch (messageId) {
             case "joinRoom":
                 onRequestJoinRoom(session, msgJson);
@@ -227,12 +236,17 @@ public class ConferenceHandler extends TextWebSocketHandler {
             case "receiveVideoFrom":
                 onReceiveVideo(session, msgJson);
                 break;
+            case "onIceCandidate":
+                onCandidate(session,msgJson);
+                break;
             case "leaveRoom":
                 onLeaveRoom(session);
                 break;
         }
 
     }
+
+
 
     private void onLeaveRoom(WebSocketSession session) {
         String sessionId = session.getId();
@@ -295,7 +309,10 @@ public class ConferenceHandler extends TextWebSocketHandler {
         answerJson.put("sdpAnswer", sdpAnswer);
         sendMessage(session, answerJson);
     }
-
+    private void onCandidate(WebSocketSession session, JSONObject msgJson) {
+        Room room = manager.getRoomBySessionId(session.getId());
+        room.addCandidate(session.getId(),msgJson.getString("name"),msgJson.getJSONObject("candidate"));
+    }
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         logger.info("new connection established with session id {}", session.getId());
