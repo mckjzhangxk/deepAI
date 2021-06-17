@@ -91,7 +91,7 @@ ws.onmessage = function (message) {
     case "PROCESS_SDP_ANSWER":
       handleProcessSdpAnswer(jsonMessage);
       break;
-    case "ADD_ICE_CANDIDATE":
+    case "candidate":
       handleAddIceCandidate(jsonMessage);
       break;
     case "ERROR":
@@ -156,7 +156,7 @@ function stop() {
   hideSpinner(uiLocalVideo, uiRemoteVideo);
 
   sendMessage({
-    id: "STOP",
+    id: "stop",
   });
 }
 
@@ -196,7 +196,7 @@ function uiStart() {
       remoteVideo: videoOutput,
       onicecandidate: (candidate) => {
         let param={
-          id:'ADD_ICE_CANDIDATE',
+          id:'candidate',
           candidate:{
             candidate:candidate.candidate,
             sdpMid:candidate.sdpMid,
