@@ -18,6 +18,7 @@
 var ws = new WebSocket('wss://' + location.host + '/call');
 var video;
 var webRtcPeer;
+const iceServer=[{"urls":"stun:stun.voipstunt.com"},{"urls":"stun:mathai.xyz:3478"}]
 
 window.onload = function() {
 	console = new Console();
@@ -86,7 +87,8 @@ function presenter() {
 
 		var options = {
 			localVideo : video,
-			onicecandidate : onIceCandidate
+			onicecandidate : onIceCandidate,
+			configuration:iceServer
 		}
 		webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
 				function(error) {
@@ -117,7 +119,8 @@ function viewer() {
 
 		var options = {
 			remoteVideo : video,
-			onicecandidate : onIceCandidate
+			onicecandidate : onIceCandidate,
+			configuration:iceServer
 		}
 		webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
 				function(error) {

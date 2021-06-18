@@ -18,6 +18,7 @@
 var ws = new WebSocket('wss://' + location.host + '/conference');
 var participants = {};
 var name;
+const iceServer=[{"urls":"stun:stun.voipstunt.com"},{"urls":"stun:mathai.xyz:3478"}]
 
 window.onbeforeunload = function() {
 	ws.close();
@@ -109,7 +110,8 @@ function onExistingParticipants(msg) {
 	var options = {
 	      localVideo: video,
 	      mediaConstraints: constraints,
-	      onicecandidate: participant.onIceCandidate.bind(participant)
+	      onicecandidate: participant.onIceCandidate.bind(participant),
+		  configuration:iceServer
 	    }
 	participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
 		function (error) {
@@ -144,7 +146,8 @@ function receiveVideo(sender) {
 
 	var options = {
       remoteVideo: video,
-      onicecandidate: participant.onIceCandidate.bind(participant)
+      onicecandidate: participant.onIceCandidate.bind(participant),
+	  configuration:iceServer
     }
 
 	participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,

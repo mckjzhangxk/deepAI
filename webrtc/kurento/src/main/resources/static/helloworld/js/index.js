@@ -25,6 +25,7 @@ let uiState = null;
 const UI_IDLE = 0;
 const UI_STARTING = 1;
 const UI_STARTED = 2;
+const iceServer=[{"urls":"stun:stun.voipstunt.com"},{"urls":"stun:mathai.xyz:3478"}]
 
 window.onload = function () {
   console = new Console();
@@ -207,6 +208,7 @@ function uiStart() {
         ws.send(JSON.stringify(param));
       },
       mediaConstraints: constraints,
+      configuration:iceServer
     },
     function () {
       webRtcPeer.generateOffer((error, sdpOffer) =>{

@@ -3,6 +3,7 @@ var videoInput;
 var videoOutput;
 var webRtcPeer;
 let options = null;
+const iceServer=[{"urls":"stun:stun.voipstunt.com"},{"urls":"stun:mathai.xyz:3478"}]
 
 function sendMessage(m) {
   ws.send(JSON.stringify(m));
@@ -28,6 +29,7 @@ window.onload = function () {
         framerate: 15,
       },
     },
+    configuration:iceServer
   };
 };
 
